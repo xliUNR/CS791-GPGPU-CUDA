@@ -15,7 +15,7 @@
 int main() {
   
   // Arrays on the host (CPU)
-  int a[N][N], b[N][N], c[N][N];
+  //int a[N][N], b[N][N], c[N][N];
   
   /*
     These will point to memory on the GPU - notice the correspondence
