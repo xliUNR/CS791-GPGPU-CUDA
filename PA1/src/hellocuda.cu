@@ -16,8 +16,8 @@ int main() {
   
   // Arrays on the host (CPU)
   //int a[N][N], b[N][N], c[N][N];
-  dim3 Grid(N);
-  dim3 Block(N);
+  dim3 grid(N);
+  dim3 block(N);
   /*
     These will point to memory on the GPU - notice the correspondence
     between these pointers and the arrays declared above.
@@ -120,7 +120,7 @@ int main() {
     different piece of data, and many threads can execute at the same
     time. This is how cuda can get such large speedups.
    */
-  //add<<<N, N>>>(dev_a, dev_b, dev_c);
+  add<<<grid, block>>>(dev_a, dev_b, dev_c);
 
   /*
     Unfortunately, the GPU is to some extent a black box. In order to

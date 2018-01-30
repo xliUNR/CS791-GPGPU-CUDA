@@ -17,8 +17,12 @@ __global__ void add(int *a, int *b, int *c) {
     equation calculates the unique ID for each element in the matrix
     since the memory is stored as a 1D list.
    */
-  int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
+  int col = threadIdx.x + blockDim.x * blockIdx.x;
+  int row = threadIdx.y + blockDim.y * blockIdx.y;
 
+  int index = row * N + col;
+ 
+  
   /*
     We make sure that the thread_id isn't too large, and then we
     assign c = a + b using the index we calculated above.
@@ -27,10 +31,10 @@ __global__ void add(int *a, int *b, int *c) {
     element from a and one element from b. Each thread is able to run
     in parallel, so we get speedup.
    */
-  if (thread_id < N * N ) {
+  if (col < N && row < N ) {
 
     //c[thread_id] = a[thread_id] + b[thread_id];
-    *(c + thread_id) = *(a + thread_id ) + *(b + thread_id);
+    c[index] = a[index] + b[index];
   }
 }
 
