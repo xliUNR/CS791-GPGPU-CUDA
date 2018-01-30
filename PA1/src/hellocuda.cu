@@ -66,9 +66,19 @@ int main() {
     
   }
 
-  //for(int i < N * N; i++){
 
- // }
+for (int i = 0; i < N; i++) {
+
+    for(int j = 0; j < N; j++){
+
+      printf("%i ", a[i][j]);
+
+    }
+
+    printf("\n");
+    
+  }
+  
 
  /*
     The following code is responsible for handling timing for code
