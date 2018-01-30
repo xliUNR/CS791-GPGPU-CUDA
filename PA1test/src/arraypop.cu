@@ -3,8 +3,9 @@
 
 #define N 2
 
+#define HANDLE_ERROR( err ) (HandleError( err, __FILE__, __LINE__ ))
 
-__global__ voic matpop(int N, int* emptyMatrix );
+__global__ void matpop(int N, int* emptyMatrix );
 
 
 
@@ -16,7 +17,7 @@ __global__ voic matpop(int N, int* emptyMatrix );
 
 int main(int argc, char const *argv[])
 {
-   int *dev_a, *host_a;
+   int *dev_a;
    int host_a[N][N];
    //allocate memory
 
@@ -58,20 +59,20 @@ static void HandleError( cudaError_t err,
         exit( EXIT_FAILURE );
     }
 }
-#define HANDLE_ERROR( err ) (HandleError( err, __FILE__, __LINE__ ))\
+
 
 
 //populates a matrix on device
 __global__ void matpop( int N, int* emptyMatrix ){
 	
-	int thread_id = threadIdx.x + blockId.x * blockDim.x;
+	int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
 
 	//check for valid memory location, then initialize element to 0
 	if( thread_id < N * N )
 	{
 		//commented out one is for array of pointers
 		//*((*(emptyMatrix)) + (blockId.x * blockDim.x + threadIdx.x)) = 0;
-		*((emptyMatrix) + (blockId.x * blockDim.x + threadIdx.x)) = 0;
+		*(emptyMatrix + (blockIdx.x * blockDim.x + threadIdx.x)) = 0;
 	}
 	
 }
