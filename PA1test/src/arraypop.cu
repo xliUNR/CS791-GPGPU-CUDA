@@ -16,7 +16,7 @@ static void HandleError( cudaError_t err,
 
 #define HANDLE_ERROR( err ) (HandleError( err, __FILE__, __LINE__ ))
 
-//__global__ void matpop(int N, int* emptyMatrix );
+__global__ void matpop(int N, int* );
 
 
 //populates a matrix on device
