@@ -96,9 +96,11 @@ for (int i = 0; i < N; i++) {
     
   } 
   //CPU addition of arrays
-  clock_t start, end;
+  clock_t cstart, cend;
   double cpu_time;
+  
   start = clock();
+
   for (int i = 0; i < N; i++) {
 
     for(int j = 0; j < N; j++){
@@ -109,7 +111,7 @@ for (int i = 0; i < N; i++) {
   } 
 
 end = clock();
-cpu_time = ((double) (end - start)) / CLOCKS_PER_SEC;
+cpu_time = ((double) (cend - cstart)) / CLOCKS_PER_SEC;
 
 
  /*
