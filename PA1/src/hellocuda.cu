@@ -18,8 +18,13 @@ int main() {
   std::cout << "Enter square matrix dimension: " << std::endl;
   std::cin >> N;
   
-  // Arrays on the host (CPU)
-  int a[N][N], b[N][N], c[N][N], compare[N][N];
+  // Arrays on the host (CPU), dynamically allocated to fit large matrix
+  //int a[N][N], b[N][N], c[N][N], compare[N][N];
+  
+  int *a = (int*)malloc(N*N*sizeof(int));
+  int *b = (int*)malloc(N*N*sizeof(int));
+  int *c = (int*)malloc(N*N*sizeof(int));
+		
   dim3 grid(N);
   dim3 block(N);
     /*
@@ -53,8 +58,9 @@ int main() {
 
     for(int j = 0; j < N; j++){
 
-      a[i][j] = 1;
-      b[i][j] = 2;
+      int offset = i * N +j;
+      a[offset] = 1;
+      *(b + offset) = 2;
 
     }
     
@@ -241,7 +247,7 @@ for (int i = 0; i < N; i++) {
    */
   std::cout << "Yay! Your program's results are correct." << std::endl;
   std::cout << "Your program took: " << elapsedTime << " ms." << std::endl;
-  std::cout << "The CPU took: " << cpuTime << "sec " << std::endl;
+  std::cout << "The CPU took: " << cpuTime << "ms " << std::endl;
 
   // Cleanup in the event of success.
   /*cudaEventDestroy( start );
