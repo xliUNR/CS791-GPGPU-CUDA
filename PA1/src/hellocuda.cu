@@ -41,7 +41,7 @@ int main() {
     Actually, a good idea would be to wrap this error checking in a
     function or macro, which is what the Cuda By Example book does.
    */
-  cudaError_t err = cudaMalloc( (void**) &dev_a, N * N * sizeof(int));
+  /*cudaError_t err = cudaMalloc( (void**) &dev_a, N * N * sizeof(int));
   if (err != cudaSuccess) {
     std::cerr << "Error: " << cudaGetErrorString(err) << std::endl;
     exit(1);
@@ -90,10 +90,10 @@ int main() {
     we want to copy. The last argument is a constant that tells
     cudaMemcpy the direction of the transfer.
    */
-  cudaMemcpy(dev_a, a, N * N * sizeof(int), cudaMemcpyHostToDevice);
+  /*cudaMemcpy(dev_a, a, N * N * sizeof(int), cudaMemcpyHostToDevice);
   cudaMemcpy(dev_b, b, N * N * sizeof(int), cudaMemcpyHostToDevice);
   cudaMemcpy(dev_c, c, N * N * sizeof(int), cudaMemcpyHostToDevice);
-  
+  */
   /*
     FINALLY we get to run some code on the GPU. At this point, if you
     haven't looked at add.cu (in this folder), you should. The
@@ -123,11 +123,11 @@ int main() {
     program we would want to check the error code returned by this
     function.
   */
-  cudaError_t err1 = cudaMemcpy(c, dev_c, N * N * sizeof(int), cudaMemcpyDeviceToHost);
+  /*cudaError_t err1 = cudaMemcpy(c, dev_c, N * N * sizeof(int), cudaMemcpyDeviceToHost);
   if (err1 != cudaSuccess) {
     std::cerr << "Error: " << cudaGetErrorString(err) << std::endl;
     exit(1);
-  }
+  }*/
 
 
   /*
