@@ -13,6 +13,9 @@
 #include "add.h"
 
 int main() {
+  int N;
+  std::cout << "Enter square matrix dimension: " << std::endl;
+  std::cin >> N;
   
   // Arrays on the host (CPU)
   int a[N][N], b[N][N], c[N][N];

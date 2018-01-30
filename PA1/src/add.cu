@@ -9,7 +9,7 @@
   pointers we pass in should point to memory on the device, but this
   is not indicated by the function's signature.
  */
-__global__ void add(int *a, int *b, int *c) {
+__global__ void add(int n, int *a, int *b, int *c) {
 
   /*
     Each thread knows its identity in the system. This identity is
@@ -17,10 +17,10 @@ __global__ void add(int *a, int *b, int *c) {
     equation calculates the unique ID for each element in the matrix
     since the memory is stored as a 1D list.
    */
-  int col = threadIdx.x + blockDim.x * blockIdx.x;
-  int row = threadIdx.y + blockDim.y * blockIdx.y;
+  //int col = threadIdx.x + blockDim.x * blockIdx.x;
+  //int row = threadIdx.y + blockDim.y * blockIdx.y;
   int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
-  int index = row * N + col;
+  //int index = row * N + col;
  
   
   /*
@@ -32,7 +32,7 @@ __global__ void add(int *a, int *b, int *c) {
     in parallel, so we get speedup.
    */
    
-  if (thread_id < N * N ) {
+  if (thread_id < n * n) {
 
     //c[thread_id] = a[thread_id] + b[thread_id];
     *(c + thread_id) = *(a + thread_id ) + *(b + thread_id);
