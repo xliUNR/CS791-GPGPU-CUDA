@@ -99,7 +99,7 @@ for (int i = 0; i < N; i++) {
   clock_t cstart, cend;
   double cpu_time;
   
-  start = clock();
+  cstart = clock();
 
   for (int i = 0; i < N; i++) {
 
@@ -110,7 +110,7 @@ for (int i = 0; i < N; i++) {
     }   
   } 
 
-end = clock();
+cend = clock();
 cpu_time = ((double) (cend - cstart)) / CLOCKS_PER_SEC;
 
 
