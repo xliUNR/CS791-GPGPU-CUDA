@@ -130,7 +130,7 @@ for (int i = 0; i < N; i++) {
     different piece of data, and many threads can execute at the same
     time. This is how cuda can get such large speedups.
    */
-  //add<<<grid, block>>>(dev_a, dev_b, dev_c);
+  add<<<grid, block>>>(dev_a, dev_b, dev_c);
 
   /*
     Unfortunately, the GPU is to some extent a black box. In order to
@@ -198,8 +198,8 @@ for (int i = 0; i < N; i++) {
   /*cudaEventDestroy( start );
   cudaEventDestroy( end );*/
 
-  /*cudaFree(dev_a);
+  cudaFree(dev_a);
   cudaFree(dev_b);
-  cudaFree(dev_c);*/
+  cudaFree(dev_c);
   return 0;
 }
