@@ -113,7 +113,7 @@ for (int i = 0; i < N; i++) {
   float cpuTime;
   cudaEventElapsedTime( &cpuTime, hstart, hend );
 
-printf("Matrix compare \n");
+/*printf("Matrix compare \n");
 for (int i = 0; i < N; i++) {
 
     for(int j = 0; j < N; j++){
@@ -124,7 +124,7 @@ for (int i = 0; i < N; i++) {
 
     printf("\n");
     
-  } 
+  } */
 
  /*
     The following code is responsible for handling timing for code
@@ -224,8 +224,10 @@ for (int i = 0; i < N; i++) {
    */
   for (int i = 0; i < N; ++i) {
     for(int j = 0; j < N; ++j){
-
-      if (c[i][j] != a[i][j] + b[i][j]) {
+	
+      int offset = i * N +j;
+	
+      if *(compare + offset) != *(a + offset) + *(b + offset) {
       std::cerr << "Oh no! Something went wrong. You should check your cuda install and your GPU. :(" << std::endl;
 
       // clean up events - we should check for error codes here.
