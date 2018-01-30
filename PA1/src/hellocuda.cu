@@ -141,13 +141,23 @@ for (int i = 0; i < N; i++) {
     program we would want to check the error code returned by this
     function.
   */
-  /*cudaError_t err1 = cudaMemcpy(c, dev_c, N * N * sizeof(int), cudaMemcpyDeviceToHost);
+  cudaError_t err1 = cudaMemcpy(c, dev_c, N * N * sizeof(int), cudaMemcpyDeviceToHost);
   if (err1 != cudaSuccess) {
     std::cerr << "Error: " << cudaGetErrorString(err) << std::endl;
     exit(1);
-  }*/
+  }
 
+  for (int i = 0; i < N; i++) {
 
+    for(int j = 0; j < N; j++){
+
+      printf("%i ", c[i][j]);
+
+    }
+
+    printf("\n");
+    
+  }
   /*
     This is the other end of the timing process. We record an event,
     synchronize on it, and then figure out the difference in time
