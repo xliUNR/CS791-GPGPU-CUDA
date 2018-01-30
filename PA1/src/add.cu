@@ -22,19 +22,20 @@ __global__ void add(int n, int *a, int *b, int *c) {
   //1 for 1D grid of 2D blocks
   //2 for 2D grid of 1D blocks
   int option = 2;
-  switch (option ) {
+  int thread_id;
+    switch (option ) {
     case 0: 
-       int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
+       thread_id = threadIdx.x + blockIdx.x * blockDim.x;
        break;
 
     case 1:
-       int thread_id =  blockIdx.x * blockDim.x * blockDim.y
+       thread_id =  blockIdx.x * blockDim.x * blockDim.y
                           + threadIdx.y * blockDim.x + threadIdx.x;
        break;
        
     case 2:
        int blockId = blockIdx.y * gridDim.x + blockIdx.x;  
-       int threadId = blockId * blockDim.x + threadIdx.x;
+       threadId = blockId * blockDim.x + threadIdx.x;
        break;                     
 
   }
@@ -67,20 +68,20 @@ __global__ void add(int n, int *a, int *b, int *c) {
 __global__ void strideAdd(int n, int *a, int *b, int *c) {
   //initialize offset AKA unique thread id
    int option = 2;
-
+   int thread_id;
    switch (option ) {
     case 0: 
-       int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
+       thread_id = threadIdx.x + blockIdx.x * blockDim.x;
        break;
 
     case 1:
-       int thread_id =  blockIdx.x * blockDim.x * blockDim.y
+       thread_id =  blockIdx.x * blockDim.x * blockDim.y
                           + threadIdx.y * blockDim.x + threadIdx.x;
        break;
        
     case 2:
        int blockId = blockIdx.y * gridDim.x + blockIdx.x;  
-       int threadId = blockId * blockDim.x + threadIdx.x;
+       threadId = blockId * blockDim.x + threadIdx.x;
        break;                     
 
   }
