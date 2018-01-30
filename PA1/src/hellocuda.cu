@@ -15,8 +15,37 @@
 
 int main() {
   int N;
+
+  char userRes;
+  bool STRIDEFLAG;
+  bool repeat = true;
   std::cout << "Enter square matrix dimension: " << std::endl;
   std::cin >> N;
+  if( N > 65535 )
+    {
+      std::cout << "Dimension is too large! Max is N = 65535. Program exiting" << std::endl;
+      exit(1); 
+    }
+
+  //Ask user if stride enabled
+  do{
+    std::cout << "stride mode? (Y/N) " << std::endl;
+    std::cin >> userRes;
+    if( userRes == 'Y' | 'y' ){
+      STRIDEFLAG = true;
+      repeat = false;
+    }
+    
+    else if( userRes == 'N' | 'n' ){
+      STRIDEFLAG = false;
+      repeat = false;
+    }
+    else{
+      std::cout << "invalid response. Try again." << std::endl;
+    }
+  } while( repeat );
+  
+
   
   // Arrays on the host (CPU), dynamically allocated to overcome limited
   // stack size
@@ -123,25 +152,14 @@ int main() {
   cudaMemcpy(dev_b, b, N * N * sizeof(int), cudaMemcpyHostToDevice);
   cudaMemcpy(dev_c, c, N * N * sizeof(int), cudaMemcpyHostToDevice);
   
-  /*
-    FINALLY we get to run some code on the GPU. At this point, if you
-    haven't looked at add.cu (in this folder), you should. The
-    comments in that file explain what the add function does, so here
-    let's focus on how add is being called. The first thing to notice
-    is the <<<...>>>, which you should recognize as _not_ being
-    standard C. This syntactic extension tells nvidia's cuda compiler
-    how to parallelize the execution of the function. We'll get into
-    details as the course progresses, but for we'll say that <<<N,
-    1>>> is creating N _blocks_ of 1 _thread_ each. Each of these
-    threads is executing add with a different data element (details of
-    the indexing are in add.cu). 
-
-    In larger programs, you will typically have many more blocks, and
-    each block will have many threads. Each thread will handle a
-    different piece of data, and many threads can execute at the same
-    time. This is how cuda can get such large speedups.
-   */
-  add<<<grid, block>>>(N, dev_a, dev_b, dev_c);
+ //parallel add functions, one for stride mode and one for regular operation
+  if( STRIDEFLAG ){
+    strideAdd<<<grid, block>>>(N, dev_a, dev_b, dev_c);
+  }
+  else{
+    add<<<grid, block>>>(N, dev_a, dev_b, dev_c);
+  }
+  
 
   /*
     Unfortunately, the GPU is to some extent a black box. In order to
