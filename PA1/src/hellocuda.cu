@@ -16,7 +16,8 @@ int main() {
   
   // Arrays on the host (CPU)
   //int a[N][N], b[N][N], c[N][N];
-  
+  dim3 Grid(N);
+  dim3 Block(N);
   /*
     These will point to memory on the GPU - notice the correspondence
     between these pointers and the arrays declared above.
