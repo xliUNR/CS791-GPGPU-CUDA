@@ -21,7 +21,7 @@ __global__ void add(int n, int *a, int *b, int *c) {
   //0 for 1D grid of 1D blocks
   //1 for 1D grid of 2D blocks
   //2 for 2D grid of 1D blocks
-  int option = 2;
+  int option = 0;
   int thread_id;
     switch (option ) {
     case 0: 
@@ -67,7 +67,7 @@ __global__ void add(int n, int *a, int *b, int *c) {
 //matrix add function that uses grid-striding
 __global__ void strideAdd(int n, int *a, int *b, int *c) {
   //initialize offset AKA unique thread id
-   int option = 2;
+   int option = 0;
    int thread_id;
    switch (option ) {
     case 0: 
