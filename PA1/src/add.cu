@@ -19,9 +19,10 @@ __global__ void add(int n, int *a, int *b, int *c) {
    */
   //int col = threadIdx.x + blockDim.x * blockIdx.x;
   //int row = threadIdx.y + blockDim.y * blockIdx.y;
-  int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
+  //int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
   //int index = row * N + col;
- 
+  int thread_id =  blockIdx.x * blockDim.x * blockDim.y
+                          + threadIdx.y * blockDim.x + threadIdx.x;
   
   /*
     We make sure that the thread_id isn't too large, and then we
@@ -47,12 +48,14 @@ __global__ void add(int n, int *a, int *b, int *c) {
 //matrix add function that uses grid-striding
 __global__ void strideAdd(int n, int *a, int *b, int *c) {
   //initialize offset AKA unique thread id
-  int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
+  //int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
+  int thread_id =  blockIdx.x * blockDim.x * blockDim.y
+                          + threadIdx.y * blockDim.x + threadIdx.x;
 
   //loop over each grid
   for( int i = thread_id; i < n*n; i+= blockDim.x * gridDim.x )
     {
-      *(c + thread_id) = *(a + thread_id ) + *(b + thread_id);
+      *(c + thread_id) = *(a + thread_id ) + *(b + thread_id);      
     }
 
 }
