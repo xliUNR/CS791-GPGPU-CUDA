@@ -55,8 +55,8 @@ int main() {
   int *compare = (int*)malloc(N*N*sizeof(int));
 	
   //setup block/thread structure 	
-  dim3 grid(1);
-  dim3 block(N, N);
+  dim3 grid(N,N);
+  dim3 block(N);
 
   //setup device matrix pointers
   int *dev_a, *dev_b, *dev_c;

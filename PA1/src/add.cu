@@ -17,12 +17,30 @@ __global__ void add(int n, int *a, int *b, int *c) {
     equation calculates the unique ID for each element in the matrix
     since the memory is stored as a 1D list.
    */
+  
+  //0 for 1D grid of 1D blocks
+  //1 for 1D grid of 2D blocks
+  //2 for 2D grid of 1D blocks
+  int option = 2;
+  switch (option ) {
+    case 0: 
+       int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
+       break;
+
+    case 1:
+       int thread_id =  blockIdx.x * blockDim.x * blockDim.y
+                          + threadIdx.y * blockDim.x + threadIdx.x;
+       break;
+       
+    case 2:
+       int blockId = blockIdx.y * gridDim.x + blockIdx.x;  
+       int threadId = blockId * blockDim.x + threadIdx.x;
+       break;                     
+
+  }
   //int col = threadIdx.x + blockDim.x * blockIdx.x;
   //int row = threadIdx.y + blockDim.y * blockIdx.y;
-  //int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
   //int index = row * N + col;
-  int thread_id =  blockIdx.x * blockDim.x * blockDim.y
-                          + threadIdx.y * blockDim.x + threadIdx.x;
   
   /*
     We make sure that the thread_id isn't too large, and then we
@@ -48,9 +66,24 @@ __global__ void add(int n, int *a, int *b, int *c) {
 //matrix add function that uses grid-striding
 __global__ void strideAdd(int n, int *a, int *b, int *c) {
   //initialize offset AKA unique thread id
-  //int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
-  int thread_id =  blockIdx.x * blockDim.x * blockDim.y
+   int option = 2;
+
+   switch (option ) {
+    case 0: 
+       int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
+       break;
+
+    case 1:
+       int thread_id =  blockIdx.x * blockDim.x * blockDim.y
                           + threadIdx.y * blockDim.x + threadIdx.x;
+       break;
+       
+    case 2:
+       int blockId = blockIdx.y * gridDim.x + blockIdx.x;  
+       int threadId = blockId * blockDim.x + threadIdx.x;
+       break;                     
+
+  }
 
   //loop over each grid
   for( int i = thread_id; i < n*n; i+= blockDim.x * gridDim.x )
