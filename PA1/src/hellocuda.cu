@@ -139,11 +139,11 @@ int main() {
     the value of the stop event. This is because the GPU may not have
     actually written to the event until all other work has finished.
    */
-  cudaEventRecord( end, 0 );
+  /*cudaEventRecord( end, 0 );
   cudaEventSynchronize( end );
 
   float elapsedTime;
-  cudaEventElapsedTime( &elapsedTime, start, end );
+  cudaEventElapsedTime( &elapsedTime, start, end );*/
 
   /*
     Let's check that the results are what we expect.
@@ -174,7 +174,7 @@ int main() {
     some information about the times we recorded above.
    */
   std::cout << "Yay! Your program's results are correct." << std::endl;
-  std::cout << "Your program took: " << elapsedTime << " ms." << std::endl;
+  //std::cout << "Your program took: " << elapsedTime << " ms." << std::endl;
   
   // Cleanup in the event of success.
   cudaEventDestroy( start );
