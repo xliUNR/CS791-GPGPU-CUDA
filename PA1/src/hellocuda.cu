@@ -154,7 +154,7 @@ int main() {
   */
   cudaError_t err1 = cudaMemcpy(c, dev_c, N * N * sizeof(int), cudaMemcpyDeviceToHost);
   if (err1 != cudaSuccess) {
-    std::cerr << "Error: " << cudaGetErrorString(err) << std::endl;
+    std::cerr << "Error: " << cudaGetErrorString(err1) << std::endl;
     exit(1);
   }
 
