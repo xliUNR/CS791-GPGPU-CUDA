@@ -256,5 +256,9 @@ for (int i = 0; i < N; i++) {
   cudaFree(dev_a);
   cudaFree(dev_b);
   cudaFree(dev_c);
+
+  free(c);
+  free(b);
+  free(a);	
   return 0;
 }
