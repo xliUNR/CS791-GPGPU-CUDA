@@ -177,11 +177,11 @@ int main() {
   //std::cout << "Your program took: " << elapsedTime << " ms." << std::endl;
   
   // Cleanup in the event of success.
-  cudaEventDestroy( start );
-  cudaEventDestroy( end );
+  /*cudaEventDestroy( start );
+  cudaEventDestroy( end );*/
 
   /*cudaFree(dev_a);
   cudaFree(dev_b);
   cudaFree(dev_c);*/
-
+  return 0;
 }
