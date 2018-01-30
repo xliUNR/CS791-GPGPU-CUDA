@@ -12,14 +12,27 @@ static void HandleError( cudaError_t err,
                 file, line );
         exit( EXIT_FAILURE );
     }
-}
+};
 
 #define HANDLE_ERROR( err ) (HandleError( err, __FILE__, __LINE__ ))
 
-__global__ void matpop(int N, int* emptyMatrix );
+//__global__ void matpop(int N, int* emptyMatrix );
 
 
+//populates a matrix on device
+__global__ void matpop( int N, int *emptyMatrix ){
+  
+  int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
 
+  //check for valid memory location, then initialize element to 0
+  if( thread_id < N * N )
+  {
+    //commented out one is for array of pointers
+    //*((*(emptyMatrix)) + (blockId.x * blockDim.x + threadIdx.x)) = 0;
+    *(emptyMatrix + (blockIdx.x * blockDim.x + threadIdx.x)) = 0;
+  }
+  
+}
 
 
 
@@ -37,6 +50,7 @@ int main(int argc, char const *argv[])
 
    //initialize matrix on device using parallel and copy over
    matpop<<<N,N>>>(N, dev_a);
+
    cudaMemcpy(host_a, dev_a, N * N * sizeof(int), cudaMemcpyDeviceToHost);
 
    printf( "\n Matrix: \n");
@@ -62,18 +76,5 @@ int main(int argc, char const *argv[])
 
 
 
-//populates a matrix on device
-__global__ void matpop( int N, int* emptyMatrix ){
-	
-	int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
 
-	//check for valid memory location, then initialize element to 0
-	if( thread_id < N * N )
-	{
-		//commented out one is for array of pointers
-		//*((*(emptyMatrix)) + (blockId.x * blockDim.x + threadIdx.x)) = 0;
-		*(emptyMatrix + (blockIdx.x * blockDim.x + threadIdx.x)) = 0;
-	}
-	
-}
 
