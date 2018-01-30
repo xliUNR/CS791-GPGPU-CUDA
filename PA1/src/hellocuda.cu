@@ -123,7 +123,12 @@ int main() {
     program we would want to check the error code returned by this
     function.
   */
-  cudaMemcpy(c, dev_c, N * N * sizeof(int), cudaMemcpyDeviceToHost);
+  cudaError_t err = cudaMemcpy(c, dev_c, N * N * sizeof(int), cudaMemcpyDeviceToHost);
+  if (err != cudaSuccess) {
+    std::cerr << "Error: " << cudaGetErrorString(err) << std::endl;
+    exit(1);
+  }
+
 
   /*
     This is the other end of the timing process. We record an event,

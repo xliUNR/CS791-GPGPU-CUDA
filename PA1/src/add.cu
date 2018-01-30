@@ -30,7 +30,7 @@ __global__ void add(int *a, int *b, int *c) {
   if (thread_id < N * N ) {
 
     //c[thread_id] = a[thread_id] + b[thread_id];
-    *((&c) + thread_id) = *((&a) + thread_id ) + *((&b) + thread_id);
+    *(c + thread_id) = *(a + thread_id ) + *(b + thread_id);
   }
 }
 
