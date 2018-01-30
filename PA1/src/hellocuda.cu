@@ -113,6 +113,18 @@ for (int i = 0; i < N; i++) {
 cend = clock();
 cpu_time = ((double) (cend - cstart)) / CLOCKS_PER_SEC;
 
+printf("Matrix compare \n");
+for (int i = 0; i < N; i++) {
+
+    for(int j = 0; j < N; j++){
+
+      printf("%i ", compare[i][j]);
+
+    }
+
+    printf("\n");
+    
+  } 
 
  /*
     The following code is responsible for handling timing for code
