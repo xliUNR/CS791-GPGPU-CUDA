@@ -24,7 +24,7 @@ int main() {
   int *a = (int*)malloc(N*N*sizeof(int));
   int *b = (int*)malloc(N*N*sizeof(int));
   int *c = (int*)malloc(N*N*sizeof(int));
-  int *compare(int*)malloc(n*N*sizeof(int));
+  int *compare(int*)malloc(N*N*sizeof(int));
 		
   dim3 grid(N);
   dim3 block(N);
