@@ -167,16 +167,16 @@ for (int i = 0; i < N; i++) {
     the value of the stop event. This is because the GPU may not have
     actually written to the event until all other work has finished.
    */
-  /*cudaEventRecord( end, 0 );
+  cudaEventRecord( end, 0 );
   cudaEventSynchronize( end );
 
   float elapsedTime;
-  cudaEventElapsedTime( &elapsedTime, start, end );*/
+  cudaEventElapsedTime( &elapsedTime, start, end );
 
   /*
     Let's check that the results are what we expect.
    */
-  /*for (int i = 0; i < N; ++i) {
+  for (int i = 0; i < N; ++i) {
     for(int j = 0; j < N; ++j){
 
       if (c[i][j] != a[i][j] + b[i][j]) {
@@ -195,14 +195,14 @@ for (int i = 0; i < N; i++) {
     }
     } 
     
-  }*/
+  }
 
   /*
     Let's let the user know that everything is ok and then display
     some information about the times we recorded above.
    */
   std::cout << "Yay! Your program's results are correct." << std::endl;
-  //std::cout << "Your program took: " << elapsedTime << " ms." << std::endl;
+  std::cout << "Your program took: " << elapsedTime << " ms." << std::endl;
   
   // Cleanup in the event of success.
   /*cudaEventDestroy( start );
