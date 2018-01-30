@@ -34,7 +34,7 @@ __global__ void add(int *a, int *b, int *c) {
   }
 }
 
-//function to populate a matrix
+/*//function to populate a matrix
 __global__ void mat_init( int N, int *emptyMatrix ) {
 
   int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
@@ -46,6 +46,6 @@ __global__ void mat_init( int N, int *emptyMatrix ) {
     //*((*(emptyMatrix)) + (blockId.x * blockDim.x + threadIdx.x)) = 0;
     *(emptyMatrix + (blockIdx.x * blockDim.x + threadIdx.x)) = 0;
   }
-}
+}*/
 
 
