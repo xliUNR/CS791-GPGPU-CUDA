@@ -29,22 +29,7 @@ int main() {
   int *dev_a, *dev_b, *dev_c;
 
   /*
-    These calls allocate memory on the GPU (also called the
-    device). This is similar to C's malloc, except that instead of
-    directly returning a pointer to the allocated memory, cudaMalloc
-    returns the pointer through its first argument, which must be a
-    void**. The second argument is the number of bytes we want to
-    allocate.
-
-    NB: the return value of cudaMalloc (like most cuda functions) is
-    an error code. Strictly speaking, we should check this value and
-    perform error handling if anything went wrong. We do this for the
-    first call to cudaMalloc so you can see what it looks like, but
-    for all other function calls we just point out that you should do
-    error checking.
-
-    Actually, a good idea would be to wrap this error checking in a
-    function or macro, which is what the Cuda By Example book does.
+    Allocate memory for device
    */
   
   cudaError_t err = cudaMalloc( (void**) &dev_a, N * N * sizeof(int));
@@ -55,10 +40,15 @@ int main() {
   cudaMalloc( (void**) &dev_b, N * N * sizeof(int));
   cudaMalloc( (void**) &dev_c, N * N * sizeof(int));
   
+ 
+ cudaEvent_t hstart, hend;
+  cudaEventCreate(&hstart);
+  cudaEventCreate(&hend);
+
+  cudaEventRecord( hstart, 0 );
 
 
-  // These lines just fill the host arrays with some data so we can do
-  // something interesting. Well, so we can add two arrays.
+  // Initializes arrays on host.
   for (int i = 0; i < N; i++) {
 
     for(int j = 0; j < N; j++){
@@ -70,6 +60,7 @@ int main() {
     
   }
 
+/*
 printf("Matrix A \n");
 for (int i = 0; i < N; i++) {
 
@@ -95,11 +86,9 @@ for (int i = 0; i < N; i++) {
     printf("\n");
     
   } 
+*/
+
   //CPU addition of arrays
-  clock_t cstart, cend;
-  double cpu_time;
-  
-  cstart = clock();
 
   for (int i = 0; i < N; i++) {
 
@@ -110,8 +99,11 @@ for (int i = 0; i < N; i++) {
     }   
   } 
 
-cend = clock();
-cpu_time = ((double) (cend - cstart)) / CLOCKS_PER_SEC;
+  cudaEventRecord( hend, 0 );
+  cudaEventSynchronize( hend );
+
+  float cpuTime;
+  cudaEventElapsedTime( &cpuTime, hstart, hend );
 
 printf("Matrix compare \n");
 for (int i = 0; i < N; i++) {
@@ -249,7 +241,7 @@ for (int i = 0; i < N; i++) {
    */
   std::cout << "Yay! Your program's results are correct." << std::endl;
   std::cout << "Your program took: " << elapsedTime << " ms." << std::endl;
-  std::cout << "The CPU took: " << cpu_time << "sec " << std::endl;
+  std::cout << "The CPU took: " << cpuTime << "sec " << std::endl;
 
   // Cleanup in the event of success.
   /*cudaEventDestroy( start );
