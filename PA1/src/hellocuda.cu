@@ -18,11 +18,11 @@ int main() {
   int a[N][N], b[N][N], c[N][N];
   dim3 grid(N);
   dim3 block(N);
-  /*
+    /*
     These will point to memory on the GPU - notice the correspondence
     between these pointers and the arrays declared above.
    */
-  //int *dev_a, *dev_b, *dev_c;
+  int *dev_a, *dev_b, *dev_c;
 
   /*
     These calls allocate memory on the GPU (also called the
