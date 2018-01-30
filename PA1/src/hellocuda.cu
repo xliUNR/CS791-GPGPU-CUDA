@@ -18,33 +18,41 @@ int main() {
   std::cout << "Enter square matrix dimension: " << std::endl;
   std::cin >> N;
   
-  // Arrays on the host (CPU), dynamically allocated to fit large matrix
-  //int a[N][N], b[N][N], c[N][N], compare[N][N];
-  
+  // Arrays on the host (CPU), dynamically allocated to overcome limited
+  // stack size
   int *a = (int*)malloc(N*N*sizeof(int));
   int *b = (int*)malloc(N*N*sizeof(int));
   int *c = (int*)malloc(N*N*sizeof(int));
   int *compare = (int*)malloc(N*N*sizeof(int));
-		
+	
+  //setup block/thread structure 	
   dim3 grid(N);
   dim3 block(N);
-    /*
-    These will point to memory on the GPU - notice the correspondence
-    between these pointers and the arrays declared above.
-   */
+
+  //setup device matrix pointers
   int *dev_a, *dev_b, *dev_c;
 
   /*
-    Allocate memory for device
+    Allocate memory for device and check for errors
    */
   
-  cudaError_t err = cudaMalloc( (void**) &dev_a, N * N * sizeof(int));
-  if (err != cudaSuccess) {
+  cudaError_t a_err = cudaMalloc( (void**) &dev_a, N * N * sizeof(int));
+  if (a_err != cudaSuccess) {
     std::cerr << "Error: " << cudaGetErrorString(err) << std::endl;
     exit(1);
   }
-  cudaMalloc( (void**) &dev_b, N * N * sizeof(int));
-  cudaMalloc( (void**) &dev_c, N * N * sizeof(int));
+  
+  cudaError_t b_err = cudaMalloc( (void**) &dev_b, N * N * sizeof(int));
+  if( b_err != cudaSuccess) {
+    std::cerr << "Error: " << cudaGetErrorString(err) << std::endl;
+    exit(1);
+  }
+    
+  cudaError_t c_err = cudaMalloc( (void**) &dev_c, N * N * sizeof(int));
+  if( c_err != cudaSuccess) {
+    std::cerr << "Error: " << cudaGetErrorString(err) << std::endl;
+    exit(1);
+  }
   
  
  cudaEvent_t hstart, hend;
@@ -62,38 +70,8 @@ int main() {
       int offset = i * N +j;
       a[offset] = 1;
       *(b + offset) = 2;
-
     }
-    
   }
-
-/*
-printf("Matrix A \n");
-for (int i = 0; i < N; i++) {
-
-    for(int j = 0; j < N; j++){
-
-      printf("%i ", a[i][j]);
-
-    }
-
-    printf("\n");
-    
-  }
-
-printf("Matrix B \n");
-for (int i = 0; i < N; i++) {
-
-    for(int j = 0; j < N; j++){
-
-      printf("%i ", b[i][j]);
-
-    }
-
-    printf("\n");
-    
-  } 
-*/
 
   //CPU addition of arrays
 
@@ -112,19 +90,6 @@ for (int i = 0; i < N; i++) {
 
   float cpuTime;
   cudaEventElapsedTime( &cpuTime, hstart, hend );
-
-/*printf("Matrix compare \n");
-for (int i = 0; i < N; i++) {
-
-    for(int j = 0; j < N; j++){
-
-      printf("%i ", compare[i][j]);
-
-    }
-
-    printf("\n");
-    
-  } */
 
  /*
     The following code is responsible for handling timing for code
@@ -223,6 +188,8 @@ for (int i = 0; i < N; i++) {
       // clean up events - we should check for error codes here.
       cudaEventDestroy( start );
       cudaEventDestroy( end );
+      cudaEventDestroy( hstart );
+      cudaEventDestroy( hend );
 
       // clean up device pointers - just like free in C. We don't have
       // to check error codes for this one.
@@ -244,8 +211,10 @@ for (int i = 0; i < N; i++) {
   std::cout << "The CPU took: " << cpuTime << "ms " << std::endl;
 
   // Cleanup in the event of success.
-  /*cudaEventDestroy( start );
-  cudaEventDestroy( end );*/
+  cudaEventDestroy( start );
+  cudaEventDestroy( end );
+  cudaEventDestroy( hstart );
+  cudaEventDestroy( hend );
 
   cudaFree(dev_a);
   cudaFree(dev_b);
@@ -255,5 +224,6 @@ for (int i = 0; i < N; i++) {
   free(b);
   free(a);
   free(compare);	
+  
   return 0;
 }
