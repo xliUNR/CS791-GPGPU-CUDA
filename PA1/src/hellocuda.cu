@@ -54,9 +54,9 @@ int main() {
 
   // These lines just fill the host arrays with some data so we can do
   // something interesting. Well, so we can add two arrays.
-  for (int i = 0; i < N; ++i) {
+  for (int i = 0; i < N; i++) {
 
-    for(int j=0; j < N; ++j){
+    for(int j = 0; j < N; j++){
 
       a[i][j] = 1;
       b[i][j] = 2;
