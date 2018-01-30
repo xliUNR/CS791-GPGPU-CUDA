@@ -24,6 +24,7 @@ int main() {
   int *a = (int*)malloc(N*N*sizeof(int));
   int *b = (int*)malloc(N*N*sizeof(int));
   int *c = (int*)malloc(N*N*sizeof(int));
+  int *compare(int*)malloc(n*N*sizeof(int));
 		
   dim3 grid(N);
   dim3 block(N);
@@ -100,7 +101,8 @@ for (int i = 0; i < N; i++) {
 
     for(int j = 0; j < N; j++){
 
-      compare[i][j] = a[i][j] + b[i][j];
+      int offset = i * N +j;	
+      *(compare + offset) = *(a + offset) + *(b + offset);
 
     }   
   } 
@@ -259,6 +261,7 @@ for (int i = 0; i < N; i++) {
 
   free(c);
   free(b);
-  free(a);	
+  free(a);
+  free(compare);	
   return 0;
 }
