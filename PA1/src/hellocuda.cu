@@ -120,7 +120,7 @@ int main() {
     different piece of data, and many threads can execute at the same
     time. This is how cuda can get such large speedups.
    */
-  add<<<grid, block>>>(dev_a, dev_b, dev_c);
+  //add<<<grid, block>>>(dev_a, dev_b, dev_c);
 
   /*
     Unfortunately, the GPU is to some extent a black box. In order to
