@@ -44,6 +44,19 @@ __global__ void add(int n, int *a, int *b, int *c) {
   }*/
 }
 
+//matrix add function that uses grid-striding
+__global__ void strideAdd(int n, int *a, int *b, int *c) {
+  //initialize offset AKA unique thread id
+  int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
+
+  //loop over each grid
+  for( int i = thread_id; i < n*n; i+= blockDim.x * gridDim.x )
+    {
+      *(c + thread_id) = *(a + thread_id ) + *(b + thread_id);
+    }
+
+}
+
 /*//function to populate a matrix
 __global__ void mat_init( int N, int *emptyMatrix ) {
 
