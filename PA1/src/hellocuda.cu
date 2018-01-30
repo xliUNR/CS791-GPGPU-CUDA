@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <cstdio>
+#include <time.h>
 #include "add.h"
 
 int main() {
@@ -18,7 +19,7 @@ int main() {
   std::cin >> N;
   
   // Arrays on the host (CPU)
-  int a[N][N], b[N][N], c[N][N];
+  int a[N][N], b[N][N], c[N][N], compare[N][N];
   dim3 grid(N);
   dim3 block(N);
     /*
@@ -69,7 +70,7 @@ int main() {
     
   }
 
-
+printf("Matrix A \n");
 for (int i = 0; i < N; i++) {
 
     for(int j = 0; j < N; j++){
@@ -81,7 +82,35 @@ for (int i = 0; i < N; i++) {
     printf("\n");
     
   }
-  
+
+printf("Matrix B \n");
+for (int i = 0; i < N; i++) {
+
+    for(int j = 0; j < N; j++){
+
+      printf("%i ", b[i][j]);
+
+    }
+
+    printf("\n");
+    
+  } 
+  //CPU addition of arrays
+  clock_t start, end;
+  double cpu_time;
+  start = clock();
+  for (int i = 0; i < N; i++) {
+
+    for(int j = 0; j < N; j++){
+
+      compare[i][j] = a[i][j] + b[i][j];
+
+    }   
+  } 
+
+end = clock();
+cpu_time = ((double) (end - start)) / CLOCKS_PER_SEC;
+
 
  /*
     The following code is responsible for handling timing for code
@@ -206,7 +235,8 @@ for (int i = 0; i < N; i++) {
    */
   std::cout << "Yay! Your program's results are correct." << std::endl;
   std::cout << "Your program took: " << elapsedTime << " ms." << std::endl;
-  
+  std::cout << "The CPU took: " << cpu_time << "sec " << std::endl;
+
   // Cleanup in the event of success.
   /*cudaEventDestroy( start );
   cudaEventDestroy( end );*/
