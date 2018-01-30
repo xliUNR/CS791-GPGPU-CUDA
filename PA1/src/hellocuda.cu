@@ -148,7 +148,7 @@ int main() {
   /*
     Let's check that the results are what we expect.
    */
-  for (int i = 0; i < N; ++i) {
+  /*for (int i = 0; i < N; ++i) {
     for(int j = 0; j < N; ++j){
 
       if (c[i][j] != a[i][j] + b[i][j]) {
@@ -165,9 +165,9 @@ int main() {
       cudaFree(dev_c);
       exit(1);
     }
-    }
+    } 
     
-  }
+  }*/
 
   /*
     Let's let the user know that everything is ok and then display
