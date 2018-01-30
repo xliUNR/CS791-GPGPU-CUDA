@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <cstdio>
 
 #define N 2
 
@@ -12,13 +12,13 @@ static void HandleError( cudaError_t err,
                 file, line );
         exit( EXIT_FAILURE );
     }
-};
+}
 
 #define HANDLE_ERROR( err ) (HandleError( err, __FILE__, __LINE__ ))
 
 __global__ void add(int *a, int *b, int *c);
 
-//__global__ void matpop(int N, int* )
+__global__ void matpop(int N, int* );
 
 
 
@@ -64,7 +64,7 @@ int main(int argc, char const *argv[])
 //////////////////// function declarations ////////////////////////////
 
 //populates a matrix on device
-/*__global__ void matpop( int N, int *emptyMatrix ){
+__global__ void matpop( int N, int *emptyMatrix ){
   
   int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
 
@@ -76,7 +76,7 @@ int main(int argc, char const *argv[])
     *(emptyMatrix + (blockIdx.x * blockDim.x + threadIdx.x)) = 0;
   }
   
-}*/
+}
 
 __global__ void add(int *a, int *b, int *c) {
 
