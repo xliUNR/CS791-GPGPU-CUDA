@@ -36,7 +36,7 @@ __global__ void add(int *a, int *b, int *c) {
 
     //c[thread_id] = a[thread_id] + b[thread_id];
     *(c + thread_id) = *(a + thread_id ) + *(b + thread_id);
-
+    }
   /*if (col < N && row < N ) {
 
     //c[thread_id] = a[thread_id] + b[thread_id];
