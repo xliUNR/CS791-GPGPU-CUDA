@@ -3,6 +3,17 @@
 
 #define N 2
 
+//CUDA error handler provided by text
+static void HandleError( cudaError_t err,
+                         const char *file,
+                         int line ) {
+    if (err != cudaSuccess) {
+        printf( "%s in %s at line %d\n", cudaGetErrorString( err ),
+                file, line );
+        exit( EXIT_FAILURE );
+    }
+}
+
 #define HANDLE_ERROR( err ) (HandleError( err, __FILE__, __LINE__ ))
 
 __global__ void matpop(int N, int* emptyMatrix );
@@ -48,17 +59,6 @@ int main(int argc, char const *argv[])
 
 
 //////////////////// function declarations ////////////////////////////
-
-//CUDA error handler provided by text
-static void HandleError( cudaError_t err,
-                         const char *file,
-                         int line ) {
-    if (err != cudaSuccess) {
-        printf( "%s in %s at line %d\n", cudaGetErrorString( err ),
-                file, line );
-        exit( EXIT_FAILURE );
-    }
-}
 
 
 
