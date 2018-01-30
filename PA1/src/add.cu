@@ -17,7 +17,7 @@ __global__ void add(int *a, int *b, int *c) {
     equation calculates the unique ID for each element in the matrix
     since the memory is stored as a 1D list.
    */
-  //int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
+  int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
 
   /*
     We make sure that the thread_id isn't too large, and then we
