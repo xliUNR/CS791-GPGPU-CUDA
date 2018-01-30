@@ -54,8 +54,8 @@ int main() {
   for (int i = 0; i < N; ++i) {
     for(int j=0; j < N; ++j){
 
-      a[i][j] = (i*N + j);
-      b[i][j] = (i*N + j);
+      a[i][j] = 1;//(i*N + j);
+      b[i][j] = 1;//(i*N + j);
 
     }
     
