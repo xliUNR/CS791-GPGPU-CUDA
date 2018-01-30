@@ -193,17 +193,7 @@ for (int i = 0; i < N; i++) {
     exit(1);
   }
 
-  for (int i = 0; i < N; i++) {
-
-    for(int j = 0; j < N; j++){
-
-      printf("%i ", c[i][j]);
-
-    }
-
-    printf("\n");
-    
-  }
+  
   /*
     This is the other end of the timing process. We record an event,
     synchronize on it, and then figure out the difference in time
@@ -227,7 +217,7 @@ for (int i = 0; i < N; i++) {
 	
       int offset = i * N +j;
 	
-      if *(compare + offset) != *(a + offset) + *(b + offset) {
+      if (*(compare + offset) != (*(a + offset) + *(b + offset))) {
       std::cerr << "Oh no! Something went wrong. You should check your cuda install and your GPU. :(" << std::endl;
 
       // clean up events - we should check for error codes here.
