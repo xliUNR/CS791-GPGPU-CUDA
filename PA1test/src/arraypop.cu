@@ -18,7 +18,7 @@ static void HandleError( cudaError_t err,
 
 __global__ void add(int *a, int *b, int *c);
 
-__global__ void matpop(int N, int* );
+//__global__ void matpop(int N, int* )
 
 
 
@@ -38,7 +38,7 @@ int main(int argc, char const *argv[])
    HANDLE_ERROR( cudaMalloc( (void**) &dev_a, N * N * sizeof(int)));
 
    //initialize matrix on device using parallel and copy over
-   matpop<<<N,N>>>(N, dev_a);
+   //matpop<<<N,N>>>(N, dev_a);
 
    cudaMemcpy(host_a, dev_a, N * N * sizeof(int), cudaMemcpyDeviceToHost);
 
@@ -64,7 +64,7 @@ int main(int argc, char const *argv[])
 //////////////////// function declarations ////////////////////////////
 
 //populates a matrix on device
-__global__ void matpop( int N, int *emptyMatrix ){
+/*__global__ void matpop( int N, int *emptyMatrix ){
   
   int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
 
@@ -76,7 +76,7 @@ __global__ void matpop( int N, int *emptyMatrix ){
     *(emptyMatrix + (blockIdx.x * blockDim.x + threadIdx.x)) = 0;
   }
   
-}
+}*/
 
 __global__ void add(int *a, int *b, int *c) {
 
