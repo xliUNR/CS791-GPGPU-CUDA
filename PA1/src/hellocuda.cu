@@ -73,11 +73,11 @@ int main() {
     In this case, we want to record the time it takes to transfer data
     to the GPU, perform some computations, and transfer data back.
   */
-  cudaEvent_t start, end;
+  /*cudaEvent_t start, end;
   cudaEventCreate(&start);
   cudaEventCreate(&end);
 
-  cudaEventRecord( start, 0 );
+  cudaEventRecord( start, 0 );*/
 
   /*
     Once we have host arrays containing data and we have allocated
