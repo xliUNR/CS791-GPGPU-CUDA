@@ -56,7 +56,7 @@ int main() {
 	
   //setup block/thread structure 	
   dim3 grid(N,N);
-  dim3 block(N);
+  dim3 block(1);
 
   //setup device matrix pointers
   int *dev_a, *dev_b, *dev_c;
