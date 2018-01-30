@@ -41,6 +41,7 @@ int main() {
     Actually, a good idea would be to wrap this error checking in a
     function or macro, which is what the Cuda By Example book does.
    */
+  
   /*cudaError_t err = cudaMalloc( (void**) &dev_a, N * N * sizeof(int));
   if (err != cudaSuccess) {
     std::cerr << "Error: " << cudaGetErrorString(err) << std::endl;
@@ -48,10 +49,12 @@ int main() {
   }
   cudaMalloc( (void**) &dev_b, N * N * sizeof(int));
   cudaMalloc( (void**) &dev_c, N * N * sizeof(int));
+  */
+
 
   // These lines just fill the host arrays with some data so we can do
   // something interesting. Well, so we can add two arrays.
-  /*for (int i = 0; i < N; ++i) {
+  for (int i = 0; i < N; ++i) {
 
     for(int j=0; j < N; ++j){
 
@@ -60,7 +63,7 @@ int main() {
 
     }
     
-  }*/
+  }
 
  /*
     The following code is responsible for handling timing for code
