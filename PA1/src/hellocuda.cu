@@ -180,8 +180,8 @@ int main() {
   cudaEventDestroy( start );
   cudaEventDestroy( end );
 
-  cudaFree(dev_a);
+  /*cudaFree(dev_a);
   cudaFree(dev_b);
-  cudaFree(dev_c);
+  cudaFree(dev_c);*/
 
 }
