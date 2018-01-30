@@ -55,7 +55,7 @@ int main() {
 
   // These lines just fill the host arrays with some data so we can do
   // something interesting. Well, so we can add two arrays.
-  /*for (int i = 0; i < N; i++) {
+  for (int i = 0; i < N; i++) {
 
     for(int j = 0; j < N; j++){
 
@@ -66,9 +66,9 @@ int main() {
     
   }
 
-  for(int i < N * N; i++){
+  //for(int i < N * N; i++){
 
-  }*/
+ // }
 
  /*
     The following code is responsible for handling timing for code
