@@ -180,7 +180,7 @@ int main() {
     Let's let the user know that everything is ok and then display
     some information about the times we recorded above.
    */
-  std::cout << "Yay! Your program's results are correct." << std::endl;
+  //std::cout << "Yay! Your program's results are correct." << std::endl;
   //std::cout << "Your program took: " << elapsedTime << " ms." << std::endl;
   
   // Cleanup in the event of success.
