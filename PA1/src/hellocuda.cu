@@ -123,8 +123,8 @@ int main() {
     program we would want to check the error code returned by this
     function.
   */
-  cudaError_t err = cudaMemcpy(c, dev_c, N * N * sizeof(int), cudaMemcpyDeviceToHost);
-  if (err != cudaSuccess) {
+  cudaError_t err1 = cudaMemcpy(c, dev_c, N * N * sizeof(int), cudaMemcpyDeviceToHost);
+  if (err1 != cudaSuccess) {
     std::cerr << "Error: " << cudaGetErrorString(err) << std::endl;
     exit(1);
   }
