@@ -19,7 +19,7 @@ __global__ void add(int *a, int *b, int *c) {
    */
   int col = threadIdx.x + blockDim.x * blockIdx.x;
   int row = threadIdx.y + blockDim.y * blockIdx.y;
-
+  int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
   int index = row * N + col;
  
   
@@ -31,11 +31,17 @@ __global__ void add(int *a, int *b, int *c) {
     element from a and one element from b. Each thread is able to run
     in parallel, so we get speedup.
    */
-  if (col < N && row < N ) {
+   
+  if (thread_id < N * N ) {
+
+    //c[thread_id] = a[thread_id] + b[thread_id];
+    *(c + thread_id) = *(a + thread_id ) + *(b + thread_id);
+
+  /*if (col < N && row < N ) {
 
     //c[thread_id] = a[thread_id] + b[thread_id];
     c[index] = a[index] + b[index];
-  }
+  }*/
 }
 
 /*//function to populate a matrix
