@@ -35,7 +35,7 @@ __global__ void add(int n, int *a, int *b, int *c) {
        
     case 2:
        int blockId = blockIdx.y * gridDim.x + blockIdx.x;  
-       threadId = blockId * blockDim.x + threadIdx.x;
+       thread_id = blockId * blockDim.x + threadIdx.x;
        break;                     
 
   }
@@ -81,7 +81,7 @@ __global__ void strideAdd(int n, int *a, int *b, int *c) {
        
     case 2:
        int blockId = blockIdx.y * gridDim.x + blockIdx.x;  
-       threadId = blockId * blockDim.x + threadIdx.x;
+       thread_id = blockId * blockDim.x + threadIdx.x;
        break;                     
 
   }
