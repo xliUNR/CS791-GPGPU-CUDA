@@ -9,7 +9,7 @@
  */
 
 #include <iostream>
-
+#include <cstdio>
 #include "add.h"
 
 int main() {
