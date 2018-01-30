@@ -38,19 +38,19 @@ int main() {
   
   cudaError_t a_err = cudaMalloc( (void**) &dev_a, N * N * sizeof(int));
   if (a_err != cudaSuccess) {
-    std::cerr << "Error: " << cudaGetErrorString(err) << std::endl;
+    std::cerr << "Error: " << cudaGetErrorString(a_err) << std::endl;
     exit(1);
   }
   
   cudaError_t b_err = cudaMalloc( (void**) &dev_b, N * N * sizeof(int));
   if( b_err != cudaSuccess) {
-    std::cerr << "Error: " << cudaGetErrorString(err) << std::endl;
+    std::cerr << "Error: " << cudaGetErrorString(b_err) << std::endl;
     exit(1);
   }
     
   cudaError_t c_err = cudaMalloc( (void**) &dev_c, N * N * sizeof(int));
   if( c_err != cudaSuccess) {
-    std::cerr << "Error: " << cudaGetErrorString(err) << std::endl;
+    std::cerr << "Error: " << cudaGetErrorString(c_err) << std::endl;
     exit(1);
   }
   
