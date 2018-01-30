@@ -91,11 +91,11 @@ for (int i = 0; i < N; i++) {
     In this case, we want to record the time it takes to transfer data
     to the GPU, perform some computations, and transfer data back.
   */
-  /*cudaEvent_t start, end;
+  cudaEvent_t start, end;
   cudaEventCreate(&start);
   cudaEventCreate(&end);
 
-  cudaEventRecord( start, 0 );*/
+  cudaEventRecord( start, 0 );
 
   /*
     Once we have host arrays containing data and we have allocated
@@ -108,10 +108,10 @@ for (int i = 0; i < N; i++) {
     we want to copy. The last argument is a constant that tells
     cudaMemcpy the direction of the transfer.
    */
-  /*cudaMemcpy(dev_a, a, N * N * sizeof(int), cudaMemcpyHostToDevice);
+  cudaMemcpy(dev_a, a, N * N * sizeof(int), cudaMemcpyHostToDevice);
   cudaMemcpy(dev_b, b, N * N * sizeof(int), cudaMemcpyHostToDevice);
   cudaMemcpy(dev_c, c, N * N * sizeof(int), cudaMemcpyHostToDevice);
-  */
+  
   /*
     FINALLY we get to run some code on the GPU. At this point, if you
     haven't looked at add.cu (in this folder), you should. The
