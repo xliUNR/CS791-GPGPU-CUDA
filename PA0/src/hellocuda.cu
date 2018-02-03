@@ -14,14 +14,12 @@
 
 int main() {
   
-  // Arrays on the host (CPU)
-  int a[N], b[N], c[N];
-  
+
   /*
     These will point to memory on the GPU - notice the correspondence
     between these pointers and the arrays declared above.
    */
-  int *dev_a, *dev_b, *dev_c;
+  int *a, *b, *c;
 
   /*
     These calls allocate memory on the GPU (also called the
@@ -41,13 +39,10 @@ int main() {
     Actually, a good idea would be to wrap this error checking in a
     function or macro, which is what the Cuda By Example book does.
    */
-  cudaError_t err = cudaMalloc( (void**) &dev_a, N * sizeof(int));
-  if (err != cudaSuccess) {
-    std::cerr << "Error: " << cudaGetErrorString(err) << std::endl;
-    exit(1);
-  }
-  cudaMalloc( (void**) &dev_b, N * sizeof(int));
-  cudaMalloc( (void**) &dev_c, N * sizeof(int));
+  
+  cudaMallocManaged( &a, N*sizeof(int));
+  cudaMallocManaged( &b, N*sizeof(int));
+  cudaMallocManaged( &c, N*sizeof(int));
 
   // These lines just fill the host arrays with some data so we can do
   // something interesting. Well, so we can add two arrays.
@@ -73,51 +68,10 @@ int main() {
 
   cudaEventRecord( start, 0 );
 
-  /*
-    Once we have host arrays containing data and we have allocated
-    memory on the GPU, we have to transfer data from the host to the
-    device. Again, notice the similarity to C's memcpy function.
 
-    The first argument is the destination of the copy - in this case a
-    pointer to memory allocated on the device. The second argument is
-    the source of the copy. The third argument is the number of bytes
-    we want to copy. The last argument is a constant that tells
-    cudaMemcpy the direction of the transfer.
-   */
-  cudaMemcpy(dev_a, a, N * sizeof(int), cudaMemcpyHostToDevice);
-  cudaMemcpy(dev_b, b, N * sizeof(int), cudaMemcpyHostToDevice);
-  cudaMemcpy(dev_c, c, N * sizeof(int), cudaMemcpyHostToDevice);
-  
-  /*
-    FINALLY we get to run some code on the GPU. At this point, if you
-    haven't looked at add.cu (in this folder), you should. The
-    comments in that file explain what the add function does, so here
-    let's focus on how add is being called. The first thing to notice
-    is the <<<...>>>, which you should recognize as _not_ being
-    standard C. This syntactic extension tells nvidia's cuda compiler
-    how to parallelize the execution of the function. We'll get into
-    details as the course progresses, but for we'll say that <<<N,
-    1>>> is creating N _blocks_ of 1 _thread_ each. Each of these
-    threads is executing add with a different data element (details of
-    the indexing are in add.cu). 
+  add<<<N, 1>>>(a,b,c);
 
-    In larger programs, you will typically have many more blocks, and
-    each block will have many threads. Each thread will handle a
-    different piece of data, and many threads can execute at the same
-    time. This is how cuda can get such large speedups.
-   */
-  add<<<N, 1>>>(dev_a, dev_b, dev_c);
 
-  /*
-    Unfortunately, the GPU is to some extent a black box. In order to
-    print the results of our call to add, we have to transfer the data
-    back to the host. We do that with a call to cudaMemcpy, which is
-    just like the cudaMemcpy calls above, except that the direction of
-    the transfer (given by the last argument) is reversed. In a real
-    program we would want to check the error code returned by this
-    function.
-  */
-  cudaMemcpy(c, dev_c, N * sizeof(int), cudaMemcpyDeviceToHost);
 
   /*
     This is the other end of the timing process. We record an event,
@@ -147,9 +101,9 @@ int main() {
 
       // clean up device pointers - just like free in C. We don't have
       // to check error codes for this one.
-      cudaFree(dev_a);
-      cudaFree(dev_b);
-      cudaFree(dev_c);
+      cudaFree(a);
+      cudaFree(b);
+      cudaFree(c);
       exit(1);
     }
   }
