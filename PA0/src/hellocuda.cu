@@ -118,9 +118,9 @@ int main() {
   // Cleanup in the event of success.
   cudaEventDestroy( start );
   cudaEventDestroy( end );
-
-  cudaFree(dev_a);
-  cudaFree(dev_b);
-  cudaFree(dev_c);
+  
+  cudaFree(a);
+  cudaFree(b);
+  cudaFree(c);
 
 }
