@@ -71,8 +71,8 @@ int main() {
 
   add<<<N, 1>>>(a,b,c);
 
-
-
+  //Need to sync b4 accessing memory locations
+  cudaDeviceSynchronize();
   /*
     This is the other end of the timing process. We record an event,
     synchronize on it, and then figure out the difference in time
