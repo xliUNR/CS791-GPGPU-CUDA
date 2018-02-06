@@ -107,7 +107,7 @@ int main() {
   //CPU sequential matrix multiplication
   for(int i=0; i < rowA; i++){
     for(int j=0; j < colB; j++){
-      sum = 0;
+      int sum = 0;
 
       for(int k=0; k < colA; k++){
         sum+= matA[i][k] * matB[k][j];
@@ -124,7 +124,7 @@ int main() {
     }
     cout << std::endl;
   }
-  
+
   cudaEventRecord( hend, 0 );
   cudaEventSynchronize( hend );
 
