@@ -27,7 +27,7 @@ inline void GPUAssert( cudaError_t errCode, const char *file, int line, bool abo
 int main() {
   //initialize variables
   int N;
-  int *MatA, *MatB, *MatC;
+  int *matA, *matB, *matC;
   char userRes;
   bool STRIDEFLAG;
   bool repeat = true;
@@ -134,7 +134,7 @@ int main() {
 
 //error handling for kernel calls 
 HANDLE_ERROR( cudaPeekAtLastError() );
-HANDLE_ERROR( cudaDevicesSynchronize() );
+HANDLE_ERROR( cudaDeviceSynchronize() );
 
   
   /*
