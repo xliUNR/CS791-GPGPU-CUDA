@@ -45,7 +45,8 @@ __global__ void add(int n, int *a, int *b, int *c) {
      
     //stride to next grid
     thread_id += blockDim.x * gridDim.x;     
-  }   
+  }
+}     
 
 
 //matrix add function that uses grid-striding
