@@ -98,9 +98,9 @@ int main() {
 
     for(int j = 0; j < N; j++){
 
-      int offset = i * N +j;
-      matA[offset] = 1;
-      matB[offset] = 2;
+      //int offset = i * N +j;
+      matA[i][j] = 1;
+      matB[i][j] = 2;
     }
   }
 
