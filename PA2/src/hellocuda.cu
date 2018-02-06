@@ -101,7 +101,7 @@ int main() {
     }
   }
 
-  //CPU addition of arrays
+ /* //CPU addition of arrays
 
   for (int i = 0; i < N; i++) {
 
@@ -112,7 +112,7 @@ int main() {
       *(compare + offset) = *(matA + offset) + *(matB + offset);
 
     } 
-  } 
+  } */
 
   //CPU matrix multiplication
 
@@ -169,7 +169,7 @@ HANDLE_ERROR( cudaDeviceSynchronize() );
 
   /*
     Let's check that the results are what we expect.
-   */
+   
   for (int i = 0; i < N; ++i) {
     for(int j = 0; j < N; ++j){
 	
@@ -193,7 +193,7 @@ HANDLE_ERROR( cudaDeviceSynchronize() );
     }
     } 
     
-  }
+  }*/
 
   /*
     Let's let the user know that everything is ok and then display
