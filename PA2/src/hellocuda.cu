@@ -94,15 +94,23 @@ int main() {
 
 
   // Initializes arrays on host
-  for (int i = 0; i < N; i++) {
-
-    for(int j = 0; j < N; j++){
+  for (int i = 0; i < rowA; i++) {
+    for(int j = 0; j < colA; j++){
 
       //int offset = i * N +j;
-      matA[i][j] = 1;
-      matB[i][j] = 2;
+      *(matA + i * colA + j) = (i * colA + j);  
     }
   }
+
+  for (int i = 0; i < rowB; i++) {
+    for(int j = 0; j < colB; j++){
+
+      //int offset = i * N +j;
+      *(matB + i * colB + j) = (i * colB + j);
+    }
+  }
+
+
 
   //CPU sequential matrix multiplication
   for(int i=0; i < rowA; i++){
@@ -127,9 +135,9 @@ int main() {
     std::cout << std::endl;
   }
 
+ 
   cudaEventRecord( hend, 0 );
   cudaEventSynchronize( hend );
-
   float cpuTime;
   cudaEventElapsedTime( &cpuTime, hstart, hend );
 
