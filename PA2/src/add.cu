@@ -55,8 +55,6 @@ __global__ void strideAdd(int n, int *a, int *b, int *c) {
    int option = 0;
    int thread_id = 0;
 
-  while( thread_id < n * n) 
-  {  
    switch (option ) {
     case 0: 
        thread_id = threadIdx.x + blockIdx.x * blockDim.x;
@@ -73,7 +71,7 @@ __global__ void strideAdd(int n, int *a, int *b, int *c) {
        break;                     
 
     }
-  }
+
 
   //loop over each grid
   for( int i = thread_id; i < n*n; i+= blockDim.x * gridDim.x )
@@ -82,19 +80,4 @@ __global__ void strideAdd(int n, int *a, int *b, int *c) {
     }
 
 }
-
-/*//function to populate a matrix
-__global__ void mat_init( int N, int *emptyMatrix ) {
-
-  int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
-
-  //check for valid memory location, then initialize element to 0
-  if( thread_id < N * N )
-  {
-    //commented out one is for array of pointers
-    //*((*(emptyMatrix)) + (blockId.x * blockDim.x + threadIdx.x)) = 0;
-    *(emptyMatrix + (blockIdx.x * blockDim.x + threadIdx.x)) = 0;
-  }
-}*/
-
 
