@@ -72,7 +72,8 @@ __global__ void add(int n, int *a, int *b, int *c) {
 __global__ void strideAdd(int n, int *a, int *b, int *c) {
   //initialize offset AKA unique thread id
    int option = 0;
-   int thread_id;
+   int thread_id = 0;
+
   while( thread_id < n * n) 
   {  
    switch (option ) {
