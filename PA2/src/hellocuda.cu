@@ -95,8 +95,8 @@ int main() {
 
     for(int j = 0; j < N; j++){
 
-      offset = i * N +j; 	
-      *(compare + offset) = *(a + offset) + *(b + offset);
+      int offset = i * N +j; 	
+      *(compare + offset) = *(matA + offset) + *(matB + offset);
 
     } 
   } 
@@ -160,7 +160,7 @@ HANDLE_ERROR( cudaDeviceSynchronize() );
 	
       int offset = i * N +j;
 	
-      if (*(compare + offset) != (*(a + offset) + *(b + offset))) {
+      if (*(compare + offset) != (*(matA + offset) + *(matB + offset))) {
       std::cerr << "Oh no! Something went wrong. You should check your cuda install and your GPU. :(" << std::endl;
 
       // clean up events - we should check for error codes here.
