@@ -39,34 +39,14 @@ __global__ void add(int n, int *a, int *b, int *c) {
        thread_id = blockId * blockDim.x + threadIdx.x;
        break;   
      }
-
+    
+    //c[thread_id] = a[thread_id] + b[thread_id];
+    *(c + thread_id) = *(a + thread_id ) * *(b + thread_id);
+     
     //stride to next grid
     thread_id += blockDim.x * gridDim.x;     
   }   
-  //int col = threadIdx.x + blockDim.x * blockIdx.x;
-  //int row = threadIdx.y + blockDim.y * blockIdx.y;
-  //int index = row * N + col;
-  
-  /*
-    We make sure that the thread_id isn't too large, and then we
-    assign c = a + b using the index we calculated above.
 
-    The big picture is that each thread is responsible for adding one
-    element from a and one element from b. Each thread is able to run
-    in parallel, so we get speedup.
-   */
-   
-  if (thread_id < n * n) {
-
-    //c[thread_id] = a[thread_id] + b[thread_id];
-    *(c + thread_id) = *(a + thread_id ) * *(b + thread_id);
-    }
-  /*if (col < N && row < N ) {
-
-    //c[thread_id] = a[thread_id] + b[thread_id];
-    c[index] = a[index] + b[index];
-  }*/
-}
 
 //matrix add function that uses grid-striding
 __global__ void strideAdd(int n, int *a, int *b, int *c) {
