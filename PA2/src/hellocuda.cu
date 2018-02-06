@@ -18,7 +18,7 @@ inline void GPUAssert( cudaError_t errCode, const char *file, int line, bool abo
     {
      if( errCode != cudaSuccess )
          {
-          printf(stderr, "GPUAssert: %s %s %d\n", cudaGetErrorString(errCode), file, line);
+          fprintf(stderr, "GPUAssert: %s %s %d\n", cudaGetErrorString(errCode), file, line);
           if (abort) exit(errCode);
          }
     }
