@@ -73,6 +73,8 @@ __global__ void strideAdd(int n, int *a, int *b, int *c) {
   //initialize offset AKA unique thread id
    int option = 0;
    int thread_id;
+  while( thread_id < n * n) 
+  {  
    switch (option ) {
     case 0: 
        thread_id = threadIdx.x + blockIdx.x * blockDim.x;
@@ -88,6 +90,7 @@ __global__ void strideAdd(int n, int *a, int *b, int *c) {
        thread_id = blockId * blockDim.x + threadIdx.x;
        break;                     
 
+    }
   }
 
   //loop over each grid
