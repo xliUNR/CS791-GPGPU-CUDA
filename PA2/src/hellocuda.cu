@@ -44,8 +44,7 @@ int main() {
 
   if( colA != rowB )
     {
-      std::cout << "Invalid matrix dimensions (row of A != col of B).
-                    Program exiting" << std::endl;
+      std::cout << "Invalid matrix dimensions (row of A != col of B). Program exiting" << std::endl;
       exit(1);              
     }
   //calculate dimensions for partial matrix
@@ -73,7 +72,7 @@ int main() {
 
   
   //Allocated unified memory
-  int *compare = (int*)malloc(N*N*sizeof(int));
+  //int *compare = (int*)malloc(N*N*sizeof(int));
 	
   HANDLE_ERROR( cudaMallocManaged(&matA, rowA*colA*sizeof(int)) );
   HANDLE_ERROR( cudaMallocManaged(&matB, rowB*colB*sizeof(int)) );
