@@ -23,7 +23,7 @@ __global__ void add(int n, int *a, int *b, int *c) {
   //2 for 2D grid of 1D blocks
   int option = 0;
   int thread_id = 0;
-  while( thread_id < N*N ) {  
+  while( thread_id < n*n ) {  
     switch (option ) {
     case 0: 
        thread_id = threadIdx.x + blockIdx.x * blockDim.x;
