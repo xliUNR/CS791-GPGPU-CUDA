@@ -22,8 +22,8 @@ __global__ void add(int n, int *a, int *b, int *c) {
   //1 for 1D grid of 2D blocks
   //2 for 2D grid of 1D blocks
   int option = 0;
-  int thread_id = 0;
-  while( thread_id < n*n ) {  
+  int thread_id;
+
     switch (option ) {
     case 0: 
        thread_id = threadIdx.x + blockIdx.x * blockDim.x;
@@ -40,9 +40,9 @@ __global__ void add(int n, int *a, int *b, int *c) {
        break;   
      }
     
+while( thread_id < n*n ){    
     //c[thread_id] = a[thread_id] + b[thread_id];
-    *(c + thread_id) = *(a + thread_id ) * *(b + thread_id);
-     
+    *(c + thread_id) = *(a + thread_id ) * *(b + thread_id);  
     //stride to next grid
     thread_id += blockDim.x * gridDim.x;     
   }
