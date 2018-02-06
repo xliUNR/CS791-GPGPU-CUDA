@@ -28,7 +28,7 @@ int main() {
   //initialize variables
   int N;
   int rowA, colA, rowB, colB, rowP, colP;
-  int *matA, *matB, *matC, *partial;
+  int *matA, *matB, *matC, *partial, *cpuC;
   char userRes;
   bool STRIDEFLAG;
   bool repeat = true;
@@ -47,6 +47,7 @@ int main() {
       std::cout << "Invalid matrix dimensions (row of A != col of B). Program exiting" << std::endl;
       exit(1);              
     }
+  
   //calculate dimensions for partial matrix
   rowP = rowA * colB;
   colP = colA;
@@ -74,10 +75,12 @@ int main() {
   //Allocated unified memory
   //int *compare = (int*)malloc(N*N*sizeof(int));
 	
-  HANDLE_ERROR( cudaMallocManaged(&matA, rowA*colA*sizeof(int)) );
-  HANDLE_ERROR( cudaMallocManaged(&matB, rowB*colB*sizeof(int)) );
-  HANDLE_ERROR( cudaMallocManaged(&partial, rowP*colP*sizeof(int)) );
-  HANDLE_ERROR( cudaMallocManaged(&matC, rowA*colB*sizeof(int)) );
+  HANDLE_ERROR( cudaMallocManaged( &matA, rowA*colA*sizeof(int)) );
+  HANDLE_ERROR( cudaMallocManaged( &matB, rowB*colB*sizeof(int)) );
+  HANDLE_ERROR( cudaMallocManaged( &partial, rowP*colP*sizeof(int)) );
+  HANDLE_ERROR( cudaMallocManaged( &matC, rowA*colB*sizeof(int)) );
+  HANDLE_ERROR( cudaMallocManaged( &cpuC, rowA*colB*sizeof(int)) );
+
 
   //setup block/thread structure need to change to better method	
   dim3 grid(N);
@@ -101,21 +104,27 @@ int main() {
     }
   }
 
- /* //CPU addition of arrays
+  //CPU sequential matrix multiplication
+  for(int i=0; i < rowA; i++){
+    for(int j=0; j < colB; j++){
+      sum = 0;
 
-  for (int i = 0; i < N; i++) {
+      for(int k=0; k < colA; k++){
+        sum+= matA[i][k] * matB[k][j];
+      }
+    cpuC[i][j] = sum;  
+    }
+  }
 
-
-    for(int j = 0; j < N; j++){
-
-      int offset = i * N +j; 	
-      *(compare + offset) = *(matA + offset) + *(matB + offset);
-
-    } 
-  } */
-
-  //CPU matrix multiplication
-
+  std::cout << "Final matrix: " << std::endl;
+  //print matrix
+  for(int i=0; i < rowA; i++){
+    for(int j=0; j < colB; j++){
+      std::cout << cpuC[i][j] << ' '; 
+    }
+    cout << std::endl;
+  }
+  
   cudaEventRecord( hend, 0 );
   cudaEventSynchronize( hend );
 
@@ -143,7 +152,7 @@ int main() {
   if( STRIDEFLAG ){
     strideAdd<<<grid, block>>>(N, matA, matB, matC);
   }
-  else{
+  else{128
     add<<<grid, block>>>(N, matA, matB, matC);
   }
 
@@ -212,6 +221,8 @@ HANDLE_ERROR( cudaDeviceSynchronize() );
   cudaFree(matA);
   cudaFree(matB);
   cudaFree(matC);
+  cudaFree(partial);
+  cudaFree(cpuC);
 
   //free(compare);	
   
