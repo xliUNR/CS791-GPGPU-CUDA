@@ -83,8 +83,8 @@ int main() {
     for(int j = 0; j < N; j++){
 
       int offset = i * N +j;
-      a[offset] = 1;
-      *(b + offset) = 2;
+      matA[offset] = 1;
+      matB[offset] = 2;
     }
   }
 
@@ -92,12 +92,13 @@ int main() {
 
   for (int i = 0; i < N; i++) {
 
+
     for(int j = 0; j < N; j++){
 
-      int offset = i * N +j;	
+      offset = i * N +j; 	
       *(compare + offset) = *(a + offset) + *(b + offset);
 
-    }   
+    } 
   } 
 
   cudaEventRecord( hend, 0 );
@@ -125,10 +126,10 @@ int main() {
   
  //parallel add functions, one for stride mode and one for regular operation
   if( STRIDEFLAG ){
-    strideAdd<<<grid, block>>>(N, dev_a, dev_b, dev_c);
+    strideAdd<<<grid, block>>>(N, matA, matB, matC);
   }
   else{
-    add<<<grid, block>>>(N, dev_a, dev_b, dev_c);
+    add<<<grid, block>>>(N, matA, matB, matC);
   }
 
 //error handling for kernel calls 
