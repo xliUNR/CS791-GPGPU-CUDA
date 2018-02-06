@@ -213,7 +213,7 @@ HANDLE_ERROR( cudaDeviceSynchronize() );
   cudaFree(matB);
   cudaFree(matC);
 
-  free(compare);	
+  //free(compare);	
   
   return 0;
 }
