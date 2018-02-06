@@ -76,7 +76,7 @@ __global__ void strideAdd(int n, int *a, int *b, int *c) {
   //loop over each grid
   for( int i = thread_id; i < n*n; i+= blockDim.x * gridDim.x )
     {
-      *(c + thread_id) = *(a + thread_id ) + *(b + thread_id);      
+      *(c + thread_id) = *(a + thread_id ) * *(b + thread_id);      
     }
 
 }
