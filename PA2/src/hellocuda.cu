@@ -27,17 +27,30 @@ inline void GPUAssert( cudaError_t errCode, const char *file, int line, bool abo
 int main() {
   //initialize variables
   int N;
-  int *matA, *matB, *matC;
+  int rowA, colA, rowB, colB, rowP, colP;
+  int *matA, *matB, *matC, *partial;
   char userRes;
   bool STRIDEFLAG;
   bool repeat = true;
-  std::cout << "Enter square matrix dimension: " << std::endl;
-  std::cin >> N;
-  if( N > 65535 )
+  std::cout << "Enter # of rows for matrix A: " << std::endl;
+  std::cin >> rowA;
+  std::cout << "Enter # of columns for matrix A: " << std::endl;
+  std::cin >> colA;
+
+  std::cout << "Enter # of rows for matrix B: " << std::endl;
+  std::cin >> rowB;
+  std::cout << "Enter # of columns for matrix A: " << std::endl;
+  std::cin >> colB;
+
+  if( colA != rowB )
     {
-      std::cout << "Dimension is too large! Max is N = 65535. Program exiting" << std::endl;
-      exit(1); 
+      std::cout << "Invalid matrix dimensions (row of A != col of B).
+                    Program exiting" << std::endl;
+      exit(1);              
     }
+  //calculate dimensions for partial matrix
+  rowP = rowA * colB;
+  colP = colA;
 
   //Ask user if stride enabled
   do{
@@ -62,9 +75,10 @@ int main() {
   //Allocated unified memory
   int *compare = (int*)malloc(N*N*sizeof(int));
 	
-  HANDLE_ERROR( cudaMallocManaged(&matA, N*N*sizeof(int)) );
-  HANDLE_ERROR( cudaMallocManaged(&matB, N*N*sizeof(int)) );
-  HANDLE_ERROR( cudaMallocManaged(&matC, N*N*sizeof(int)) );
+  HANDLE_ERROR( cudaMallocManaged(&matA, rowA*colA*sizeof(int)) );
+  HANDLE_ERROR( cudaMallocManaged(&matB, rowB*colB*sizeof(int)) );
+  HANDLE_ERROR( cudaMallocManaged(&partial, rowP*colP*sizeof(int)) );
+  HANDLE_ERROR( cudaMallocManaged(&matC, rowA*colB*sizeof(int)) );
 
   //setup block/thread structure need to change to better method	
   dim3 grid(N);
@@ -100,6 +114,8 @@ int main() {
 
     } 
   } 
+
+  //CPU matrix multiplication
 
   cudaEventRecord( hend, 0 );
   cudaEventSynchronize( hend );

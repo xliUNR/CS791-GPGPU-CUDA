@@ -39,7 +39,7 @@ __global__ void add(int n, int *a, int *b, int *c) {
        thread_id = blockId * blockDim.x + threadIdx.x;
        break;   
      }
-    
+//striding, in cases were N > number of threads    
 while( thread_id < n*n ){    
     //c[thread_id] = a[thread_id] + b[thread_id];
     *(c + thread_id) = *(a + thread_id ) * *(b + thread_id);  
