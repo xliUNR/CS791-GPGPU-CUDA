@@ -110,8 +110,9 @@ int main() {
       int sum = 0;
 
       for(int k=0; k < colA; k++){
-        sum+= matA[i][k] * matB[k][j];
+        sum = sum + ( matA[i][k] * matB[k][j] );
       }
+
     cpuC[i][j] = sum;  
     }
   }
@@ -122,7 +123,7 @@ int main() {
     for(int j=0; j < colB; j++){
       std::cout << cpuC[i][j] << ' '; 
     }
-    cout << std::endl;
+    std::cout << std::endl;
   }
 
   cudaEventRecord( hend, 0 );
@@ -152,7 +153,7 @@ int main() {
   if( STRIDEFLAG ){
     strideAdd<<<grid, block>>>(N, matA, matB, matC);
   }
-  else{128
+  else{
     add<<<grid, block>>>(N, matA, matB, matC);
   }
 
