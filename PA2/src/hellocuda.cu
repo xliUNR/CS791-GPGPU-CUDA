@@ -110,10 +110,11 @@ int main() {
       int sum = 0;
 
       for(int k=0; k < colA; k++){
-        sum = sum + ( *(matA[i][k])* *(matB[k][j]) );
+        //sum = sum + ( matA[i][k] * matB[k][j] );
+        sum+= *(matA + i * colA + k ) * *(matB + k * colB + j);
       }
 
-    *(cpuC[i][j]) = sum;  
+    *( cpuC + i * colB + j ) = sum; 
     }
   }
 
@@ -121,7 +122,7 @@ int main() {
   //print matrix
   for(int i=0; i < rowA; i++){
     for(int j=0; j < colB; j++){
-      std::cout << cpuC[i][j] << ' '; 
+      std::cout << *(cpuC + i * colB +j ) << ' '; 
     }
     std::cout << std::endl;
   }
