@@ -83,8 +83,8 @@ int main() {
 
 
   //setup block/thread structure need to change to better method	
-  dim3 grid(N);
-  dim3 block(N);
+  dim3 grid(rowA * colB);
+  dim3 block(colA);
 
  cudaEvent_t hstart, hend;
   cudaEventCreate(&hstart);
@@ -93,7 +93,7 @@ int main() {
   cudaEventRecord( hstart, 0 );
 
 
-  // Initializes arrays on host
+  // Initializes matrix A
   for (int i = 0; i < rowA; i++) {
     for(int j = 0; j < colA; j++){
 
@@ -102,6 +102,7 @@ int main() {
     }
   }
 
+  // Initializes matrix B
   for (int i = 0; i < rowB; i++) {
     for(int j = 0; j < colB; j++){
 
@@ -109,8 +110,6 @@ int main() {
       *(matB + i * colB + j) = (i * colB + j);
     }
   }
-
-
 
   //CPU sequential matrix multiplication
   for(int i=0; i < rowA; i++){
@@ -135,7 +134,7 @@ int main() {
     std::cout << std::endl;
   }
 
- 
+
   cudaEventRecord( hend, 0 );
   cudaEventSynchronize( hend );
   float cpuTime;
