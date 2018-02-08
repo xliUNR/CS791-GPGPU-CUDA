@@ -28,7 +28,7 @@ int main() {
   //initialize variables
   int N;
   int rowA, colA, rowB, colB, rowP, colP;
-  int *matA, *matB, *matC, *partial, *cpuC;
+  int *matA, *matB, *matC, *cpuC;
   char userRes;
   bool STRIDEFLAG;
   bool repeat = true;
@@ -77,7 +77,6 @@ int main() {
 	
   HANDLE_ERROR( cudaMallocManaged( &matA, rowA*colA*sizeof(int)) );
   HANDLE_ERROR( cudaMallocManaged( &matB, rowB*colB*sizeof(int)) );
-  HANDLE_ERROR( cudaMallocManaged( &partial, rowP*colP*sizeof(int)) );
   HANDLE_ERROR( cudaMallocManaged( &matC, rowA*colB*sizeof(int)) );
   HANDLE_ERROR( cudaMallocManaged( &cpuC, rowA*colB*sizeof(int)) );
 
@@ -139,7 +138,8 @@ int main() {
   cudaEventSynchronize( hend );
   float cpuTime;
   cudaEventElapsedTime( &cpuTime, hstart, hend );
-
+   
+   
  /*
     The following code is responsible for handling timing for code
     that executes on the GPU. The cuda approach to this problem uses

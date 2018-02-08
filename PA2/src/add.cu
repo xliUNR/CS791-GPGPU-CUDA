@@ -10,35 +10,53 @@
   is not indicated by the function's signature.
  */
 __global__ void add(int n, int *a, int *b, int *c) {
+  //initialize variables
+  int cacheSize, aIndex, bIndex;
+  //check for even threads per block. Reduction requires even number of threads
+  //so must pad if odd.
+  if( blockDim.x % 2 != 0){
+    cacheSize = blockDim.x + 1;
+  }
+  else{
+    cacheSize = blockDim.x;
+  }
 
-  /*
-    Each thread knows its identity in the system. This identity is
-    made available in code via indices blockIdx and threadIdx. This 
-    equation calculates the unique ID for each element in the matrix
-    since the memory is stored as a 1D list.
-   */
+  __shared__ cache[cacheSize];
+
+  //pad w/ 0 if odd cacheSize
+  if( blockDim.x % 2 != 0 ){
+    cache[cacheSize] = 0;
+  }
   
-  //0 for 1D grid of 1D blocks
-  //1 for 1D grid of 2D blocks
-  //2 for 2D grid of 1D blocks
-  int option = 0;
-  int thread_id;
 
-    switch (option ) {
-    case 0: 
-       thread_id = threadIdx.x + blockIdx.x * blockDim.x;
-       break;
+  //calculated indexes of two elements to be multiplied.
+ 
+  
+  //loop until all multiplications done.
+  while( threadIdx.x < n ){
+    aIndex = threadIdx.x + blockIdx.y * n ;
+    bIndex = blockIdx.x + threadIdx.x * n ;
+    
+    cache[threadIdx.x] = *( a + aIndex ) * ( b + bIndex );
+    //loop to next set of threads
+    threadIdx.x+=blockDim.x;
 
-    case 1:
-       thread_id =  blockIdx.x * blockDim.x * blockDim.y
-                          + threadIdx.y * blockDim.x + threadIdx.x;
-       break;
-       
-    case 2:
-       int blockId = blockIdx.y * gridDim.x + blockIdx.x;  
-       thread_id = blockId * blockDim.x + threadIdx.x;
-       break;   
-     }
+ }
+ __syncthreads();
+
+//Use reduction to sum values, when it is done, cache[0] will contain answer
+int reduceIndex = cacheSize / 2 ;
+while( reduceIndex != 0 ){
+  if(threadIdx.x < reduceIndex ){
+    cache[threadIdx.x] += cache[ threadIdx.x + reduceIndex ];
+  }
+  __syncthreads();
+  reduceIndex /= 2;
+}
+
+//load all values into final matrix c
+*(c + (blockIdx.x + blockIdx.y * n) ) = cache[0];
+
 //striding, in cases were N > number of threads    
 while( thread_id < n*n ){    
     //c[thread_id] = a[thread_id] + b[thread_id];
