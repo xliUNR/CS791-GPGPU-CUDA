@@ -10,10 +10,16 @@
   is not indicated by the function's signature.
  */
 __global__ void add(int n, int *a, int *b, int *c) {
-  //initialize variables
+/*
+  initialize variables, indexes for two arrays being multiplied along with 
+  a cache size variable
+*/
   int cacheSize, aIndex, bIndex;
-  //check for even threads per block. Reduction requires even number of threads
-  //so must pad if odd.
+
+/*
+  check for even threads per block. Reduction requires even number of threads
+  so must pad if odd.
+*/  
   if( blockDim.x % 2 != 0){
     cacheSize = blockDim.x + 1;
   }
@@ -27,12 +33,13 @@ __global__ void add(int n, int *a, int *b, int *c) {
   if( blockDim.x % 2 != 0 ){
     cache[cacheSize] = 0;
   }
-  
-
-  //calculated indexes of two elements to be multiplied.
- 
-  
-  //loop until all multiplications done.
+/* 
+  Loop over n for each thread in a block, One thread corresponds to one element by
+  element multiplication. Results are stored in shared memory cache. This way
+  all blocks will have independent cache. Requires a synchronization step before
+  summing cache for each block. This is to ensure device has finished multiplication 
+  step.  
+*/
   while( threadIdx.x < n ){
     aIndex = threadIdx.x + blockIdx.y * n ;
     bIndex = blockIdx.x + threadIdx.x * n ;
@@ -44,7 +51,12 @@ __global__ void add(int n, int *a, int *b, int *c) {
  }
  __syncthreads();
 
-//Use reduction to sum values, when it is done, cache[0] will contain answer
+
+/*
+  Use reduction to sum values, when it is done, cache[0] will contain sum for each block
+  which corresponds to a element in the product matrix.
+  
+*/
 int reduceIndex = cacheSize / 2 ;
 while( reduceIndex != 0 ){
   if(threadIdx.x < reduceIndex ){
