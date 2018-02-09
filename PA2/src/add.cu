@@ -14,7 +14,8 @@ __global__ void add(int n, int *a, int *b, int *c) {
   initialize variables, indexes for two arrays being multiplied along with 
   a cache size variable
 */
-  int cacheSize, aIndex, bIndex;
+  int cacheSize, aIndex, bIndex, threadId, blockId, cacheIndex;
+  cacheIndex = threadIdx.x;
 
 /*
   check for even threads per block. Reduction requires even number of threads
@@ -40,13 +41,14 @@ __global__ void add(int n, int *a, int *b, int *c) {
   summing cache for each block. This is to ensure device has finished multiplication 
   step.  
 */
-  while( threadIdx.x < n ){
+  while( cacheIndex < n ){
     aIndex = threadIdx.x + blockIdx.y * n ;
     bIndex = blockIdx.x + threadIdx.x * n ;
     
-    cache[threadIdx.x] = *( a + aIndex ) * ( b + bIndex );
-    //loop to next set of threads
-    threadIdx.x+=blockDim.x;
+    cache[cacheIndex] = *( a + aIndex ) * ( b + bIndex );
+    
+    //stride to next set of elements
+    cacheIndex+=blockDim.x;
 
  }
  __syncthreads();
