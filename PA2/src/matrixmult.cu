@@ -47,7 +47,7 @@ __global__ void matrixMult(int *a, int *b, int *c, int n) {
   //Stride loop.  
   while( blockId < n*n ){
    //reset threads for every block stride 
-   tid = threadIdx.x; 
+   //tid = threadIdx.x; 
    //Stride loop for threads.
    while(tid < n){
       //initialize unique indices of input matrix a and b elements
