@@ -85,21 +85,21 @@ int main() {
   //setup block/thread structure based on user input	
   dim3 grid = {numBlocks, numBlocks};
   dim3 block = {numThreads};
-
+  
   // Initializes matrix A
-  for (int i = 0; i < rowA; i++) {
-    for(int j = 0; j < colA; j++){
+  for (int i = 0; i < matrixDim; i++) {
+    for(int j = 0; j < matrixDim; j++){
 
       //int offset = i * N +j;
-      *(matA + i * colA + j) = rand(0,);  
+      *(matA + i * matrixDim + j) = (i * matrixDim + j);  
     }
   }
   // Initializes matrix B
-  for (int i = 0; i < rowB; i++) {
-    for(int j = 0; j < colB; j++){
+  for (int i = 0; i < matrixDim; i++) {
+    for(int j = 0; j < matrixDim; j++){
 
       //int offset = i * N +j;
-      *(matB + i * colB + j) = (i * colB + j);
+      *(matB + i * matrixDim + j) = (i * matrixDim + j);
     }
   }
 
@@ -110,34 +110,26 @@ int main() {
   cudaEventRecord( hstart, 0 );
 
   //CPU sequential matrix multiplication
-  for(int i=0; i < rowA; i++){
-    for(int j=0; j < colB; j++){
+  for(int i=0; i < matrixDim; i++){
+    for(int j=0; j < matrixDim; j++){
+      //initialize sum for each multiplication
       int sum = 0;
-
-      for(int k=0; k < colA; k++){
+      
+      for(int k=0; k < matrixDim; k++){
         //sum = sum + ( matA[i][k] * matB[k][j] );
-        sum+= *(matA + i * colA + k ) * *(matB + k * colB + j);
+        sum+= *(matA + i * matrixDim + k ) * *(matB + k * matrixDim + j);
       }
-
-    *( cpuC + i * colB + j ) = sum; 
+    //save sum to cpu matrix  
+    *( cpuC + i * matrixDim + j ) = sum; 
     }
   }
-
-  std::cout << "Final matrix: " << std::endl;
-  //print matrix
-  for(int i=0; i < rowA; i++){
-    for(int j=0; j < colB; j++){
-      std::cout << *(cpuC + i * colB +j ) << ' '; 
-    }
-    std::cout << std::endl;
-  }
-
   //stop time for sequential run.
   cudaEventRecord( hend, 0 );
   cudaEventSynchronize( hend );
   float cpuTime;
   cudaEventElapsedTime( &cpuTime, hstart, hend );
-   
+  
+
   //start event timer for GPU parallel implementation 
   cudaEvent_t start, end;
   cudaEventCreate(&start);
@@ -160,7 +152,7 @@ int main() {
 
   
   //check to make sure both matrices match each other
-  for (int i = 0; i < N; ++i) {
+  for (int i = 0; i < N; ++i){
     for(int j = 0; j < N; ++j){
 	
       int offset = i * N +j;
