@@ -21,10 +21,8 @@ __global__ void matrixMult(int *a, int *b, int *c, int n) {
     Calculate the starting block index (x,y). This is used for striding 
     across grid
   */
-  int b_x, b_y;
-  b_x = blockIdx.x;
-  b_y = blockIdx.y;
-
+  int blockId = blockIdx.y * n + blockIdx.x;
+  
   /*
     Initialize threadId for thread striding
   */  
@@ -46,14 +44,15 @@ __global__ void matrixMult(int *a, int *b, int *c, int n) {
   //calculate # of threads for reduction 
   reduceThreads = cacheSize / 2 ;
 
-  
+  //Stride loop.  
+  while( blockId < n*n ){
    //reset threads for every block stride 
    tid = threadIdx.x; 
    //Stride loop for threads.
    while(tid < n){
       //initialize unique indices of input matrix a and b elements
-      aIndex = tid + b_y * n;
-      bIndex = b_x + tid * n;
+      aIndex = tid + ( blockId / n ) * n;
+      bIndex = ( blockId % n ) + tid * n;
 
       //multiply element by element and store in shared cache.
       cache[tid] = ( *( a + aIndex ) ) * ( *(b + bIndex ) );
@@ -84,7 +83,11 @@ __global__ void matrixMult(int *a, int *b, int *c, int n) {
       }
 
     //write results of matrix back to product matrix 
-    *(c + b_y * n + b_x) = cache[0];
+    *( c + blockId ) = cache[0];
 
-}
-
+    /*
+      stride over grid
+    */ 
+    blockId = blockId + ( gridDim.x * gridDim.y ); 
+  } 
+}     
