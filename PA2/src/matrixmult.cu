@@ -81,13 +81,13 @@ __global__ void matrixMult(int *a, int *b, int *c, int n) {
 
     //write results of matrix back to product matrix 
     *(c + b_y * n + b_x) = cache[0];
-    
+
     /*Increment block x and y indices. This is required b/c of striding. In order
       to multiply the correct elements, the indices are incremented independent 
       of the actual CUDA block indices because those no longer provide the "true"
       indices once striding is used.
     */ 
-    b_x+1;
-    b_y++1; 
+    b_x+=1;
+    b_y+=1; 
   }
 }     
