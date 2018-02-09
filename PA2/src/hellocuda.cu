@@ -182,7 +182,7 @@ int main() {
 	
       int offset = i * matrixDim + j;
 	
-      /*if (*(matC + offset) != *(cpuC + offset) ) {
+      if (*(matC + offset) != *(cpuC + offset) ) {
       std::cerr << "Oh no! Something went wrong. You should check your cuda install and your GPU. :(" << std::endl;
       
       // clean up events - we should check for error codes here.
@@ -197,7 +197,7 @@ int main() {
       cudaFree(matB);
       cudaFree(matC);
       exit(1);
-      }*/
+      }
       std::cout << *(matC + offset);
     }   
     std::cout << std::endl; 
