@@ -37,10 +37,8 @@ __global__ void matrixMult(int *a, int *b, int *c, int n) {
     cacheSize = n;
   }
 
-
   //Stride loop. I used for because it seemed safer than while loop.  
-  for( int i = (blockIdx.y * gridDim.x + blockIdx.x) ; 
-                              i < n*n; i += gridDim.x * gridDim.y ){
+  while( b_x * b_y < n*n ){
 
    //Stride loop for threads.
    for( int i = threadIdx.x; i < n; i+=blockDim.x){
