@@ -48,7 +48,8 @@ __global__ void matrixMult(int *a, int *b, int *c, int n) {
 
   //Stride loop.  
   while( b_x * b_y < n*n ){
-
+   //reset threads for every block stride 
+   tid = threadIdx.x; 
    //Stride loop for threads.
    while(tid < n){
       //initialize unique indices of input matrix a and b elements
@@ -91,7 +92,7 @@ __global__ void matrixMult(int *a, int *b, int *c, int n) {
       of the actual CUDA block indices because those no longer provide the "true"
       indices once striding is used.
     */ 
-    b_x+=1;
-    b_y+=1; 
+    b_x+=blockDim.x;
+    b_y+=blockDim.y; 
   }
 }     
