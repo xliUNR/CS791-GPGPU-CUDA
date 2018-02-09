@@ -60,9 +60,9 @@ int main() {
   }
 
   //ask for threads per block and check if valid
-  std::cout << std::endl << "Please specify number of threads per block: " 
+  std::cout << std::endl << "Please specify number of threads per block " 
             << std::endl << "(Max number of threads per block is: " 
-            << prop.maxThreadsPerBlock << ")";
+            << prop.maxThreadsPerBlock << "): ";
 
   std::cin >> numThreads;
   if( numThreads > prop.maxThreadsPerBlock ){
@@ -71,12 +71,11 @@ int main() {
   }
 
   //ask for grid dimension
-  std::cout << std::endl << "Please specify dimension of grid: "
+  std::cout << std::endl << "Please specify dimension of grid "
             << std::endl << "(Max dimension of grid is: [" 
-            << prop.maxGridSize[0] << ", " << prop.maxGridSize[1] << ", "
-            << prop.maxGridSize[2] << "]";
+            << prop.maxGridSize[1] << ", " << prop.maxGridSize[2] << "]: ";
   std::cin >> numBlocks;
-  if( numBlocks < prop.maxGridSize[0] ){
+  if( numBlocks > prop.maxGridSize[1] ){
     std::cout << std::endl << "Sorry grid dimensions are too larger than GPU supports. Program exiting" << std::endl;
     exit(1);
   }
