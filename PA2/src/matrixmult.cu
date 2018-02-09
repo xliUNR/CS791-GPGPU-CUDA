@@ -27,10 +27,16 @@ __global__ void matrixMult(int *a, int *b, int *c, int n) {
   //initialize shared cache to store partial results from element by element mult.
   extern __shared__ int cache[];
 
-  //pad last element of cache with 0 if cacheSize is odd
-  if( blockDim.x % 2 != 0 ){
+  //pad if n is odd 
+  if( n % 2 != 0 ){
+    cacheSize = n + 1;
     cache[cacheSize] = 0;
   }
+
+  else{
+    cacheSize = n;
+  }
+
 
   //Stride loop. I used for because it seemed safer than while loop.  
   for( int i = (blockIdx.y * gridDim.x + blockIdx.x) ; 
@@ -75,7 +81,7 @@ __global__ void matrixMult(int *a, int *b, int *c, int n) {
 
     //write results of matrix back to product matrix 
     *(c + b_y * n + b_x) = cache[0];
-
+    
     /*Increment block x and y indices. This is required b/c of striding. In order
       to multiply the correct elements, the indices are incremented independent 
       of the actual CUDA block indices because those no longer provide the "true"
