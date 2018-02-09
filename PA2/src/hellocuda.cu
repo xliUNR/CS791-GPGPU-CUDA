@@ -24,6 +24,9 @@ int main() {
   //Initialize variables for user specified grid and block structures.   
   int matrixDim, numElements, numThreads, numBlocks;
 
+  //initialize cache size for shared cache among the blocks
+  int cacheSize;
+
   //initialize device properties for checking limitations of GPU
   cudaDeviceProp prop;
   
@@ -136,8 +139,23 @@ int main() {
   cudaEventCreate(&end);
   cudaEventRecord( start, 0 );
   
-  //kernel call for GPU implementation
-  matrixMult<<<grid, block>>>(matA, matB, matC, matrixDim);
+  /*
+    check to see if matrixDim is even. Will have to pad with 0 if not.
+    This is for the reduction step, must have an even number to perform
+    reduction algorithm.
+  */
+  if( matrixDim % 2 != 0 ){
+    cacheSize = matrixDim + 1;
+  }
+  else{
+    cacheSize = matrixDim;
+  }
+
+  /*
+    kernel call for GPU implementation, last part is for dynamic alloc of
+    cache
+  */  
+  matrixMult<<<grid, block, cacheSize*sizeof(int)>>>(matA, matB, matC, matrixDim);
 
   //error handling for kernel calls 
   HANDLE_ERROR( cudaPeekAtLastError() );

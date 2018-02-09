@@ -23,20 +23,9 @@ __global__ void matrixMult(int *a, int *b, int *c, int n) {
   int b_x, b_y;
   b_x = blockIdx.x;
   b_y = blockIdx.y;
-  
-  /*
-  check for even threads per block. Reduction requires even number of threads
-  so must pad if odd.
-  */  
-  if( n % 2 != 0 ){
-    cacheSize = n + 1;
-  }
-  else{
-    cacheSize = n;
-  }
 
   //initialize shared cache to store partial results from element by element mult.
-  __shared__ cache[cacheSize];
+  extern __shared__ int cache[];
 
   //pad last element of cache with 0 if cacheSize is odd
   if( blockDim.x % 2 != 0 ){
