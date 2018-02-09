@@ -55,7 +55,7 @@ int main() {
     cache has enough room.
   */
   if( ( matrixDim * sizeof(int) ) > prop.sharedMemPerBlock ){
-    std::cout << std::endl << "Sorry matrix dimension is too large for shared memory. Program exiting";
+    std::cout << std::endl << "Sorry matrix dimension is too large for shared memory. Program exiting" << std::endl;
     exit(1);
   }
 
@@ -63,15 +63,15 @@ int main() {
   std::cout << std::endl << "Please specify number of threads per block: ";
   std::cin >> numThreads;
   if( numThreads > prop.maxThreadsPerBlock ){
-    std::cout << std::endl << "Sorry number of threads larger than GPU supports. Program exiting";
+    std::cout << std::endl << "Sorry number of threads larger than GPU supports. Program exiting" << std::endl;
     exit(1);
   }
 
   //ask for grid dimension
   std::cout << std::endl << "Please specify dimension of grid: ";
   std::cin >> numBlocks;
-  if( numBlocks < prop.maxGridSize[0] ){
-    std::cout << std::endl << "Sorry grid dimensions are too larger than GPU supports. Program exiting";
+  if( numBlocks < prop.maxGridSize[3] ){
+    std::cout << std::endl << "Sorry grid dimensions are too larger than GPU supports. Program exiting" << std::endl;
     exit(1);
   }
 
