@@ -99,7 +99,8 @@ int main() {
     for(int j = 0; j < matrixDim; j++){
 
       //int offset = i * N +j;
-      *(matA + i * matrixDim + j) = (i * matrixDim + j);  
+      *(matA + i * matrixDim + j) = 1;
+      //(i * matrixDim + j);  
     }
   }
   // Initializes matrix B
@@ -107,7 +108,8 @@ int main() {
     for(int j = 0; j < matrixDim; j++){
 
       //int offset = i * N +j;
-      *(matB + i * matrixDim + j) = (i * matrixDim + j);
+      *(matB + i * matrixDim + j) = 1;
+      //(i * matrixDim + j);
     }
   }
 
@@ -180,9 +182,9 @@ int main() {
 	
       int offset = i * matrixDim + j;
 	
-      if (*(matC + offset) != *(cpuC + offset) ) {
+      /*if (*(matC + offset) != *(cpuC + offset) ) {
       std::cerr << "Oh no! Something went wrong. You should check your cuda install and your GPU. :(" << std::endl;
-
+      
       // clean up events - we should check for error codes here.
       cudaEventDestroy( start );
       cudaEventDestroy( end );
@@ -195,8 +197,36 @@ int main() {
       cudaFree(matB);
       cudaFree(matC);
       exit(1);
-      }
-    }    
+      }*/
+      std::cout << *(matC + offset);
+    }   
+    std::cout << std::endl; 
+  }
+std::cout << "CPU matrix: " << std::endl;
+  for (int i = 0; i < matrixDim; ++i){
+    for(int j = 0; j < matrixDim; ++j){
+  
+      int offset = i * matrixDim + j;
+  
+      /*if (*(matC + offset) != *(cpuC + offset) ) {
+      std::cerr << "Oh no! Something went wrong. You should check your cuda install and your GPU. :(" << std::endl;
+      
+      // clean up events - we should check for error codes here.
+      cudaEventDestroy( start );
+      cudaEventDestroy( end );
+      cudaEventDestroy( hstart );
+      cudaEventDestroy( hend );
+
+      // clean up device pointers - just like free in C. We don't have
+      // to check error codes for this one.
+      cudaFree(matA);
+      cudaFree(matB);
+      cudaFree(matC);
+      exit(1);
+      }*/
+      std::cout << *(cpuC + offset);
+    }   
+    std::cout << std::endl; 
   }
 
   /*
