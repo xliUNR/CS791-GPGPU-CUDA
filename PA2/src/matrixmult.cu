@@ -46,8 +46,7 @@ __global__ void matrixMult(int *a, int *b, int *c, int n) {
   //calculate # of threads for reduction 
   reduceThreads = cacheSize / 2 ;
 
-  //Stride loop.  
-  while( b_x * b_y < n*n ){
+  
    //reset threads for every block stride 
    tid = threadIdx.x; 
    //Stride loop for threads.
@@ -69,7 +68,7 @@ __global__ void matrixMult(int *a, int *b, int *c, int n) {
     __syncthreads(); 
 
     //reset tid to threadIdx.x
-    //tid = threadIdx.x;
+    // tid = threadIdx.x;
 
     /*
       Reduction loop: will loop until summation complete in cache. Need to sync 
@@ -87,12 +86,5 @@ __global__ void matrixMult(int *a, int *b, int *c, int n) {
     //write results of matrix back to product matrix 
     *(c + b_y * n + b_x) = cache[0];
 
-    /*Increment block x and y indices. This is required b/c of striding. In order
-      to multiply the correct elements, the indices are incremented independent 
-      of the actual CUDA block indices because those no longer provide the "true"
-      indices once striding is used.
-    */ 
-    b_x+=blockDim.x;
-    b_y+=blockDim.y; 
-  }
-}     
+}
+
