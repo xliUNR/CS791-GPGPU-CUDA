@@ -83,8 +83,8 @@ int main() {
 
 
   //setup block/thread structure based on user input	
-  dim3 grid = {numBlocks, numBlocks};
-  dim3 block = {numThreads};
+  dim3 grid(numBlocks, numBlocks);
+  dim3 block(numThreads);
   
   // Initializes matrix A
   for (int i = 0; i < matrixDim; i++) {
@@ -152,12 +152,12 @@ int main() {
 
   
   //check to make sure both matrices match each other
-  for (int i = 0; i < N; ++i){
-    for(int j = 0; j < N; ++j){
+  for (int i = 0; i < matrixDim; ++i){
+    for(int j = 0; j < matrixDim; ++j){
 	
-      int offset = i * N +j;
+      int offset = i * matrixDim + j;
 	
-      if (*(c + offset) != *(cpuC + offset) ) {
+      if (*(matC + offset) != *(cpuC + offset) ) {
       std::cerr << "Oh no! Something went wrong. You should check your cuda install and your GPU. :(" << std::endl;
 
       // clean up events - we should check for error codes here.
