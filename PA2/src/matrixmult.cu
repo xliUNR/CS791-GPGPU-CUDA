@@ -22,7 +22,7 @@ __global__ void matrixMult(int *a, int *b, int *c, int n) {
     across grid
   */
   int blockId = blockIdx.y * n + blockIdx.x;
-  
+
   /*
     Initialize threadId for thread striding
   */  
@@ -74,6 +74,9 @@ __global__ void matrixMult(int *a, int *b, int *c, int n) {
       threads before every addition to avoid race conditions
       */
       while( reduceThreads > 0 ){
+        //reset tid
+        tid = threadIdx.x;
+        
        while( tid < reduceThreads ){
           cache[tid] += cache[ tid + reduceThreads ];
           tid+=blockDim.x;
