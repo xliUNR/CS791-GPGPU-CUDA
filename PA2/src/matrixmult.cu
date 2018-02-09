@@ -8,7 +8,8 @@
  */
 __global__ void matrixMult(int *a, int *b, int *c, int n) {
   //initialize variables used for shared memory cache. set Index to 
-  int cacheSize, cacheIndex;
+  int cacheSize;
+  //cacheIndex
 
   //Index of matrix a and matrix b used for element by element multiplication 
   int aIndex, bIndex;
@@ -54,34 +55,34 @@ __global__ void matrixMult(int *a, int *b, int *c, int n) {
       aIndex = tid + b_y * n;
       bIndex = b_x + tid * n;
 
-      //calculate index of cache for each thread
-      cacheIndex = tid;
-
       //multiply element by element and store in shared cache.
-      cache[cacheIndex] = ( *( a + aIndex ) ) * ( *(b + bIndex ) );
+      cache[tid] = ( *( a + aIndex ) ) * ( *(b + bIndex ) );
       
-      /*
-      have to synchronize all threads to make sure cache values are all updated
-      before accessing them for the summation step.
-      */ 
-      __syncthreads(); 
+      //stride over number of threads
+      tid+=blockDim.x;
+   }
+  /*
+    have to synchronize all threads to make sure cache values are all updated
+    before accessing them for the summation step.
+    */ 
+    __syncthreads(); 
 
-      /*
+    //reset tid to threadIdx.x
+    tid = threadIdx.x;
+
+    /*
       Reduction loop: will loop until summation complete in cache. Need to sync 
       threads before every addition to avoid race conditions
       */
       while( reduceThreads > 0 ){
-       if( threadIdx.x < reduceThreads ){
-          cache[threadIdx.x] += cache[ threadIdx.x + reduceThreads ];
+       while( tid < reduceThreads ){
+          cache[tid] += cache[ tid + reduceThreads ];
+          tid+=blockDim.x;
         }
-
       __syncthreads();
       reduceThreads /= 2;
       }
 
-      //stride over number of threads
-      tid+=blockDim.x;
-   }
     //write results of matrix back to product matrix 
     *(c + b_y * n + b_x) = cache[0];
 
