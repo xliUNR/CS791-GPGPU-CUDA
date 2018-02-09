@@ -24,6 +24,11 @@ __global__ void matrixMult(int *a, int *b, int *c, int n) {
   b_x = blockIdx.x;
   b_y = blockIdx.y;
 
+  /*
+    Initialize threadId for thread striding
+  */  
+  int tid = threadIdx.x;
+
   //initialize shared cache to store partial results from element by element mult.
   extern __shared__ int cache[];
 
@@ -36,47 +41,47 @@ __global__ void matrixMult(int *a, int *b, int *c, int n) {
   else{
     cacheSize = n;
   }
+  
+  //calculate # of threads for reduction 
+  reduceThreads = cacheSize / 2 ;
 
-  //Stride loop. I used for because it seemed safer than while loop.  
+  //Stride loop.  
   while( b_x * b_y < n*n ){
 
    //Stride loop for threads.
-   for( int i = threadIdx.x; i < n; i+=blockDim.x){
+   while(tid < n){
       //initialize unique indices of input matrix a and b elements
-      aIndex = threadIdx.x + b_y * n;
-      bIndex = b_x + threadIdx.x * n;
+      aIndex = tid + b_y * n;
+      bIndex = b_x + tid * n;
 
       //calculate index of cache for each thread
-      cacheIndex = threadIdx.x;
+      cacheIndex = tid;
 
       //multiply element by element and store in shared cache.
       cache[cacheIndex] = ( *( a + aIndex ) ) * ( *(b + bIndex ) );
       
-      //stride over number of threads
-      cacheIndex+=blockDim.x;
-   }
-
-    /*
+      /*
       have to synchronize all threads to make sure cache values are all updated
       before accessing them for the summation step.
-    */ 
-    __syncthreads(); 
+      */ 
+      __syncthreads(); 
 
-    //calculate Index 
-    reduceThreads = cacheSize / 2 ;
-
-    /*
+      /*
       Reduction loop: will loop until summation complete in cache. Need to sync 
       threads before every addition to avoid race conditions
-    */
-    while( reduceThreads > 0 ){
-    if( threadIdx.x < reduceThreads ){
-      cache[threadIdx.x] += cache[ threadIdx.x + reduceThreads ];
-    }
-    __syncthreads();
-    reduceThreads /= 2;
-    }
+      */
+      while( reduceThreads > 0 ){
+       if( threadIdx.x < reduceThreads ){
+          cache[threadIdx.x] += cache[ threadIdx.x + reduceThreads ];
+        }
 
+      __syncthreads();
+      reduceThreads /= 2;
+      }
+
+      //stride over number of threads
+      tid+=blockDim.x;
+   }
     //write results of matrix back to product matrix 
     *(c + b_y * n + b_x) = cache[0];
 
