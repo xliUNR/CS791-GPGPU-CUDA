@@ -69,7 +69,7 @@ __global__ void matrixMult(int *a, int *b, int *c, int n) {
     __syncthreads(); 
 
     //reset tid to threadIdx.x
-    tid = threadIdx.x;
+    //tid = threadIdx.x;
 
     /*
       Reduction loop: will loop until summation complete in cache. Need to sync 
