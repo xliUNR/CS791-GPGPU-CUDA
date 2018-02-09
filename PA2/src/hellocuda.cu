@@ -1,17 +1,11 @@
-/*
-  This program demonstrates the basics of working with cuda. We use
-  the GPU to add two arrays. We also introduce cuda's approach to
-  error handling and timing using cuda Events.
-
-  This is the main program. You should also look at the header add.h
-  for the important declarations, and then look at add.cu to see how
-  to define functions that execute on the GPU.
- */
-
+///////////////////////////////////////////////////////////////////////////////
+////////////// main program for PA2: Matrix Multiplication ////////////////////
+////////////////////////// written by Eric Li ////////////////////////////////
+///////////////////////////////////////////////////////////////////////////// 
 #include <iostream>
 #include <cstdio>
 #include <time.h>
-#include "add.h"
+#include "matrixmult.h"
 //error checking macro
 #define HANDLE_ERROR(func) { GPUAssert((func), __FILE__, __LINE__);}
 inline void GPUAssert( cudaError_t errCode, const char *file, int line, bool abort=true)
@@ -25,82 +19,81 @@ inline void GPUAssert( cudaError_t errCode, const char *file, int line, bool abo
 
 
 int main() {
-  //initialize variables
-  int N;
-  int rowA, colA, rowB, colB, rowP, colP;
+/////////////////////////////////////////////////////////////////////////////
+//////////////////// variable declarations //////////////////////////////////  
+  //Initialize variables for user specified grid and block structures.   
+  int matrixDim, numElements, numThreads, numBlocks;
+
+  //initialize device properties for checking limitations of GPU
+  cudaDeviceProp prop;
+  
+  /*
+    initialize pointers for matrices: A and B are multiplied and stored in
+    matrix C. 
+    cpuC is for the sequential implementation of matrix multiplication  
+  */
   int *matA, *matB, *matC, *cpuC;
-  char userRes;
-  bool STRIDEFLAG;
-  bool repeat = true;
-  std::cout << "Enter # of rows for matrix A: " << std::endl;
-  std::cin >> rowA;
-  std::cout << "Enter # of columns for matrix A: " << std::endl;
-  std::cin >> colA;
 
-  std::cout << "Enter # of rows for matrix B: " << std::endl;
-  std::cin >> rowB;
-  std::cout << "Enter # of columns for matrix A: " << std::endl;
-  std::cin >> colB;
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////// start program /////////////////////////////////
+  std::cout << std::endl << "Square matrix multiplication program";
+  //ask for dimensions of matrices and store in variable matrixDim
+  std::cout << std::endl << "Enter dimension of square matrices to be multiplied: ";
+  std::cin >> matrixDim;
 
-  if( colA != rowB )
-    {
-      std::cout << "Invalid matrix dimensions (row of A != col of B). Program exiting" << std::endl;
-      exit(1);              
-    }
-  
-  //calculate dimensions for partial matrix
-  rowP = rowA * colB;
-  colP = colA;
+  /*
+    get device properties of nvidia card and test to make sure we are within
+    capabilities of the card
+  */
+  cudaGetDeviceProperties(&prop, 0);
 
-  //Ask user if stride enabled
-  do{
-    std::cout << "stride mode? (Y/N) " << std::endl;
-    std::cin >> userRes;
-    if( userRes == 'Y' | 'y' ){
-      STRIDEFLAG = true;
-      repeat = false;
-    }
-    
-    else if( userRes == 'N' | 'n' ){
-      STRIDEFLAG = false;
-      repeat = false;
-    }
-    else{
-      std::cout << "invalid response. Try again." << std::endl;
-    }
-  } while( repeat );
-  
+  /*
+    test to make sure dimensions aren't larger than shared memory to make sure
+    cache has enough room.
+  */
+  if( ( matrixDim * sizeof(int) ) > prop.sharedMemPerBlock ){
+    std::cout << std::endl << "Sorry matrix dimension is too large for shared memory. Program exiting";
+    exit(1);
+  }
 
-  
+  //ask for threads per block and check if valid
+  std::cout << std::endl << "Please specify number of threads per block: ";
+  std::cin >> numThreads;
+  if( numThreads > prop.maxThreadsPerBlock ){
+    std::cout << std::endl << "Sorry number of threads larger than GPU supports. Program exiting";
+    exit(1);
+  }
+
+  //ask for grid dimension
+  std::cout << std::endl << "Please specify dimension of grid: ";
+  std::cin >> numBlocks;
+  if( numBlocks < prop.maxGridSize[0] ){
+    std::cout << std::endl << "Sorry grid dimensions are too larger than GPU supports. Program exiting";
+    exit(1);
+  }
+
+  //calculate number of elements in each matrix for memory allocation purposes
+  numElements = matrixDim * matrixDim; 
+   
   //Allocated unified memory
-  //int *compare = (int*)malloc(N*N*sizeof(int));
-	
-  HANDLE_ERROR( cudaMallocManaged( &matA, rowA*colA*sizeof(int)) );
-  HANDLE_ERROR( cudaMallocManaged( &matB, rowB*colB*sizeof(int)) );
-  HANDLE_ERROR( cudaMallocManaged( &matC, rowA*colB*sizeof(int)) );
-  HANDLE_ERROR( cudaMallocManaged( &cpuC, rowA*colB*sizeof(int)) );
+  HANDLE_ERROR( cudaMallocManaged( &matA, numElements*sizeof(int)) );
+  HANDLE_ERROR( cudaMallocManaged( &matB, numElements*sizeof(int)) );
+  HANDLE_ERROR( cudaMallocManaged( &matC, numElements*sizeof(int)) );
+  HANDLE_ERROR( cudaMallocManaged( &cpuC, numElements*sizeof(int)) );
 
 
-  //setup block/thread structure need to change to better method	
-  dim3 grid(rowA * colB);
-  dim3 block(colA);
-
- cudaEvent_t hstart, hend;
-  cudaEventCreate(&hstart);
-  cudaEventCreate(&hend);
-
-  cudaEventRecord( hstart, 0 );
-
+  //setup block/thread structure based on user input	
+  dim3 grid = {numBlocks, numBlocks};
+  dim3 block = {numThreads};
 
   // Initializes matrix A
   for (int i = 0; i < rowA; i++) {
     for(int j = 0; j < colA; j++){
 
       //int offset = i * N +j;
-      *(matA + i * colA + j) = (i * colA + j);  
+      *(matA + i * colA + j) = rand(0,);  
     }
   }
-
   // Initializes matrix B
   for (int i = 0; i < rowB; i++) {
     for(int j = 0; j < colB; j++){
@@ -109,6 +102,12 @@ int main() {
       *(matB + i * colB + j) = (i * colB + j);
     }
   }
+
+  //start timing for sequential portion
+  cudaEvent_t hstart, hend;
+  cudaEventCreate(&hstart);
+  cudaEventCreate(&hend);
+  cudaEventRecord( hstart, 0 );
 
   //CPU sequential matrix multiplication
   for(int i=0; i < rowA; i++){
@@ -133,67 +132,40 @@ int main() {
     std::cout << std::endl;
   }
 
-
+  //stop time for sequential run.
   cudaEventRecord( hend, 0 );
   cudaEventSynchronize( hend );
   float cpuTime;
   cudaEventElapsedTime( &cpuTime, hstart, hend );
    
-   
- /*
-    The following code is responsible for handling timing for code
-    that executes on the GPU. The cuda approach to this problem uses
-    events. For timing purposes, an event is essentially a point in
-    time. We create events for the beginning and end points of the
-    process we want to time. When we want to start timing, we call
-    cudaEventRecord.
-
-    In this case, we want to record the time it takes to transfer data
-    to the GPU, perform some computations, and transfer data back.
-  */
+  //start event timer for GPU parallel implementation 
   cudaEvent_t start, end;
   cudaEventCreate(&start);
   cudaEventCreate(&end);
-
   cudaEventRecord( start, 0 );
   
- //parallel add functions, one for stride mode and one for regular operation
-  if( STRIDEFLAG ){
-    strideAdd<<<grid, block>>>(N, matA, matB, matC);
-  }
-  else{
-    add<<<grid, block>>>(N, matA, matB, matC);
-  }
+  //kernel call for GPU implementation
+  matrixMult<<<grid, block>>>(matA, matB, matC, matrixDim);
 
-//error handling for kernel calls 
-HANDLE_ERROR( cudaPeekAtLastError() );
-HANDLE_ERROR( cudaDeviceSynchronize() );
+  //error handling for kernel calls 
+  HANDLE_ERROR( cudaPeekAtLastError() );
+  HANDLE_ERROR( cudaDeviceSynchronize() );
 
-  
-  /*
-    This is the other end of the timing process. We record an event,
-    synchronize on it, and then figure out the difference in time
-    between the start and the stop.
-
-    We have to call cudaEventSynchronize before we can safely _read_
-    the value of the stop event. This is because the GPU may not have
-    actually written to the event until all other work has finished.
-   */
+  //end timer for GPU matrix multiplication
   cudaEventRecord( end, 0 );
   cudaEventSynchronize( end );
 
   float elapsedTime;
   cudaEventElapsedTime( &elapsedTime, start, end );
 
-  /*
-    Let's check that the results are what we expect.
-   
+  
+  //check to make sure both matrices match each other
   for (int i = 0; i < N; ++i) {
     for(int j = 0; j < N; ++j){
 	
       int offset = i * N +j;
 	
-      if (*(compare + offset) != (*(matA + offset) + *(matB + offset))) {
+      if (*(c + offset) != *(cpuC + offset) ) {
       std::cerr << "Oh no! Something went wrong. You should check your cuda install and your GPU. :(" << std::endl;
 
       // clean up events - we should check for error codes here.
@@ -208,10 +180,9 @@ HANDLE_ERROR( cudaDeviceSynchronize() );
       cudaFree(matB);
       cudaFree(matC);
       exit(1);
-    }
-    } 
-    
-  }*/
+      }
+    }    
+  }
 
   /*
     Let's let the user know that everything is ok and then display
@@ -230,10 +201,7 @@ HANDLE_ERROR( cudaDeviceSynchronize() );
   cudaFree(matA);
   cudaFree(matB);
   cudaFree(matC);
-  cudaFree(partial);
   cudaFree(cpuC);
-
-  //free(compare);	
   
   return 0;
 }

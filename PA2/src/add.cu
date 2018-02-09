@@ -1,15 +1,12 @@
 
-#include "add.h"
+#include "matrixmult.h"
 
 /*
-  This is the function that each thread will execute on the GPU. The
-  fact that it executes on the device is indicated by the __global__
-  modifier in front of the return type of the function. After that,
-  the signature of the function isn't special - in particular, the
-  pointers we pass in should point to memory on the device, but this
-  is not indicated by the function's signature.
+  This is the GPU kernel for matrix multiplication. Input parameters *a and *b
+  are the matrices to be multiplied. *c stores the answer matrix. n is the one 
+  side dimension of any of the square matrices
  */
-__global__ void add(int n, int *a, int *b, int *c) {
+__global__ void matrixMult(int *a, int *b, int *c, int n) {
   //initialize variables used for shared memory cache. set Index to 
   int cacheSize, cacheIndex;
 
