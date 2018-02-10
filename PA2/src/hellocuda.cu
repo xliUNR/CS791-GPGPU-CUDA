@@ -174,75 +174,18 @@ int main() {
 
   float elapsedTime;
   cudaEventElapsedTime( &elapsedTime, start, end );
-
   
-  //check to make sure both matrices match each other
-  for (int i = 0; i < matrixDim; ++i){
-    for(int j = 0; j < matrixDim; ++j){
-	
-      int offset = i * matrixDim + j;
-	
-      /*if (*(matC + offset) != *(cpuC + offset) ) {
-      std::cerr << "Oh no! Something went wrong. You should check your cuda install and your GPU. :(" << std::endl;
-      
-      // clean up events - we should check for error codes here.
-      cudaEventDestroy( start );
-      cudaEventDestroy( end );
-      cudaEventDestroy( hstart );
-      cudaEventDestroy( hend );
-
-      // clean up device pointers - just like free in C. We don't have
-      // to check error codes for this one.
-      cudaFree(matA);
-      cudaFree(matB);
-      cudaFree(matC);
-      exit(1);
-      }*/
-      std::cout << *(matC + offset);
-    }   
-    std::cout << std::endl; 
-  }
-std::cout << "CPU matrix: " << std::endl;
-  for (int i = 0; i < matrixDim; ++i){
-    for(int j = 0; j < matrixDim; ++j){
-  
-      int offset = i * matrixDim + j;
-  
-      /*if (*(matC + offset) != *(cpuC + offset) ) {
-      std::cerr << "Oh no! Something went wrong. You should check your cuda install and your GPU. :(" << std::endl;
-      
-      // clean up events - we should check for error codes here.
-      cudaEventDestroy( start );
-      cudaEventDestroy( end );
-      cudaEventDestroy( hstart );
-      cudaEventDestroy( hend );
-
-      // clean up device pointers - just like free in C. We don't have
-      // to check error codes for this one.
-      cudaFree(matA);
-      cudaFree(matB);
-      cudaFree(matC);
-      exit(1);
-      }*/
-      std::cout << *(cpuC + offset);
-    }   
-    std::cout << std::endl; 
-  }
-
-  /*
-    Let's let the user know that everything is ok and then display
-    some information about the times we recorded above.
-   */
-  std::cout << "Yay! Your program's results are correct." << std::endl;
+  //print out program stats
   std::cout << "Your program took: " << elapsedTime << " ms." << std::endl;
   std::cout << "The CPU took: " << cpuTime << "ms " << std::endl;
 
-  // Cleanup in the event of success.
+  // Cleanup timing variables.
   cudaEventDestroy( start );
   cudaEventDestroy( end );
   cudaEventDestroy( hstart );
   cudaEventDestroy( hend );
-
+  
+  //free memory
   cudaFree(matA);
   cudaFree(matB);
   cudaFree(matC);
