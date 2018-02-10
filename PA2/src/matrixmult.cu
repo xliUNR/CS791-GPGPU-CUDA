@@ -91,6 +91,6 @@ __global__ void matrixMult(int *a, int *b, int *c, int n) {
     /*
       stride over grid
     */ 
-    blockId += gridDim.x; 
+    blockId = blockId + gridDim.x; 
   } 
 }     
