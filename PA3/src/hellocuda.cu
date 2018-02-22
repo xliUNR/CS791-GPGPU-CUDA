@@ -26,7 +26,7 @@ int main(int argc, char const *argv[])
 {
    //initialize variables
    FILE * fp;
-   int rows, cols;
+   int rows, cols, numEmpty;
    float *inData, *partial, *sortArray; 
    char* buffer;
    char* charBuffer;
@@ -54,12 +54,12 @@ int main(int argc, char const *argv[])
    if(fp){
       std::cout << std::endl << "Printing buffer vals: ";
       for(int i = 0; i < rows; i++){
-         //read in first value, discard and put index i instead
-         getdelim(&charBuffer, &len, ' ,',fp);
+         //read in first value, discard and put index i instead as the first column
+         getdelim(&charBuffer, &len, " ," ,fp);
          str = strtok( charBuffer, ",");
          inData[ i*cols ] = i;
 
-         //loop over all columns
+         //loop over all columns and input value into 1D array
          for(int j = 1; j < cols; j++){
             getdelim(&charBuffer, &len, ',',fp);
             str = strtok( charBuffer, ",");
@@ -71,7 +71,13 @@ int main(int argc, char const *argv[])
         std::cout << ' ' << str;
         std::cout << ' ' << "double" << std::strtod(str, NULL);*/
       }
+   //make some missing values (10%), the first 10% of rows
+   numEmpty = (rows <= 10) ? 1: (rows/10);
 
+   for(int i = 0; i < numEmpty; i++){
+       inData[ i*rows+1] = -1;
+   }   
+   
     for(int i = 0; i < rows; i++){
 
       for(int j= 0; j < cols; j++){
