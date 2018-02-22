@@ -44,6 +44,7 @@ int main(int argc, char const *argv[])
    
    //allocate memory for read buffer
    buffer = (char*) malloc(cols*sizeof(float));
+   buffer2 = (char*) malloc(10*sizeof(float));
    //open file and read in data
    fp = fopen("../src/PA3_nrdc_data.csv", "r");
    
@@ -57,6 +58,7 @@ int main(int argc, char const *argv[])
          }
       }*/
      //std::fin.ignore(' '); 
+     std::getline(fp, buffer2, ' ');
      fgets(buffer, cols*sizeof(float), fp).ignore(' ');
      std::cout << std::endl << "This is the string printed: " << buffer;
      str = strtok(buffer, " ,");
@@ -76,5 +78,6 @@ int main(int argc, char const *argv[])
    cudaFree(partial);
    cudaFree(sortArray);
    free(buffer);
+   free(buffer2);
    return 0;
 }
