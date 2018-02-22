@@ -58,11 +58,11 @@ int main(int argc, char const *argv[])
 
          }
       }
-   }*/
+   }
 
    else{
       std::cout << std::endl << "File opening error, please try again";
-   }
+   }*/
    //read in data from file
 
 
