@@ -57,7 +57,7 @@ int main(int argc, char const *argv[])
          //read in first value, discard and put index i instead as the first column
          getdelim(&charBuffer, &len, " ," ,fp);
          str = strtok( charBuffer, ",");
-         inData[ i*cols ] = i;
+         inData[ i*cols ] = (float)i;
 
          //loop over all columns and input value into 1D array
          for(int j = 1; j < cols; j++){
@@ -77,7 +77,7 @@ int main(int argc, char const *argv[])
    for(int i = 0; i < numEmpty; i++){
        inData[ i*rows+1] = -1;
    }   
-   
+
     for(int i = 0; i < rows; i++){
 
       for(int j= 0; j < cols; j++){
