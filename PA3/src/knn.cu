@@ -101,7 +101,7 @@ __global__ void kNN( float *inputMat, float *partialMat, int imputRow,
          }
         
          //stride to next set of blocks
-         blockIdx = blockIdx + gridDim.x;   
+         bidx+=gridDim.x;   
       }
 }      
 
