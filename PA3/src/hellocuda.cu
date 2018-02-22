@@ -63,7 +63,7 @@ int main(int argc, char const *argv[])
          for(int j = 1; j < cols; j++){
             getdelim(&charBuffer, &len, ',',fp);
             str = strtok( charBuffer, ",");
-            nData[ i*cols+j ] = std::strtod(str,NULL);
+            inData[ i*cols+j ] = std::strtod(str,NULL);
          }
 
       
