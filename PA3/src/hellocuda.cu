@@ -43,7 +43,7 @@ int main(int argc, char const *argv[])
    HANDLE_ERROR( cudaMallocManaged( &sortArray, rows*sizeof(float)) );
    
    //allocate memory for read buffer
-   malloc(&buffer, rows*sizeof(float));
+   buffer = (float*) malloc(rows*sizeof(float));
    //open file and read in data
    fp = fopen("PA3_nrdc_data.csv", "r");
    fgets(buffer, rows*sizeof(float), fp);
