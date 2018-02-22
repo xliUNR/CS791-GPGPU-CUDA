@@ -29,7 +29,7 @@ __global__ void kNN( float *inputMat, float *partialMat, int imputIndex,
          tidx = bidx * cols + threadIdx.x + 2;
 
          //Calculate offset of input matrix
-         Emptyoffset = ( bidx * blockDim.x + 2 )*sizeof(int);
+         Emptyoffset = ( bidx * blockDim.x + 2 )*sizeof(float);
          EmptyoffsetIndex = ( bidx * blockDim.x + 2 );
          /*
            test to see if block ( time ) has an empty, if it is empty then threads must idle because their calculation would be useless.
@@ -88,9 +88,8 @@ __global__ void kNN( float *inputMat, float *partialMat, int imputIndex,
                reduceThreads /= 2;   
             }
 
-            /*
-              Square root results of summation to get distance 
-            */
+            
+            //Square root results of summation to get distance             
             partialMat[ (bidx * cols + 2) ] = 
                                    sqrt( partialMat[ (bidx * cols + 2) ] );
          }
@@ -114,24 +113,4 @@ __global__ void distXfer( float* inMat, float* outArr, int rows, int cols ){
 }     
 
 
-
-__global__ void reduceMin( int* inMat){
-   int reduceThreads, reduceIndex;
-   bool swapped;
-   reduceIndex = blockIdx.x * cols + 2;
-
-   reduceThreads = rows / 2;
-
-   while( reduceThreads > 5 )
-      {
-         atomicMin(&(inMat[reduceIndex]), 
-                              inputMat[ reduceIndex + reduceThreads]);
-         __syncthreads();
-         reduceThreads /= 2;
-      }
-}  
-
-///////////////////////////////////////////////////////////////////////////////
-////////////////////////// helper functions ///////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
 
