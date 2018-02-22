@@ -70,7 +70,6 @@ __global__ void kNN( float *inputMat, float *partialMat, int imputRow,
                  caclulate index of partial matrix that the reduction 
                  results are stored in, then sum and stride to next row
                */  
-               reduceIndex = bidx * rows + tidx;
                partialMat[ tidx ] += partialMat[ sumIdx ];
                sumIdx+=blockDim.x;             
             }
