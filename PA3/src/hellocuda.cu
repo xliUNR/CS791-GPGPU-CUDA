@@ -29,7 +29,7 @@ int main(int argc, char const *argv[])
    int rows, cols;
    float *inData, *partial, *sortArray; 
    char* buffer;
-   char* buffer2;
+   char* charBuffer;
    size_t len;
    char* str;
    //ask user for dimension of input data matrix
@@ -46,7 +46,7 @@ int main(int argc, char const *argv[])
    
    //allocate memory for read buffer
    buffer = (char*) malloc(cols*sizeof(double));
-   buffer2 = (char*) malloc(20*sizeof(double));
+   charBuffer = (char*) malloc(20*sizeof(double));
    //open file and read in data
    fp = fopen("../src/PA3_nrdc_data.csv", "r");
    
@@ -55,14 +55,16 @@ int main(int argc, char const *argv[])
       std::cout << std::endl << "Printing buffer vals: ";
       for(int i = 0; i < cols; i++){
          //fgets(buffer, rows*sizeof(float), fp);
+         getdelim(&charBuffer, &len, ',',fp);
+         inData[ i*cols ] = charBuffer;
+         /*for(int j = 0; j < cols; j++){
+            getdelim(&charBuffer) 
+         }*/
 
-         //for(int j = 0; j < cols; j++){
-
-         //}
-
-        getdelim(&buffer2, &len, ',', fp);
+      
         str = strtok( buffer2, ",");
         std::cout << ' ' << str;
+        std::cout << ' ' << std::strtod(str, NULL);
       }
      //std::fin.ignore(' '); 
      
