@@ -12,7 +12,7 @@
 __global__ void kNN( float *inputMat, float *partialMat, int imputRow, 
                                                            int rows, int cols){
    //initialize variables
-   int bidx, tidx, tid, partialIndex, reduceThreads, reduceIndex, sumIdx, Emptyoffset, EmptyoffsetIndex, imputIdx;
+   int bidx, tidx, reduceThreads, reduceIndex, sumIdx, EmptyoffsetIndex,imputIdx;
    float diff;
    /*
      calculate unique index in matrix. This is so that each thread can access
@@ -29,7 +29,6 @@ __global__ void kNN( float *inputMat, float *partialMat, int imputRow,
          tidx = bidx * cols + threadIdx.x + 2;
 
          //Calculate offset of input matrix
-         Emptyoffset = ( bidx * cols + 2 )*sizeof(float);
          EmptyoffsetIndex = ( bidx * blockDim.x + 2 );
          /*
            test to see if block ( time ) has an empty, if it is empty then threads must idle because their calculation would be useless.
@@ -37,7 +36,7 @@ __global__ void kNN( float *inputMat, float *partialMat, int imputRow,
            and squaring. Each element is stored in partial matrix which will
            be later summed and square rooted for the Euclidean distance. 
          */
-         if( (*inputMat + Emptyoffset) > 0 ){
+         if( inputMat[ EmptyoffsetIndex ] > 0 ){
             //loop for thread stride
             while( tidx < cols*(bidx+1) )
                {  
