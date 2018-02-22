@@ -12,7 +12,7 @@
 __global__ void kNN( float *inputMat, float *partialMat, int imputRow, 
                                                            int rows, int cols){
    //initialize variables
-   int bidx, tidx, reduceThreads, reduceIndex, sumIdx, EmptyoffsetIndex,imputIdx;
+   int bidx, tidx, reduceThreads, sumIdx, EmptyoffsetIndex, imputIdx;
    float diff;
    /*
      calculate unique index in matrix. This is so that each thread can access
