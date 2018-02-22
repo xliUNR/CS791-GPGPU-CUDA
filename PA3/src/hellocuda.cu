@@ -62,7 +62,7 @@ int main(int argc, char const *argv[])
          }*/
 
       
-        str = strtok( buffer2, ",");
+        str = strtok( charBuffer, ",");
         std::cout << ' ' << str;
         std::cout << ' ' << std::strtod(str, NULL);
       }
@@ -90,6 +90,6 @@ int main(int argc, char const *argv[])
    cudaFree(partial);
    cudaFree(sortArray);
    free(buffer);
-   free(buffer2);
+   free(charBuffer);
    return 0;
 }
