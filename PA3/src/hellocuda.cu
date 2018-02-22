@@ -28,7 +28,8 @@ int main(int argc, char const *argv[])
    FILE * fp;
    int rows, cols;
    float *inData, *partial, *sortArray; 
-   char* buffer, buffer2;
+   char* buffer;
+   char* buffer2;
    char* str;
    //ask user for dimension of input data matrix
    std::cout << " Please enter amount of rows desired to read in: ";
@@ -44,7 +45,7 @@ int main(int argc, char const *argv[])
    
    //allocate memory for read buffer
    buffer = (char*) malloc(cols*sizeof(float));
-   buffer2 = (char*) malloc(10*sizeof(float));
+   buffer2 = (char*) malloc(20*sizeof(float));
    //open file and read in data
    fp = fopen("../src/PA3_nrdc_data.csv", "r");
    
