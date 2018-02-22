@@ -45,7 +45,7 @@ int main(int argc, char const *argv[])
    //allocate memory for read buffer
    buffer = (char*) malloc(cols*sizeof(float));
    //open file and read in data
-   fp = fopen("PA3_nrdc_data.csv", "r");
+   fp = fopen("../src/PA3_nrdc_data.csv", "r");
    
    //test for successful file opening
    if(fp){
