@@ -53,20 +53,32 @@ int main(int argc, char const *argv[])
    //test for successful file opening
    if(fp){
       std::cout << std::endl << "Printing buffer vals: ";
-      for(int i = 0; i < cols; i++){
-         //fgets(buffer, rows*sizeof(float), fp);
+      for(int i = 0; i < rows; i++){
+         //read in first value, discard and put index i instead
          getdelim(&charBuffer, &len, ',',fp);
          str = strtok( charBuffer, ",");
          inData[ i*cols ] = std::strtod(str,NULL);
-         /*for(int j = 0; j < cols; j++){
-            getdelim(&charBuffer) 
-         }*/
+
+         //loop over all columns
+         for(int j = 1; j < cols; j++){
+            getdelim(&charBuffer, &len, ',',fp);
+            str = strtok( charBuffer, ",");
+            nData[ i*cols+j ] = std::strtod(str,NULL);
+         }
 
       
-        str = strtok( charBuffer, ",");
+        /*str = strtok( charBuffer, ",");
         std::cout << ' ' << str;
-        std::cout << ' ' << "double" << std::strtod(str, NULL);
+        std::cout << ' ' << "double" << std::strtod(str, NULL);*/
       }
+
+    for(int i = 0; i < rows; i++){
+
+      for(int j= 0; j < cols; j++){
+        std::cout << inData[ i*cols +j] << ' ';
+      }
+      std::cout << std::endl;
+    }  
      //std::fin.ignore(' '); 
      
 
