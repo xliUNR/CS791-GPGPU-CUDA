@@ -57,6 +57,7 @@ int main(int argc, char const *argv[])
          }
       }*/
      fgets(buffer, cols*sizeof(float), fp);
+     std::cout << std::endl << "This is the string printed: " << buffer;
      str = strtok(buffer, " ,");
      std::cout << std::endl << "This is the string printed: " << str ;
    }
