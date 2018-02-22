@@ -65,7 +65,7 @@ int main(int argc, char const *argv[])
       
         str = strtok( charBuffer, ",");
         std::cout << ' ' << str;
-        std::cout << ' ' << 'double' << std::strtod(str, NULL);
+        std::cout << ' ' << "double" << std::strtod(str, NULL);
       }
      //std::fin.ignore(' '); 
      
