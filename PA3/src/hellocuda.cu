@@ -52,7 +52,7 @@ int main(int argc, char const *argv[])
    
    //test for successful file opening
    if(fp){
-      std::cout << std::endl << "Printing buffer vals: "
+      std::cout << std::endl << "Printing buffer vals: ";
       for(int i = 0; i < cols; i++){
          //fgets(buffer, rows*sizeof(float), fp);
 
@@ -74,7 +74,6 @@ int main(int argc, char const *argv[])
      std::cout << std::endl << "This is the string printed: " << str ;
      std::cout << std::endl << "This is the buffer2 printed: " << buffer2 ;*/
    }
-
    else{
       std::cout << std::endl << "File opening error, please try again";
    }
