@@ -43,26 +43,27 @@ int main(int argc, char const *argv[])
    HANDLE_ERROR( cudaMallocManaged( &sortArray, rows*sizeof(float)) );
    
    //allocate memory for read buffer
-   buffer = (char*) malloc(cols*sizeof(char));
+   buffer = (char*) malloc(cols*sizeof(float));
    //open file and read in data
    fp = fopen("PA3_nrdc_data.csv", "r");
-   fgets(buffer, cols*sizeof(float), fp);
-   str = strtok(buffer, " ,");
-   std::cout << std::endl << "This is the string printed: " << str ;
+   
    //test for successful file opening
-   /*if(fp){
-      for(int i = 0; i < rows; i++){
+   if(fp){
+      /*for(int i = 0; i < rows; i++){
          fgets(buffer, rows*sizeof(float), fp);
 
          for(int j = 0; j < cols; j++){
 
          }
-      }
+      }*/
+     fgets(buffer, cols*sizeof(float), fp);
+   //str = strtok(buffer, " ,");
+   //std::cout << std::endl << "This is the string printed: " << str ;
    }
 
    else{
       std::cout << std::endl << "File opening error, please try again";
-   }*/
+   }
    //read in data from file
 
 
