@@ -56,7 +56,7 @@ int main(int argc, char const *argv[])
       for(int i = 0; i < cols; i++){
          //fgets(buffer, rows*sizeof(float), fp);
          getdelim(&charBuffer, &len, ',',fp);
-         inData[ i*cols ] = charBuffer;
+         //inData[ i*cols ] = charBuffer;
          /*for(int j = 0; j < cols; j++){
             getdelim(&charBuffer) 
          }*/
