@@ -29,7 +29,7 @@ int main(int argc, char const *argv[])
    int rows, cols;
    float *inData, *partial, *sortArray; 
    char* buffer;
-   char* str;
+   //char* str;
    //ask user for dimension of input data matrix
    std::cout << " Please enter amount of rows desired to read in: ";
    std::cin >> rows;
