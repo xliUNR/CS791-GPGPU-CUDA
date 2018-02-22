@@ -56,8 +56,8 @@ int main(int argc, char const *argv[])
 
          }
       }*/
-     std::fin.ignore(' '); 
-     fgets(buffer, cols*sizeof(float), fp);
+     //std::fin.ignore(' '); 
+     fgets(buffer, cols*sizeof(float), fp).ignore(' ');
      std::cout << std::endl << "This is the string printed: " << buffer;
      str = strtok(buffer, " ,");
      std::cout << std::endl << "This is the string printed: " << str ;
