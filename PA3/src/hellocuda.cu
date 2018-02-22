@@ -60,7 +60,7 @@ int main(int argc, char const *argv[])
          }
       }*/
      //std::fin.ignore(' '); 
-     std::getdelim(&buffer2, &len, ' ', fp);
+     getdelim(&buffer2, &len, ' ', fp);
      fgets(buffer, cols*sizeof(float), fp);
      std::cout << std::endl << "This is the string printed: " << buffer;
      str = strtok(buffer, " ,");
