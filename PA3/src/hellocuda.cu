@@ -31,7 +31,7 @@ int main(int argc, char const *argv[])
    char* buffer;
    char* buffer2;
    size_t len;
-   char* str;
+   //char* str;
    //ask user for dimension of input data matrix
    std::cout << " Please enter amount of rows desired to read in: ";
    std::cin >> rows;
@@ -60,7 +60,7 @@ int main(int argc, char const *argv[])
 
          //}
 
-        getdelim(&buffer2, &len, ' ,', fp);
+        getdelim(&buffer2, &len, ',', fp);
         std::cout << ' ' << buffer2;
       }
      //std::fin.ignore(' '); 
