@@ -9,10 +9,10 @@
   This is the main function that performs the kNN algorithm.
 */
 
-__global__ void kNN( float *inputMat, float *partialMat, int imputIndex, 
+__global__ void kNN( float *inputMat, float *partialMat, int imputRow, 
                                                            int rows, int cols){
    //initialize variables
-   int blockIdx, tidx, partialIndex, reduceThreads, sumIdx;
+   int bidx, tidx, tid, partialIndex, reduceThreads, reduceIndex, sumIdx, Emptyoffset, EmptyoffsetIndex, imputIdx;
    float diff;
    /*
      calculate unique index in matrix. This is so that each thread can access
@@ -29,15 +29,22 @@ __global__ void kNN( float *inputMat, float *partialMat, int imputIndex,
          tidx = bidx * cols + threadIdx.x + 2;
 
          //Calculate offset of input matrix
-         Emptyoffset = ( bidx * blockDim.x + 2 )*sizeof(float);
+         Emptyoffset = ( bidx * cols + 2 )*sizeof(float);
          EmptyoffsetIndex = ( bidx * blockDim.x + 2 );
          /*
            test to see if block ( time ) has an empty, if it is empty then threads must idle because their calculation would be useless.
+           Otherwise, this will calculate the partial results of subtraction
+           and squaring. Each element is stored in partial matrix which will
+           be later summed and square rooted for the Euclidean distance. 
          */
          if( (*inputMat + Emptyoffset) > 0 ){
-            while( tidx < cols )
+            //loop for thread stride
+            while( tidx < cols*(bidx+1) )
                {  
-                  diff = inputMat[imputIndex] - inputMat[tidx];
+                  //calc the column of the row that needs to be imputed
+                  imputIdx = imputRow * cols + tidx - (bidx * cols);
+                  //Calc difference between elements & square
+                  diff = inputMat[imputIdx] - inputMat[tidx];
                   partialMat[tidx] = diff * diff;
                   //stride threads to next set of operations
                   tidx = tidx + blockDim.x;
@@ -58,15 +65,15 @@ __global__ void kNN( float *inputMat, float *partialMat, int imputIndex,
            stride loop for summing. The first block size number of
            threads will hold the sums. Then this will be reduced.
          */
-         while( sumIdx < cols )
+         while( sumIdx < cols*(bidx+1) )
             {  
                /*
                  caclulate index of partial matrix that the reduction 
                  results are stored in, then sum and stride to next row
                */  
                reduceIndex = bidx * rows + tidx;
-               partialMat[ reduceIndex ] += partialMat[ sumIdx ];
-               tidx+=blockDim.x;             
+               partialMat[ tidx ] += partialMat[ sumIdx ];
+               sumIdx+=blockDim.x;             
             }
             __syncthreads();
             reduceThreads /= 2;   
@@ -81,7 +88,7 @@ __global__ void kNN( float *inputMat, float *partialMat, int imputIndex,
                  Have to add 2 b/c of tidx offset due to first two cols being
                  ignored
                */
-               if( tidx < reduceThreads + 2 )
+               if( threadIdx.x < reduceThreads )
                   {
                      partialMat[ tidx ] += partialMat[ tidx + reduceThreads ];
                   }
@@ -97,20 +104,22 @@ __global__ void kNN( float *inputMat, float *partialMat, int imputIndex,
          //stride to next set of blocks
          blockIdx = blockIdx + gridDim.x;   
       }
+}      
 
 /*
   this function will transfer the second col of each row into an array so
   that sorting can be done on CPU
 */
 __global__ void distXfer( float* inMat, float* outArr, int rows, int cols ){
-   int bidx, tidx;
+   int bidx;
    bidx = blockIdx.x;
-   tidx = bidx * cols + threadIdx.x;
+   //grid stride loop
    while( bidx < rows ){
       outArr[ bidx ] = inMat[ (bidx * cols + 2) ];
-      bidx += blockDim.x;
+      bidx += gridDim.x;
    }
 }     
+
 
 
 
