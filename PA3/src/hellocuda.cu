@@ -52,20 +52,27 @@ int main(int argc, char const *argv[])
    
    //test for successful file opening
    if(fp){
-      /*for(int i = 0; i < rows; i++){
-         fgets(buffer, rows*sizeof(float), fp);
+      std::cout << std::endl << "Printing buffer vals: "
+      for(int i = 0; i < cols; i++){
+         //fgets(buffer, rows*sizeof(float), fp);
 
-         for(int j = 0; j < cols; j++){
+         //for(int j = 0; j < cols; j++){
 
-         }
-      }*/
+         //}
+
+        getdelim(&buffer2, &len, ' ,', fp);
+        std::cout << ' ' << buffer2;
+      }
      //std::fin.ignore(' '); 
-     getdelim(&buffer2, &len, ' ,', fp);
+     
+
+
+     /*getdelim(&buffer2, &len, ' ,', fp);
      fgets(buffer, cols*sizeof(char), fp);
      std::cout << std::endl << "This is the string printed: " << buffer;
      str = strtok(buffer, " ,");
      std::cout << std::endl << "This is the string printed: " << str ;
-     std::cout << std::endl << "This is the buffer2 printed: " << buffer2 ;
+     std::cout << std::endl << "This is the buffer2 printed: " << buffer2 ;*/
    }
 
    else{
