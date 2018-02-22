@@ -56,6 +56,7 @@ int main(int argc, char const *argv[])
 
          }
       }*/
+     std::fin.ignore(' '); 
      fgets(buffer, cols*sizeof(float), fp);
      std::cout << std::endl << "This is the string printed: " << buffer;
      str = strtok(buffer, " ,");
@@ -66,7 +67,7 @@ int main(int argc, char const *argv[])
       std::cout << std::endl << "File opening error, please try again";
    }
    //read in data from file
-
+   fclose(fp);
 
 
 
