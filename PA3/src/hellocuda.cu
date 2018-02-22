@@ -28,7 +28,7 @@ int main(int argc, char const *argv[])
    FILE * fp;
    int rows, cols;
    float *inData, *partial, *sortArray; 
-   char* buffer;
+   char* buffer, buffer2;
    char* str;
    //ask user for dimension of input data matrix
    std::cout << " Please enter amount of rows desired to read in: ";
