@@ -9,7 +9,7 @@ all: $(O_FILES)
 hellocuda.o: ../src/hellocuda.cu
 	$(CC) -c ../src/hellocuda.cu -o hellocuda.o $(INCLUDES)
 
-knn.o: ../src/knn.cu.cu
+knn.o: ../src/knn.cu
 	$(CC) -c ../src/knn.cu -o knn.o $(INCLUDES)
 
 clean:
