@@ -55,9 +55,9 @@ int main(int argc, char const *argv[])
       std::cout << std::endl << "Printing buffer vals: ";
       for(int i = 0; i < rows; i++){
          //read in first value, discard and put index i instead
-         getdelim(&charBuffer, &len, ',',fp);
+         getdelim(&charBuffer, &len, ' ,',fp);
          str = strtok( charBuffer, ",");
-         inData[ i*cols ] = std::strtod(str,NULL);
+         inData[ i*cols ] = i;
 
          //loop over all columns
          for(int j = 1; j < cols; j++){
