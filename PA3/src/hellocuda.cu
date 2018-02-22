@@ -8,8 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <knn.h>
-
+#include "knn.h"
 //define error macro
 #define HANDLE_ERROR(func) { GPUAssert((func), __FILE__, __LINE__);}
 inline void GPUAssert( cudaError_t errCode, const char *file, int line, bool abort=true)
