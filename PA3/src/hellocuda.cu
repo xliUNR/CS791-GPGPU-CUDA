@@ -29,7 +29,7 @@ int main(int argc, char const *argv[])
    int rows, cols;
    float *inData, *partial, *sortArray; 
    char* buffer;
-   char buffer2[20];
+   string buffer2;
    char* str;
    //ask user for dimension of input data matrix
    std::cout << " Please enter amount of rows desired to read in: ";
@@ -79,6 +79,6 @@ int main(int argc, char const *argv[])
    cudaFree(partial);
    cudaFree(sortArray);
    free(buffer);
-   free(buffer2);
+   
    return 0;
 }
