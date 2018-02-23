@@ -64,7 +64,7 @@ int main(int argc, char const *argv[])
       //std::cout << std::endl << "Printing buffer vals: ";
       for(int i = 0; i < rows; i++){
          //read in first value, discard and put index i instead as the first column
-         getdelim(&charBuffer, &len, ' ,' ,fp);
+         getdelim(&charBuffer, &len, " ," ,fp);
          str = strtok( charBuffer, ",");
          std::cout << str;
          inData[ i*cols ] = (float)i;
