@@ -21,12 +21,12 @@ inline void GPUAssert( cudaError_t errCode, const char *file, int line, bool abo
          }
     }
 //Define compare function used for qsort
-/*int compareFunc( const void *a, const void *b){
+int compareFunc( const void *a, const void *b){
   float *x = (float*)a;
   float *y = (float*)b;
   if( *x < *y ) return -1;
   else if(*x > *y) return 1; return 0;
-}*/
+}
 ///////////////////////////////////////////////////////////////////////////////
 //main function
 int main(int argc, char const *argv[])
