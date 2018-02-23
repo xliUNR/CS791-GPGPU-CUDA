@@ -179,7 +179,7 @@ int main(int argc, char const *argv[])
         to be imputed with every other row and returns a partial matrix with 
         distances stored in the second col of each row 
       */  
-      knnDist<<<grid,block>>>(inData, partial, i, rows, cols);
+      knnDist<<<grid,2>>>(inData, partial, i, rows, cols);
       //error checking for kernel call
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
