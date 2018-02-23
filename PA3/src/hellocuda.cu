@@ -162,7 +162,7 @@ int main(int argc, char const *argv[])
    cudaFree(sortArray);
    
    free(charBuffer);
-   free(CPUsortArr);
+   //free(CPUsortArr);
    return 0;
 }
 
