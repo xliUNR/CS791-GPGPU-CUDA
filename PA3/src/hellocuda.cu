@@ -48,9 +48,9 @@ int main(int argc, char const *argv[])
    std::cin >> cols;
 
    //allocate Unified memory for input data storage
-   HANDLE_ERROR( cudaMallocManaged( &inData, rows*cols*sizeof(float)) );
+   /*HANDLE_ERROR( cudaMallocManaged( &inData, rows*cols*sizeof(float)) );
    HANDLE_ERROR( cudaMallocManaged( &partial, rows*cols*sizeof(float)) );
-   HANDLE_ERROR( cudaMallocManaged( &sortArray, rows*sizeof(float)) );
+   HANDLE_ERROR( cudaMallocManaged( &sortArray, rows*sizeof(float)) );*/
    
    //allocate CPU memory
    charBuffer = (char*) malloc(sizeof(float));
@@ -155,9 +155,9 @@ int main(int argc, char const *argv[])
 
 
    //free memory
-   cudaFree(inData);
+   /*cudaFree(inData);
    cudaFree(partial);
-   cudaFree(sortArray);
+   cudaFree(sortArray);*/
    
    free(charBuffer);
    //free(CPUsortArr);
