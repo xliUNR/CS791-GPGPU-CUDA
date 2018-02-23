@@ -41,12 +41,17 @@ int main(int argc, char const *argv[])
    char* str;
    size_t len;
    
+   
    //ask user for dimension of input data matrix
    std::cout << " Please enter amount of rows desired to read in: ";
    std::cin >> rows;
    
    std::cout << " Please enter amount of columns desired to read in: ";
    std::cin >> cols;
+
+   //declare grid structure
+   dim3 grid(32);
+   dim3 block((cols+32/32));
 
    //allocate Unified memory for input data storage
    HANDLE_ERROR( cudaMallocManaged( &inData, rows*cols*sizeof(float)) );
