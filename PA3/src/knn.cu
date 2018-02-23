@@ -83,7 +83,7 @@ __global__ void knnDist( float *inputMat, float *partialMat, int imputRow,
                  results are stored in, then sum and stride to next row
                */  
                partialMat[ tidx ] += partialMat[ sumIdx ];
-               printf("loop sum id: %d \n", sumIdx);
+               printf("loop sum id: %d and tidx %d \n", sumIdx, tidx);
                sumIdx+=blockDim.x;             
             }
             __syncthreads();  
