@@ -153,8 +153,8 @@ int main(int argc, char const *argv[])
       //divide by 5 to get average
       avg /=5;
       //Print results
-     /*std::cout << std::endl << "Imputed Index: " << i; 
-      std::cout << "  Imputed Value: " << avg; */
+      std::cout << std::endl << "Imputed Index: " << i; 
+      std::cout << "  Imputed Value: " << avg; 
     }
   }
   //stop timing
@@ -213,9 +213,9 @@ int main(int argc, char const *argv[])
       }
       //divide by 5 to get average
       avg /=5;
-      //write back into array
-      /*std::cout << std::endl << "GPU Imputed Index: " << i; 
-      std::cout << "  GPU Imputed Value: " << avg; */
+      //print results
+      std::cout << std::endl << "GPU Imputed Index: " << i; 
+      std::cout << "  GPU Imputed Value: " << avg; 
     }
   }
   cudaEventRecord( end, 0 );
