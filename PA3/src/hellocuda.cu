@@ -56,7 +56,7 @@ int main(int argc, char const *argv[])
    //allocate CPU memory
    buffer = (char*) malloc(cols*sizeof(double));
    charBuffer = (char*) malloc(20*sizeof(double));
-   CPUsortArr = (float*) malloc(rows*sizeof(float));
+   //CPUsortArr = (float*) malloc(rows*sizeof(float));
    //open file and read in data
    fp = fopen("../src/PA3_nrdc_data.csv", "r");
    
@@ -163,7 +163,7 @@ int main(int argc, char const *argv[])
    cudaFree(sortArray);
    free(buffer);
    free(charBuffer);
-   free(CPUsortArr);
+   //free(CPUsortArr);
    return 0;
 }
 
