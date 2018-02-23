@@ -129,6 +129,10 @@ int main(int argc, char const *argv[])
         //store accum value. 0 for rows w/ holes. Distance for other
         CPUsortArr[ j ] = accum;
       }
+      std::cout << "CPUsortArr: "
+      for(int m = 0; m < rows; m++){
+        std::cout << CPUsortArr[m] << std::endl; 
+      }
       //use qsort from stdlib. 
       qsort(CPUsortArr, rows, sizeof(float), compareFunc);
       //Then find k = 5 nearest neighbors. Average then
