@@ -124,8 +124,8 @@ int main(int argc, char const *argv[])
             //debug printing
             std::cout <<" print partial result (sub) " << partResult << std::endl;
 
-            std::cout << inData[ i*cols +k ] << " - " << inData[j*cols+k];
-            std::cout << "i = " << i <<std::endl << "j = " << j;
+            std::cout << inData[ i*cols +k ] << " - " << inData[j*cols+k] << std::endl;
+            std::cout << " i = " << i <<std::endl << " j = " << j << " k = " << k;
 
             partResult *= partResult;
             accum += partResult;
