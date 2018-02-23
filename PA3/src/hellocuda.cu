@@ -30,9 +30,9 @@ int main(int argc, char const *argv[])
 {
    //initialize variables
    FILE * fp;
-   int rows, cols, numEmpty, knnCtr;
+   int rows, cols, numEmpty, knnCtr, knnIdx;
    float *inData, *partial, *sortArray, *CPUsortArr;
-   float accum, partResult; 
+   float accum, partResult, avg; 
    char* buffer;
    char* charBuffer;
    char* str;
@@ -120,20 +120,38 @@ for(int i=0; i < rows; i++){
         //square root accumulator to get distance
         accum = sqrt(accum);
       }
-      //store accum value. 0 for rows w/ holes.
+      //store accum value. 0 for rows w/ holes. Distance for other
       CPUsortArr[ j ] = accum;
     }
     //use qsort from stdlib. 
     qsort(CPUsortArr, rows, sizeof(float), compareFunc);
     //Then find k = 5 nearest neighbors. Average then
     //deposit back into inMat.
-    //while( )
+    knnCtr = 0;
+    knnIdx = 0;
+    avg = 0;
+    while( knnCtr < 5 && knnIdx < rows ){
+      if( CPUsortArr[ knnIdx ] != 0 ){
+        avg+=CPUsortArr[ knnIdx ];
+        knnCtr++;
+      }
+      knnIdx++;
+    }
+    //divide by 5 to get average
+    avg /=5;
+    //write back into array
+    std::cout << std::endl << 'Imputed Value: ' << avg; 
   }
 }
 
 //////////////////////////////////////////////////////////////////////////
 /////////////// parallel Implementation  /////////////////////////////////     
+//loop over all rows
+for(int i=0; i < rows; i++){
+  if( inMat[ i*cols + 2] == -1){
 
+  }
+}
 
 
    //free memory
