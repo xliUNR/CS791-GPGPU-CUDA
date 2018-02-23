@@ -185,7 +185,7 @@ int main(int argc, char const *argv[])
       HANDLE_ERROR( cudaDeviceSynchronize() );
 
       //this kernel transfers distance into 1D array for sorting on CPU
-      distXfer<<<grid,32>>>(partial, GPUsortArr, rows, cols);
+      distXfer<<<grid,1>>>(partial, GPUsortArr, rows, cols);
       //error checking for kernel call
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
