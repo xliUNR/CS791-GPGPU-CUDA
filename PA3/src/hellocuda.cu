@@ -61,7 +61,7 @@ int main(int argc, char const *argv[])
    
    //test for successful file opening
    if(fp){
-      //std::cout << std::endl << "Printing buffer vals: ";
+      std::cout << std::endl << "Printing buffer vals: ";
       for(int i = 0; i < rows; i++){
          //read in first value, discard and put index i instead as the first column
          getdelim(&charBuffer, &len, ',' ,fp);
@@ -84,6 +84,7 @@ int main(int argc, char const *argv[])
       exit(1);
       
    }
+  //close file 
   fclose(fp); 
 
    //make some missing values (10%), the first 10% of rows
@@ -92,7 +93,7 @@ int main(int argc, char const *argv[])
    for(int i = 0; i < numEmpty; i++){
        inData[ i*rows+1] = -1;
    }   
-
+   std::cout << std::endl;
     for(int i = 0; i < rows; i++){
 
       for(int j= 0; j < cols; j++){
