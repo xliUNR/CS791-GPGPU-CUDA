@@ -33,7 +33,7 @@ int main(int argc, char const *argv[])
 {
    //initialize variables
    FILE * fp;
-   int rows, cols, numEmpty knnCtr, knnIdx;
+   int rows, cols, numEmpty, knnCtr, knnIdx;
    float *inData, *partial, *sortArray, *CPUsortArr;
    float accum, partResult, avg; 
    char* charBuffer;
