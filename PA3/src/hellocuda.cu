@@ -75,21 +75,21 @@ int main(int argc, char const *argv[])
             str = strtok( charBuffer, ",");
             //inData[ i*cols+j ] = std::strtod(str,NULL);
          }
-        fclose(fp); 
+        
       }
    }
    //else print error message and exit 
    else{
       std::cout << std::endl << "File opening error, please try again";
       exit(1);
-      fclose(fp);
+      
    }
-
+  fclose(fp); 
 
    //make some missing values (10%), the first 10% of rows
    numEmpty = (rows <= 10) ? 1: (rows/10);
 
-  /* for(int i = 0; i < numEmpty; i++){
+   for(int i = 0; i < numEmpty; i++){
        inData[ i*rows+1] = -1;
    }   
 
@@ -99,7 +99,7 @@ int main(int argc, char const *argv[])
         std::cout << inData[ i*cols +j] << ' ';
       }
       std::cout << std::endl;
-    }  */      
+    }       
 //////////////////////////////////////////////////////////////////////////
 //////////////////// sequential Implementation  //////////////////////////
 //outermost loop is to loop over all rows
