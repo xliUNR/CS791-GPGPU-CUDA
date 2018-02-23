@@ -132,7 +132,7 @@ int main(int argc, char const *argv[])
         CPUsortArr[ j ] = accum;
       }
       //printing CPUsort Arr
-      td::cout << std::endl << "CPUsortArr for row" << i << ": ";
+      std::cout << std::endl << "CPUsortArr for row" << i << ": ";
       for(int m = 0; m < rows; m++){
         std::cout << CPUsortArr[m] << std::endl; 
       }
