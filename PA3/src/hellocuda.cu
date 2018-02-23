@@ -81,6 +81,7 @@ int main(int argc, char const *argv[])
             str = strtok( charBuffer, ",");
             inData[ i*cols+j ] = std::strtod(str,NULL);
            }
+         //skip until endline  
          getdelim(&endlineBuffer, &len, '\n', fp); 
         }
      }
@@ -121,13 +122,6 @@ int main(int argc, char const *argv[])
           //accumulator
           for(int k = 2; k < cols; k++){
             partResult = inData[ i*cols + k ] - inData[ j*cols + k ];
-
-            //debug printing
-            std::cout <<" print partial result (sub) " << partResult << std::endl;
-
-            std::cout << inData[ i*cols +k ] << " - " << inData[j*cols+k] << std::endl;
-            std::cout << " i = " << i <<std::endl << " j = " << j << " k = " << k;
-
             partResult *= partResult;
             accum += partResult;
           }
@@ -136,11 +130,6 @@ int main(int argc, char const *argv[])
         }
         //store accum value. 0 for rows w/ holes. Distance for other
         CPUsortArr[ j ] = accum;
-      }
-      //printing CPUsort Arr
-      std::cout << "CPUsortArr: ";
-      for(int m = 0; m < rows; m++){
-        std::cout << CPUsortArr[m] << std::endl; 
       }
       //use qsort from stdlib. 
       qsort(CPUsortArr, rows, sizeof(float), compareFunc);
@@ -195,11 +184,7 @@ int main(int argc, char const *argv[])
       //error checking for kernel call
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
-      //print GPU sort array
-      std::cout << "GPUsortArr: ";
-      for(int m = 0; m < rows; m++){
-        std::cout << GPUsortArr[m] << std::endl; 
-      }
+      
       //sort array
       qsort(GPUsortArr, rows, sizeof(float), compareFunc);
       //Then find k = 5 nearest neighbors. Average then
