@@ -56,7 +56,7 @@ __global__ void knnDist( float *inputMat, float *partialMat, int imputRow,
                   diff = inputMat[imputIdx] - inputMat[tidx];
                   //print impute idx
                   //printf("Impute index %d and tidx %d yield %f and %f \n", imputIdx, tidx, 
-                                    inputMat[imputIdx], inputMat[tidx]);
+                                    //inputMat[imputIdx], inputMat[tidx]);
                   //printf("BID IS: %d \n", bidx);
                   
                   partialMat[tidx] = diff * diff;
@@ -121,7 +121,6 @@ __global__ void knnDist( float *inputMat, float *partialMat, int imputRow,
 */
 __global__ void distXfer( float* inMat, float* outArr, int rows, int cols ){
    int tid;
-   float temp;
    //bidx = blockIdx.x;
    tid = blockIdx.x*gridDim.x + threadIdx.x;
    
