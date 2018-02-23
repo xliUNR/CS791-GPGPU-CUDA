@@ -132,7 +132,7 @@ int main(int argc, char const *argv[])
         CPUsortArr[ j ] = accum;
       }
       //printing CPUsort Arr
-      std::cout << std::endl << "CPUsortArr: ";
+      td::cout << std::endl << "CPUsortArr for row" << i << ": ";
       for(int m = 0; m < rows; m++){
         std::cout << CPUsortArr[m] << std::endl; 
       }
@@ -194,7 +194,7 @@ int main(int argc, char const *argv[])
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
       //print GPU sort array
-      std::cout << std::endl << "GPUsortArr: ";
+      std::cout << std::endl << "GPUsortArr for row" << i << ": ";
       for(int m = 0; m < rows; m++){
         std::cout << GPUsortArr[m] << std::endl; 
       }
