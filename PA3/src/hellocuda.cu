@@ -39,6 +39,7 @@ int main(int argc, char const *argv[])
    float accum, partResult, avg; 
    char* charBuffer;
    char* str;
+   char* endlineBuffer;
    size_t len;
    
    
@@ -235,6 +236,7 @@ int main(int argc, char const *argv[])
    cudaFree(partial);
    cudaFree(GPUsortArr);
    free(charBuffer);
+   free(endlineBuffer);
    free(CPUsortArr);
    return 0;
 }
