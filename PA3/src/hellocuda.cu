@@ -104,7 +104,7 @@ int main(int argc, char const *argv[])
 //////////////////////////////////////////////////////////////////////////
 //////////////////// sequential Implementation  //////////////////////////
 //outermost loop is to loop over all rows
-for(int i=0; i < rows; i++){
+/*for(int i=0; i < rows; i++){
   //look for columns that are missing value, which is denoted by a -1
   if( inData[ i*cols + 1] == -1 ){
     //loop over all rows again for nearest neighbor calc
@@ -145,7 +145,7 @@ for(int i=0; i < rows; i++){
     //write back into array
     std::cout << std::endl << "Imputed Value: " << avg; 
   }
-}
+}*/
 
 //////////////////////////////////////////////////////////////////////////
 /////////////// parallel Implementation  /////////////////////////////////     
