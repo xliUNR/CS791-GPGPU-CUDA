@@ -48,9 +48,9 @@ int main(int argc, char const *argv[])
    std::cin >> cols;
 
    //allocate Unified memory for input data storage
-   /*HANDLE_ERROR( cudaMallocManaged( &inData, rows*cols*sizeof(float)) );
+   HANDLE_ERROR( cudaMallocManaged( &inData, rows*cols*sizeof(float)) );
    HANDLE_ERROR( cudaMallocManaged( &partial, rows*cols*sizeof(float)) );
-   HANDLE_ERROR( cudaMallocManaged( &sortArray, rows*sizeof(float)) );*/
+   HANDLE_ERROR( cudaMallocManaged( &sortArray, rows*sizeof(float)) );
    
    //allocate CPU memory
    charBuffer = (char*) malloc(sizeof(float));
@@ -65,7 +65,7 @@ int main(int argc, char const *argv[])
          //read in first value, discard and put index i instead as the first column
          getdelim(&charBuffer, &len, ',' ,fp);
          str = strtok( charBuffer, ",");
-         inData[ i*cols ] = (float)i;
+         //inData[ i*cols ] = (float)i;
 
          //loop over all columns and input value into 1D array
          for(int j = 1; j < cols; j++){
