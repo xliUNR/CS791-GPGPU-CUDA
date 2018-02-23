@@ -71,6 +71,7 @@ __global__ void knnDist( float *inputMat, float *partialMat, int imputRow,
            element belonging to other thread. 
          */
          sumIdx = tidx + blockDim.x;
+         printf("INIT SUM ID: %d \n", sumIdx);
          /*
            stride loop for summing. The first block size number of
            threads will hold the sums. Then this will be reduced.
@@ -82,6 +83,7 @@ __global__ void knnDist( float *inputMat, float *partialMat, int imputRow,
                  results are stored in, then sum and stride to next row
                */  
                partialMat[ tidx ] += partialMat[ sumIdx ];
+               printf("loop sum id: %d \n", sumIdx);
                sumIdx+=blockDim.x;             
             }
             __syncthreads();  
