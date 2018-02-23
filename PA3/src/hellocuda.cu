@@ -54,6 +54,7 @@ int main(int argc, char const *argv[])
    
    //allocate CPU memory
    charBuffer = (char*) malloc(sizeof(float));
+   str = (char*) malloc(sizeof(float));
    //CPUsortArr = (float*) malloc(rows*sizeof(float));
    //open file and read in data
    fp = fopen("../src/PA3_nrdc_data.csv", "r");
@@ -65,6 +66,7 @@ int main(int argc, char const *argv[])
          //read in first value, discard and put index i instead as the first column
          getdelim(&charBuffer, &len, ',' ,fp);
          str = strtok( charBuffer, ",");
+         std::cout << str;
          //inData[ i*cols ] = (float)i;
 
          //loop over all columns and input value into 1D array
