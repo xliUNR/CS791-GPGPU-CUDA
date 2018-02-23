@@ -132,10 +132,10 @@ int main(int argc, char const *argv[])
         CPUsortArr[ j ] = accum;
       }
       //printing CPUsort Arr
-      /*std::cout << "CPUsortArr: ";
+      std::cout << "CPUsortArr: ";
       for(int m = 0; m < rows; m++){
         std::cout << CPUsortArr[m] << std::endl; 
-      }*/
+      }
       //use qsort from stdlib. 
       qsort(CPUsortArr, rows, sizeof(float), compareFunc);
       //Then find k = 5 nearest neighbors. Average then
@@ -175,25 +175,29 @@ int main(int argc, char const *argv[])
     //If row needs to be imputed, will execute GPU kernel
     if( inData[ i*cols + 1] == -1){
       /*
-        kernel call to knnDist which calculates the distance between the row 
-        to be imputed with every other row and returns a partial matrix with 
-        distances stored in the second col of each row 
+        kernel call to knnDist which calculates the partial distance between 
+        the row to be imputed with every other row and returns a partial matrix with 
+        distances stored in the second col of each row. This value still needs to be
+        square rooted to get the distance. 
       */  
       knnDist<<<grid,2>>>(inData, partial, i, rows, cols);
       //error checking for kernel call
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
 
-      //this kernel transfers distance into 1D array for sorting on CPU
-      distXfer<<<grid,1>>>(partial, GPUsortArr, rows, cols);
+      /*
+        this kernel squares results stored in col 2 of partial and transfers distance 
+        into 1D array for sorting on CPU
+      */  
+      distXfer<<<grid,32>>>(partial, GPUsortArr, rows, cols);
       //error checking for kernel call
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
       //print GPU sort array
-      /*std::cout << "GPUsortArr: ";
+      std::cout << "GPUsortArr: ";
       for(int m = 0; m < rows; m++){
         std::cout << GPUsortArr[m] << std::endl; 
-      }*/
+      }
       //sort array
       qsort(GPUsortArr, rows, sizeof(float), compareFunc);
       //Then find k = 5 nearest neighbors. Average then

@@ -6,7 +6,10 @@
 #include "knn.h"
 
 /*
-  This is the main function that performs the kNN algorithm.
+  This is the main function that performs the kNN algorithm. This will check if rows
+  has holes, if not it will perform a partial distance calculation with the row that 
+  is to be imputed. This calculates the difference between parameters, squares them,
+  sums then stores in col 2 of each row.
 */
 
 __global__ void knnDist( float *inputMat, float *partialMat, int imputRow, 
@@ -34,7 +37,8 @@ __global__ void knnDist( float *inputMat, float *partialMat, int imputRow,
          //Calculate offset of 2nd col, which tells whether row has hole or not
          EmptyoffsetIndex = ( bidx * cols + 1 );
          /*
-           test to see if block ( time ) has an empty, if it is empty then threads must idle because their calculation would be useless.
+           test to see if block ( time ) has an empty, if it is empty then threads 
+           must idle because their calculation would be useless.
            Otherwise, this will calculate the partial results of subtraction
            and squaring. Each element is stored in partial matrix which will
            be later summed and square rooted for the Euclidean distance. 
@@ -51,9 +55,9 @@ __global__ void knnDist( float *inputMat, float *partialMat, int imputRow,
                   //Calc difference between elements & square
                   diff = inputMat[imputIdx] - inputMat[tidx];
                   //print impute idx
-                  printf("Impute index %d and tidx %d yield %f and %f \n", imputIdx, tidx, 
+                  //printf("Impute index %d and tidx %d yield %f and %f \n", imputIdx, tidx, 
                                     inputMat[imputIdx], inputMat[tidx]);
-                  printf("BID IS: %d \n", bidx);
+                  //printf("BID IS: %d \n", bidx);
                   
                   partialMat[tidx] = diff * diff;
                   //stride threads to next set of operations
@@ -71,7 +75,7 @@ __global__ void knnDist( float *inputMat, float *partialMat, int imputRow,
            element belonging to other thread. 
          */
          sumIdx = tidx + blockDim.x;
-         printf("INIT SUM ID: %d \n", sumIdx);
+         //printf("INIT SUM ID: %d \n", sumIdx);
          /*
            stride loop for summing. The first block size number of
            threads will hold the sums. Then this will be reduced.
@@ -83,7 +87,7 @@ __global__ void knnDist( float *inputMat, float *partialMat, int imputRow,
                  results are stored in, then sum and stride to next row
                */  
                partialMat[ tidx ] += partialMat[ sumIdx ];
-               printf("loop sum id: %d and tidx %d \n", sumIdx, tidx);
+               //printf("loop sum id: %d and tidx %d \n", sumIdx, tidx);
                sumIdx+=blockDim.x;             
             }
             __syncthreads();  
@@ -102,26 +106,31 @@ __global__ void knnDist( float *inputMat, float *partialMat, int imputRow,
                reduceThreads /= 2;   
             }            
             //Square root results of summation to get distance             
-            partialMat[ (bidx * cols + 2) ] = 
-                                   sqrt( partialMat[ (bidx * cols + 2) ] );
+            //partialMat[ (bidx * cols + 2) ] = 
+                                   //sqrt( partialMat[ (bidx * cols + 2) ] );
          }
-        
+
          //stride to next set of blocks
          bidx+=gridDim.x;   
       }
 }      
 
 /*
-  this function will transfer the second col of each row into an array so
-  that sorting can be done on CPU
+  this function will calculate the square root , thereby finishing the distance calculation 
+  and transfer the second col of each row into an array so that sorting can be done on CPU
 */
 __global__ void distXfer( float* inMat, float* outArr, int rows, int cols ){
-   int bidx;
-   bidx = blockIdx.x;
+   int tid;
+   float temp;
+   //bidx = blockIdx.x;
+   tid = blockIdx.x*gridDim.x + threadIdx.x;
+   
    //grid stride loop
-   while( bidx < rows ){
-      outArr[ bidx ] = inMat[ (bidx * cols + 2) ];
-      bidx += gridDim.x;
+   while( tid < rows ){
+      //inMat[ bidx*cols+2 ] = sqrt( inMat[])
+      outArr[ tid ] = sqrt( inMat[ (tid * cols + 2) ]);
+      //bidx += gridDim.x;
+      tid+=gridDim.x*blockDim.x;
    }
 }     
 
