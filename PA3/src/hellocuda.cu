@@ -118,11 +118,9 @@ for(int i=0; i < rows; i++){
           partResult = inData[ i*cols + k ] - inData[ j*cols + k ];
           partResult *= partResult;
           accum += partResult;
-          std::cout << std::endl << " accumulator val: " << accum;
         }
         //square root accumulator to get distance
         accum = sqrt(accum);
-        std::cout << std::endl << " square root: " << accum;
       }
       //store accum value. 0 for rows w/ holes. Distance for other
       CPUsortArr[ j ] = accum;
@@ -144,7 +142,9 @@ for(int i=0; i < rows; i++){
     //divide by 5 to get average
     avg /=5;
     //write back into array
+    std::cout << std::endl << "Imputed Index: " << i; 
     std::cout << std::endl << "Imputed Value: " << avg; 
+
   }
 }
 
