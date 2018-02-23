@@ -53,8 +53,8 @@ int main(int argc, char const *argv[])
    HANDLE_ERROR( cudaMallocManaged( &sortArray, rows*sizeof(float)) );
    
    //allocate CPU memory
-   charBuffer = (char*) malloc(sizeof(float));
-   str = (char*) malloc(sizeof(float));
+   charBuffer = (char*) malloc(20*sizeof(double));
+   
    //CPUsortArr = (float*) malloc(rows*sizeof(float));
    //open file and read in data
    fp = fopen("../src/PA3_nrdc_data.csv", "r");
@@ -64,7 +64,7 @@ int main(int argc, char const *argv[])
       //std::cout << std::endl << "Printing buffer vals: ";
       for(int i = 0; i < rows; i++){
          //read in first value, discard and put index i instead as the first column
-         getdelim(&charBuffer, &len, ',' ,fp);
+         getdelim(&charBuffer, &len, ' ,' ,fp);
          str = strtok( charBuffer, ",");
          std::cout << str;
          //inData[ i*cols ] = (float)i;
@@ -73,7 +73,7 @@ int main(int argc, char const *argv[])
          for(int j = 1; j < cols; j++){
             getdelim(&charBuffer, &len, ',',fp);
             str = strtok( charBuffer, ",");
-            inData[ i*cols+j ] = std::strtod(str,NULL);
+            //inData[ i*cols+j ] = std::strtod(str,NULL);
          }
         fclose(fp); 
       }
