@@ -60,7 +60,7 @@ int main(int argc, char const *argv[])
    
    //allocate CPU memory
    charBuffer = (char*) malloc(20*sizeof(double));
-   
+   endlineBuffer = (char*) malloc(100*sizeof(double));
    CPUsortArr = (float*) malloc(rows*sizeof(float));
    //open file and read in data
    fp = fopen("../src/PA3_nrdc_data.csv", "r");
@@ -80,7 +80,7 @@ int main(int argc, char const *argv[])
             str = strtok( charBuffer, ",");
             inData[ i*cols+j ] = std::strtod(str,NULL);
            }
-        
+         getdelim(&endlineBuffer, &len, '\n', fp); 
         }
      }
    //else print error message and exit 
