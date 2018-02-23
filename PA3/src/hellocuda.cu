@@ -36,7 +36,6 @@ int main(int argc, char const *argv[])
    int rows, cols, numEmpty;//, knnCtr, knnIdx;
    float *inData, *partial, *sortArray;//, *CPUsortArr;
    //float accum, partResult, avg; 
-   char* buffer;
    char* charBuffer;
    char* str;
    size_t len;
@@ -161,9 +160,9 @@ int main(int argc, char const *argv[])
    cudaFree(inData);
    cudaFree(partial);
    cudaFree(sortArray);
-   free(buffer);
+   
    free(charBuffer);
-   //free(CPUsortArr);
+   free(CPUsortArr);
    return 0;
 }
 
