@@ -98,14 +98,6 @@ int main(int argc, char const *argv[])
    for(int i = 0; i < numEmpty; i++){
        inData[ i*rows+1] = -1;
    }   
-   std::cout << std::endl;
-    for(int i = 0; i < rows; i++){
-
-      for(int j= 0; j < cols; j++){
-        std::cout << inData[ i*cols +j] << ' ';
-      }
-      std::cout << std::endl;
-    }       
   //////////////////////////////////////////////////////////////////////////
   //////////////////// sequential Implementation  //////////////////////////
   //make event timing variables
@@ -174,7 +166,7 @@ int main(int argc, char const *argv[])
   //loop over all rows
   for(int i=0; i < rows; i++){
     //If row needs to be imputed, will execute GPU kernel
-    if( inData[ i*cols + 2] == -1){
+    if( inData[ i*cols + 1] == -1){
       /*
         kernel call to knnDist which calculates the distance between the row 
         to be imputed with every other row and returns a partial matrix with 
