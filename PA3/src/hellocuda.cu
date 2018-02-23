@@ -55,7 +55,7 @@ int main(int argc, char const *argv[])
    //allocate CPU memory
    charBuffer = (char*) malloc(20*sizeof(double));
    
-   //CPUsortArr = (float*) malloc(rows*sizeof(float));
+   CPUsortArr = (float*) malloc(rows*sizeof(float));
    //open file and read in data
    fp = fopen("../src/PA3_nrdc_data.csv", "r");
    
