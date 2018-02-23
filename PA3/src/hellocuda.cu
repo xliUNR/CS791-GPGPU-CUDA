@@ -21,8 +21,11 @@ inline void GPUAssert( cudaError_t errCode, const char *file, int line, bool abo
          }
     }
 //Define compare function used for qsort
-float compareFunc( const void *a, const void *b){
-  return( *(float*)a - *(float*)b);
+int compareFunc( const void *a, const void *b){
+  float *x = (float*)a;
+  float *y = (float*)b;
+  if( *x < *y ) return -1;
+  else if(*x > *y) return 1; return 0;
 }
 ///////////////////////////////////////////////////////////////////////////////
 //main function
@@ -147,11 +150,11 @@ for(int i=0; i < rows; i++){
 //////////////////////////////////////////////////////////////////////////
 /////////////// parallel Implementation  /////////////////////////////////     
 //loop over all rows
-for(int i=0; i < rows; i++){
-  if( inMat[ i*cols + 2] == -1){
+/*for(int i=0; i < rows; i++){
+  if( inData[ i*cols + 2] == -1){
 
   }
-}
+}*/
 
 
    //free memory
