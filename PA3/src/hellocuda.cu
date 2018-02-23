@@ -21,12 +21,12 @@ inline void GPUAssert( cudaError_t errCode, const char *file, int line, bool abo
          }
     }
 //Define compare function used for qsort
-int compareFunc( const void *a, const void *b){
+/*int compareFunc( const void *a, const void *b){
   float *x = (float*)a;
   float *y = (float*)b;
   if( *x < *y ) return -1;
   else if(*x > *y) return 1; return 0;
-}
+}*/
 ///////////////////////////////////////////////////////////////////////////////
 //main function
 int main(int argc, char const *argv[])
@@ -34,7 +34,7 @@ int main(int argc, char const *argv[])
    //initialize variables
    FILE * fp;
    int rows, cols, numEmpty, knnCtr, knnIdx;
-   float *inData, *partial, *sortArray, *CPUsortArr;
+   float *inData, *partial, *sortArray, //*CPUsortArr;
    float accum, partResult, avg; 
    char* buffer;
    char* charBuffer;
@@ -54,8 +54,8 @@ int main(int argc, char const *argv[])
    HANDLE_ERROR( cudaMallocManaged( &sortArray, rows*sizeof(float)) );
    
    //allocate CPU memory
-   buffer = (char*) malloc(cols*sizeof(double));
-   charBuffer = (char*) malloc(20*sizeof(double));
+   buffer = (char*) malloc(cols*sizeof(float));
+   charBuffer = (char*) malloc(20*sizeof(float));
    //CPUsortArr = (float*) malloc(rows*sizeof(float));
    //open file and read in data
    fp = fopen("../src/PA3_nrdc_data.csv", "r");
