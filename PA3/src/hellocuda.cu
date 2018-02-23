@@ -120,6 +120,12 @@ int main(int argc, char const *argv[])
           //accumulator
           for(int k = 2; k < cols; k++){
             partResult = inData[ i*cols + k ] - inData[ j*cols + k ];
+
+            //debug printing
+            std::cout <<" print partial result (sub) " << partResult << std::endl;
+
+            std::cout << inData[ i*cols +k ] << " - " << inData[j*cols+k];
+
             partResult *= partResult;
             accum += partResult;
           }
