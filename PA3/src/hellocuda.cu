@@ -32,9 +32,10 @@ int compareFunc( const void *a, const void *b){
 int main(int argc, char const *argv[])
 {
    //initialize variables
+   //file pointer for reading data from file
    FILE * fp;
    int rows, cols, numEmpty, knnCtr, knnIdx;
-   float *inData, *partial, *sortArray, *CPUsortArr;
+   float *inData, *partial, *GPUsortArr, *CPUsortArr;
    float accum, partResult, avg; 
    char* charBuffer;
    char* str;
@@ -50,7 +51,7 @@ int main(int argc, char const *argv[])
    //allocate Unified memory for input data storage
    HANDLE_ERROR( cudaMallocManaged( &inData, rows*cols*sizeof(float)) );
    HANDLE_ERROR( cudaMallocManaged( &partial, rows*cols*sizeof(float)) );
-   HANDLE_ERROR( cudaMallocManaged( &sortArray, rows*sizeof(float)) );
+   HANDLE_ERROR( cudaMallocManaged( &GPUsortArr, rows*sizeof(float)) );
    
    //allocate CPU memory
    charBuffer = (char*) malloc(20*sizeof(double));
@@ -73,16 +74,16 @@ int main(int argc, char const *argv[])
             getdelim(&charBuffer, &len, ',',fp);
             str = strtok( charBuffer, ",");
             inData[ i*cols+j ] = std::strtod(str,NULL);
-         }
+           }
         
-      }
-   }
+        }
+     }
    //else print error message and exit 
    else{
       std::cout << std::endl << "File opening error, please try again";
-      exit(1);
-      
-   }
+      exit(1);    
+    }
+
   //close file 
   fclose(fp); 
 
@@ -100,72 +101,130 @@ int main(int argc, char const *argv[])
       }
       std::cout << std::endl;
     }       
-//////////////////////////////////////////////////////////////////////////
-//////////////////// sequential Implementation  //////////////////////////
-//outermost loop is to loop over all rows
-for(int i=0; i < rows; i++){
-  //look for columns that are missing value, which is denoted by a -1
-  if( inData[ i*cols + 1] == -1 ){
-    //loop over all rows again for nearest neighbor calc
-    for(int j=0; j < rows; j++){
-      //set accumulator to 0. This will store partial results from dist
-      accum = 0;
-      //This time checking for nonempty rows to calculate the
-      if( inData[ j*cols +1 ] != -1){
-        //loop over columns and calculate partial distance then sum into
-        //accumulator
-        for(int k = 2; k < cols; k++){
-          partResult = inData[ i*cols + k ] - inData[ j*cols + k ];
-          partResult *= partResult;
-          accum += partResult;
+  //////////////////////////////////////////////////////////////////////////
+  //////////////////// sequential Implementation  //////////////////////////
+  //make event timing variables
+  cudaEvent_t hstart, hend;
+  cudaEventCreate(&hstart);
+  cudaEventCreate(&hend);
+  cudaEventRecord( hstart, 0 );
+
+  //outermost loop is to loop over all rows
+  for(int i=0; i < rows; i++){
+    //look for columns that are missing value, which is denoted by a -1
+    if( inData[ i*cols + 1] == -1 ){
+      //loop over all rows again for nearest neighbor calc
+      for(int j=0; j < rows; j++){
+        //set accumulator to 0. This will store partial results from dist
+        accum = 0;
+        //This time checking for nonempty rows to calculate the
+        if( inData[ j*cols +1 ] != -1){
+          //loop over columns and calculate partial distance then sum into
+          //accumulator
+          for(int k = 2; k < cols; k++){
+            partResult = inData[ i*cols + k ] - inData[ j*cols + k ];
+            partResult *= partResult;
+            accum += partResult;
+          }
+          //square root accumulator to get distance
+          accum = sqrt(accum);
         }
-        //square root accumulator to get distance
-        accum = sqrt(accum);
+        //store accum value. 0 for rows w/ holes. Distance for other
+        CPUsortArr[ j ] = accum;
       }
-      //store accum value. 0 for rows w/ holes. Distance for other
-      CPUsortArr[ j ] = accum;
-    }
-    //use qsort from stdlib. 
-    qsort(CPUsortArr, rows, sizeof(float), compareFunc);
-    //Then find k = 5 nearest neighbors. Average then
-    //deposit back into inMat.
-    knnCtr = 0;
-    knnIdx = 0;
-    avg = 0;
-    while( knnCtr < 5 && knnIdx < rows ){
-      if( CPUsortArr[ knnIdx ] != 0 ){
-        avg+=CPUsortArr[ knnIdx ];
-        knnCtr++;
+      //use qsort from stdlib. 
+      qsort(CPUsortArr, rows, sizeof(float), compareFunc);
+      //Then find k = 5 nearest neighbors. Average then
+      //deposit back into inMat.
+      knnCtr = 0;
+      knnIdx = 0;
+      avg = 0;
+      while( knnCtr < 5 && knnIdx < rows ){
+        if( CPUsortArr[ knnIdx ] != 0 ){
+          avg+=CPUsortArr[ knnIdx ];
+          knnCtr++;
+        }
+        knnIdx++;
       }
-      knnIdx++;
+      //divide by 5 to get average
+      avg /=5;
+      //write back into array
+      std::cout << std::endl << "Imputed Index: " << i; 
+      std::cout << "  Imputed Value: " << avg; 
     }
-    //divide by 5 to get average
-    avg /=5;
-    //write back into array
-    std::cout << std::endl << "Imputed Index: " << i; 
-    std::cout << std::endl << "Imputed Value: " << avg; 
-
   }
-}
+  //stop timing
+  cudaEventRecord( hend, 0 );
+  cudaEventSynchronize( hend );
+  float cpuTime;
+  cudaEventElapsedTime( &cpuTime, hstart, hend);
+  //////////////////////////////////////////////////////////////////////////
+  /////////////// parallel Implementation /////////////////////////////////   
+  //start event timer for GPU parallel implementation 
+  cudaEvent_t start, end;
+  cudaEventCreate(&start);
+  cudaEventCreate(&end);
+  cudaEventRecord( start, 0 );
 
-//////////////////////////////////////////////////////////////////////////
-/////////////// parallel Implementation  /////////////////////////////////     
-//loop over all rows
-/*for(int i=0; i < rows; i++){
-  if( inData[ i*cols + 2] == -1){
+  //loop over all rows
+  for(int i=0; i < rows; i++){
+    //If row needs to be imputed, will execute GPU kernel
+    if( inData[ i*cols + 2] == -1){
+      /*
+        kernel call to knnDist which calculates the distance between the row 
+        to be imputed with every other row and returns a partial matrix with 
+        distances stored in the second col of each row 
+      */  
+      knnDist<<<grid,block>>>(inData, partial, i, rows, cols);
+      //error checking for kernel call
+      HANDLE_ERROR( cudaPeekAtLastError() );
+      HANDLE_ERROR( cudaDeviceSynchronize() );
 
+      //this kernel transfers distance into 1D array for sorting on CPU
+      distXfer<<<grid,1>>>(partial, sortArray, rows, cols);
+      //error checking for kernel call
+      HANDLE_ERROR( cudaPeekAtLastError() );
+      HANDLE_ERROR( cudaDeviceSynchronize() );
+
+      //sort array
+      qsort(GPUsortArr, rows, sizeof(float), compareFunc);
+      //Then find k = 5 nearest neighbors. Average then
+      //deposit back into inMat.
+      knnCtr = 0;
+      knnIdx = 0;
+      avg = 0;
+      while( knnCtr < 5 && knnIdx < rows ){
+        if( GPUsortArr[ knnIdx ] != 0 ){
+          avg+=GPUsortArr[ knnIdx ];
+          knnCtr++;
+        }
+        knnIdx++;
+      }
+      //divide by 5 to get average
+      avg /=5;
+      //write back into array
+      std::cout << std::endl << "GPU Imputed Index: " << i; 
+      std::cout << "  GPU Imputed Value: " << avg; 
+    }
   }
-}*/
+  cudaEventRecord( end, 0 );
+  cudaEventSynchronize( end );
 
+  float elapsedTime;
+  cudaEventElapsedTime( &elapsedTime, start, end );
+
+  //print out program stats
+  std::cout << "Your program took: " << elapsedTime << " ms." << std::endl;
+  std::cout << "The CPU took: " << cpuTime << "ms " << std::endl;
 
    //free memory
    cudaFree(inData);
    cudaFree(partial);
-   cudaFree(sortArray);
-   
+   cudaFree(GPUsortArr);
    free(charBuffer);
-   //free(CPUsortArr);
+   free(CPUsortArr);
    return 0;
 }
+
 
 

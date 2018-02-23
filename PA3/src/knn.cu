@@ -9,7 +9,7 @@
   This is the main function that performs the kNN algorithm.
 */
 
-__global__ void kNN( float *inputMat, float *partialMat, int imputRow, 
+__global__ void knnDist( float *inputMat, float *partialMat, int imputRow, 
                                                            int rows, int cols){
    //initialize variables
    int bidx, tidx, reduceThreads, sumIdx, EmptyoffsetIndex, imputIdx;
@@ -21,22 +21,25 @@ __global__ void kNN( float *inputMat, float *partialMat, int imputRow,
      indices of each thread.
    */  
    bidx = blockIdx.x;
-   reduceThreads = cols / 2;
+   //reduceThreads = cols / 2;
 
    while( bidx < rows )
       {  
-         //calc thread index in partial matrix
+         /*
+           calc thread index in partial matrix, offset by 2 since first col is
+           id and the second col contains holes 
+         */
          tidx = bidx * cols + threadIdx.x + 2;
 
-         //Calculate offset of input matrix
-         EmptyoffsetIndex = ( bidx * blockDim.x + 2 );
+         //Calculate offset of 2nd col, which tells whether row has hole or not
+         EmptyoffsetIndex = ( bidx * cols + 1 );
          /*
            test to see if block ( time ) has an empty, if it is empty then threads must idle because their calculation would be useless.
            Otherwise, this will calculate the partial results of subtraction
            and squaring. Each element is stored in partial matrix which will
            be later summed and square rooted for the Euclidean distance. 
          */
-         if( inputMat[ EmptyoffsetIndex ] > 0 ){
+         if( inputMat[ EmptyoffsetIndex ] != -1 ){
             //loop for thread stride
             while( tidx < cols*(bidx+1) )
                {  
@@ -73,27 +76,21 @@ __global__ void kNN( float *inputMat, float *partialMat, int imputRow,
                partialMat[ tidx ] += partialMat[ sumIdx ];
                sumIdx+=blockDim.x;             
             }
-            __syncthreads();
-            reduceThreads /= 2;   
+            __syncthreads();  
 
       //thread reduction step
          //reset tidx
          tidx = bidx*cols + threadIdx.x + 2;      
          reduceThreads = blockDim.x / 2;
          while( reduceThreads > 0 )
-            {
-               /*
-                 Have to add 2 b/c of tidx offset due to first two cols being
-                 ignored
-               */
+            { 
                if( threadIdx.x < reduceThreads )
                   {
                      partialMat[ tidx ] += partialMat[ tidx + reduceThreads ];
                   }
+               __syncthreads();   
                reduceThreads /= 2;   
-            }
-
-            
+            }            
             //Square root results of summation to get distance             
             partialMat[ (bidx * cols + 2) ] = 
                                    sqrt( partialMat[ (bidx * cols + 2) ] );
