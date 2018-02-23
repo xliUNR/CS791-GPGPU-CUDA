@@ -157,9 +157,9 @@ int main(int argc, char const *argv[])
 
 
    //free memory
-   /*cudaFree(inData);
+   cudaFree(inData);
    cudaFree(partial);
-   cudaFree(sortArray);*/
+   cudaFree(sortArray);
    
    free(charBuffer);
    //free(CPUsortArr);
