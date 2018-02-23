@@ -53,7 +53,6 @@ int main(int argc, char const *argv[])
    HANDLE_ERROR( cudaMallocManaged( &sortArray, rows*sizeof(float)) );
    
    //allocate CPU memory
-   buffer = (char*) malloc(cols*sizeof(float));
    charBuffer = (char*) malloc(20*sizeof(float));
    //CPUsortArr = (float*) malloc(rows*sizeof(float));
    //open file and read in data
@@ -85,7 +84,7 @@ int main(int argc, char const *argv[])
    }
 
 
-   /*//make some missing values (10%), the first 10% of rows
+   //make some missing values (10%), the first 10% of rows
    numEmpty = (rows <= 10) ? 1: (rows/10);
 
    for(int i = 0; i < numEmpty; i++){
@@ -98,8 +97,7 @@ int main(int argc, char const *argv[])
         std::cout << inData[ i*cols +j] << ' ';
       }
       std::cout << std::endl;
-    }  */
-      
+    }        
 //////////////////////////////////////////////////////////////////////////
 //////////////////// sequential Implementation  //////////////////////////
 //outermost loop is to loop over all rows
