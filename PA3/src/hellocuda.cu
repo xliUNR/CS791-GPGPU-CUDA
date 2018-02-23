@@ -143,7 +143,7 @@ for(int i=0; i < rows; i++){
     //divide by 5 to get average
     avg /=5;
     //write back into array
-    std::cout << std::endl << 'Imputed Value: ' << avg; 
+    std::cout << std::endl << "Imputed Value: " << avg; 
   }
 }
 
