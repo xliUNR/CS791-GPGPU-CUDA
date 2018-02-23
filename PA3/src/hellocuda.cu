@@ -86,7 +86,7 @@ int main(int argc, char const *argv[])
    }
 
 
-   //make some missing values (10%), the first 10% of rows
+   /*//make some missing values (10%), the first 10% of rows
    numEmpty = (rows <= 10) ? 1: (rows/10);
 
    for(int i = 0; i < numEmpty; i++){
@@ -99,7 +99,7 @@ int main(int argc, char const *argv[])
         std::cout << inData[ i*cols +j] << ' ';
       }
       std::cout << std::endl;
-    }  
+    }  */
       
 //////////////////////////////////////////////////////////////////////////
 //////////////////// sequential Implementation  //////////////////////////
