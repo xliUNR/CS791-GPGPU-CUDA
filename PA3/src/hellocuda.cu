@@ -33,9 +33,9 @@ int main(int argc, char const *argv[])
 {
    //initialize variables
    FILE * fp;
-   int rows, cols, numEmpty, knnCtr, knnIdx;
-   float *inData, *partial, *sortArray;//, //*CPUsortArr;
-   float accum, partResult, avg; 
+   int rows, cols, numEmpty;//, knnCtr, knnIdx;
+   float *inData, *partial, *sortArray;//, *CPUsortArr;
+   //float accum, partResult, avg; 
    char* buffer;
    char* charBuffer;
    char* str;
@@ -167,6 +167,4 @@ int main(int argc, char const *argv[])
    return 0;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-////////////////////////  free functions //////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
+
