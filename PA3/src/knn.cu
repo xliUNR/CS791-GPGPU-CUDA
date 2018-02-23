@@ -46,15 +46,14 @@ __global__ void knnDist( float *inputMat, float *partialMat, int imputRow,
                   //calc the column of the row that needs to be imputed
                   imputIdx = imputRow * cols + tidx - (bidx * cols);
 
-                  //print impute idx
-                  std::cout << std::endl << "Impute index: " << imputIdx;
-                  std::cout << std::endl << "tidx: " << tidx;
+                  
+                  
                   //Calc difference between elements & square
                   diff = inputMat[imputIdx] - inputMat[tidx];
-                  std::cout << std::endl << "Impute row val: " << inputMat[imputIdx];
-                  std::cout << std::endl << "other row val: " << inputMat[tidx];
-                  //print diff
-                  std::cout << std::endl << "diff: " << diff;
+                  //print impute idx
+                  printf("Impute index %d and tidx %d yield %f and %f", imputIdx, tidx, 
+                                    inputMat[imputIdx], inputMat[tidx]);
+                  
                   partialMat[tidx] = diff * diff;
                   //stride threads to next set of operations
                   tidx = tidx + blockDim.x;
