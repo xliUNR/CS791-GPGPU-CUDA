@@ -60,7 +60,7 @@ int main(int argc, char const *argv[])
    
    //test for successful file opening
    if(fp){
-      std::cout << std::endl << "Printing buffer vals: ";
+      //std::cout << std::endl << "Printing buffer vals: ";
       for(int i = 0; i < rows; i++){
          //read in first value, discard and put index i instead as the first column
          getdelim(&charBuffer, &len, ',' ,fp);
