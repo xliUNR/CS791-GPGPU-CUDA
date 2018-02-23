@@ -20,18 +20,24 @@ inline void GPUAssert( cudaError_t errCode, const char *file, int line, bool abo
           if (abort) exit(errCode);
          }
     }
-
+//Define compare function used for qsort
+float compareFunc( const void *a, const void *b){
+  return( *(float*)a - *(float*)b);
+}
+///////////////////////////////////////////////////////////////////////////////
 //main function
 int main(int argc, char const *argv[])
 {
    //initialize variables
    FILE * fp;
-   int rows, cols, numEmpty;
-   float *inData, *partial, *sortArray; 
+   int rows, cols, numEmpty, knnCtr;
+   float *inData, *partial, *sortArray, *CPUsortArr;
+   float accum, partResult; 
    char* buffer;
    char* charBuffer;
-   size_t len;
    char* str;
+   size_t len;
+   
    //ask user for dimension of input data matrix
    std::cout << " Please enter amount of rows desired to read in: ";
    std::cin >> rows;
@@ -44,9 +50,10 @@ int main(int argc, char const *argv[])
    HANDLE_ERROR( cudaMallocManaged( &partial, rows*cols*sizeof(float)) );
    HANDLE_ERROR( cudaMallocManaged( &sortArray, rows*sizeof(float)) );
    
-   //allocate memory for read buffer
+   //allocate CPU memory
    buffer = (char*) malloc(cols*sizeof(double));
    charBuffer = (char*) malloc(20*sizeof(double));
+   CPUsortArr = (float*) malloc(rows*sizeof(float));
    //open file and read in data
    fp = fopen("../src/PA3_nrdc_data.csv", "r");
    
@@ -65,12 +72,17 @@ int main(int argc, char const *argv[])
             str = strtok( charBuffer, ",");
             inData[ i*cols+j ] = std::strtod(str,NULL);
          }
-
-      
-        /*str = strtok( charBuffer, ",");
-        std::cout << ' ' << str;
-        std::cout << ' ' << "double" << std::strtod(str, NULL);*/
+        fclose(fp); 
       }
+   }
+   //else print error message and exit 
+   else{
+      std::cout << std::endl << "File opening error, please try again";
+      exit(1);
+      fclose(fp);
+   }
+
+
    //make some missing values (10%), the first 10% of rows
    numEmpty = (rows <= 10) ? 1: (rows/10);
 
@@ -85,22 +97,42 @@ int main(int argc, char const *argv[])
       }
       std::cout << std::endl;
     }  
-     //std::fin.ignore(' '); 
-     
+      
+//////////////////////////////////////////////////////////////////////////
+//////////////////// sequential Implementation  //////////////////////////
+//outermost loop is to loop over all rows
+for(int i=0; i < rows; i++){
+  //look for columns that are missing value, which is denoted by a -1
+  if( inData[ i*cols + 1] == -1 ){
+    //loop over all rows again for nearest neighbor calc
+    for(int j=0; j < rows; j++){
+      //set accumulator to 0. This will store partial results from dist
+      accum = 0;
+      //This time checking for nonempty rows to calculate the
+      if( inData[ j*cols +1 ] != -1){
+        //loop over columns and calculate partial distance then sum into
+        //accumulator
+        for(int k = 2; k < cols; k++){
+          partResult = inData[ i*cols + k ] - inData[ j*cols + k ];
+          partResult *= partResult;
+          accum += partResult;
+        }
+        //square root accumulator to get distance
+        accum = sqrt(accum);
+      }
+      //store accum value. 0 for rows w/ holes.
+      CPUsortArr[ j ] = accum;
+    }
+    //use qsort from stdlib. 
+    qsort(CPUsortArr, rows, sizeof(float), compareFunc);
+    //Then find k = 5 nearest neighbors. Average then
+    //deposit back into inMat.
+    //while( )
+  }
+}
 
-
-     /*getdelim(&buffer2, &len, ' ,', fp);
-     fgets(buffer, cols*sizeof(char), fp);
-     std::cout << std::endl << "This is the string printed: " << buffer;
-     str = strtok(buffer, " ,");
-     std::cout << std::endl << "This is the string printed: " << str ;
-     std::cout << std::endl << "This is the buffer2 printed: " << buffer2 ;*/
-   }
-   else{
-      std::cout << std::endl << "File opening error, please try again";
-   }
-   //read in data from file
-   fclose(fp);
+//////////////////////////////////////////////////////////////////////////
+/////////////// parallel Implementation  /////////////////////////////////     
 
 
 
@@ -110,5 +142,10 @@ int main(int argc, char const *argv[])
    cudaFree(sortArray);
    free(buffer);
    free(charBuffer);
+   free(CPUsortArr);
    return 0;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+////////////////////////  free functions //////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
