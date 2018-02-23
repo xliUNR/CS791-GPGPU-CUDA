@@ -30,7 +30,7 @@ __global__ void knnDist( float *inputMat, float *partialMat, int imputRow,
            id and the second col contains holes 
          */
          tidx = bidx * cols + threadIdx.x + 2;
-
+         printf("TID IS: %d", tidx);
          //Calculate offset of 2nd col, which tells whether row has hole or not
          EmptyoffsetIndex = ( bidx * cols + 1 );
          /*
@@ -51,7 +51,7 @@ __global__ void knnDist( float *inputMat, float *partialMat, int imputRow,
                   //Calc difference between elements & square
                   diff = inputMat[imputIdx] - inputMat[tidx];
                   //print impute idx
-                  printf("Impute index %d and tidx %d yield %f and %f", imputIdx, tidx, 
+                  printf("Impute index %d and tidx %d yield %f and %f \n", imputIdx, tidx, 
                                     inputMat[imputIdx], inputMat[tidx]);
                   
                   partialMat[tidx] = diff * diff;
