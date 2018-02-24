@@ -22,7 +22,7 @@
 */
 
 __global__ void knnDist( float *inputMat, float *partialMat, int imputRow, 
-                                                  int rows, int inCols, int pCols,){
+                                                  int rows, int inCols, int pCols){
    //initialize variables
    int bidx, tidx, pidx, reduceThreads, sumIdx, EmptyoffsetIndex, imputIdx;
    float diff;
