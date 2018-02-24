@@ -202,7 +202,7 @@ int main(int argc, char const *argv[])
         distances stored in the second col of each row. This value still needs to be
         square rooted to get the distance. 
       */  
-      knnDist<<<grid,16>>>(inData, partial, i, rows, readCols, paddedCols);
+      knnDist<<<grid,64>>>(inData, partial, i, rows, readCols, paddedCols);
       //error checking for kernel call
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
@@ -211,7 +211,7 @@ int main(int argc, char const *argv[])
         this kernel squares results stored in col 2 of partial and transfers distance 
         into 1D array for sorting on CPU
       */  
-      distXfer<<<1,16>>>(partial, GPUsortArr, rows, paddedCols);
+      distXfer<<<1,64>>>(partial, GPUsortArr, rows, paddedCols);
       //error checking for kernel call
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
