@@ -132,10 +132,10 @@ int main(int argc, char const *argv[])
         CPUsortArr[ j ] = accum;
       }
       //printing CPUsort Arr
-      std::cout << std::endl << "CPUsortArr for row" << i << ": ";
+      /*std::cout << std::endl << "CPUsortArr for row" << i << ": ";
       for(int m = 0; m < rows; m++){
         std::cout << CPUsortArr[m] << std::endl; 
-      }
+      }*/
       //use qsort from stdlib. 
       qsort(CPUsortArr, rows, sizeof(float), compareFunc);
       //Then find k = 5 nearest neighbors. Average then
@@ -153,8 +153,8 @@ int main(int argc, char const *argv[])
       //divide by 5 to get average
       avg /=5;
       //Print results
-      /*std::cout << std::endl << "CPU Imputed Index: " << i; 
-      std::cout << " CPU Imputed Value: " << avg; */
+      std::cout << std::endl << "CPU Imputed Index: " << i; 
+      std::cout << " CPU Imputed Value: " << avg; 
     }
   }
   //stop timing
