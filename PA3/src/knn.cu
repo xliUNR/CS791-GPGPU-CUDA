@@ -147,6 +147,6 @@ __global__ void distXfer( float* inMat, float* outArr, int rows, int cols ){
    }
 }     
 
-__device__ int
+
 
 
