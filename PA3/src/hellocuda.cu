@@ -120,7 +120,7 @@ int main(int argc, char const *argv[])
    numEmpty = (rows <= 10) ? 1: (rows/10);
 
    for(int i = 0; i < numEmpty; i++){
-       inData[ i*cols+1] = -1;
+       inData[ i*readCols+1] = -1;
    }   
   //////////////////////////////////////////////////////////////////////////
   //////////////////// sequential Implementation  //////////////////////////
