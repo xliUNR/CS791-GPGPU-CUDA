@@ -51,7 +51,7 @@ int main(int argc, char const *argv[])
    std::cin >> cols;
 
    //declare grid structure
-   dim3 grid(32);
+   dim3 grid(2);
    //dim3 block((cols+32/32));
 
    //allocate Unified memory for input data storage
@@ -189,7 +189,7 @@ int main(int argc, char const *argv[])
         this kernel squares results stored in col 2 of partial and transfers distance 
         into 1D array for sorting on CPU
       */  
-      distXfer<<<grid,2>>>(partial, GPUsortArr, rows, cols);
+      distXfer<<<grid,32>>>(partial, GPUsortArr, rows, cols);
       //error checking for kernel call
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
