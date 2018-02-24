@@ -68,7 +68,7 @@ int main(int argc, char const *argv[])
    }
 
    //declare grid structure
-   dim3 grid(32);
+   dim3 grid(64);
    //dim3 block((cols+32/32));
 
    //allocate Unified memory for input data storage
