@@ -189,7 +189,7 @@ int main(int argc, char const *argv[])
         this kernel squares results stored in col 2 of partial and transfers distance 
         into 1D array for sorting on CPU
       */  
-      distXfer<<<grid,32>>>(partial, GPUsortArr, rows, cols);
+      distXfer<<<1,32>>>(partial, GPUsortArr, rows, cols);
       //error checking for kernel call
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
