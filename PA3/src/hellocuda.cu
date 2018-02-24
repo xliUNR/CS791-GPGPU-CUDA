@@ -34,45 +34,53 @@ int main(int argc, char const *argv[])
    //initialize variables
    //file pointer for reading data from file
    FILE * fp;
-   int rows, cols, numEmpty, knnCtr, knnIdx;
+   int rows, readCols, paddedCols, numEmpty, knnCtr, knnIdx;
    float *inData, *partial, *GPUsortArr, *CPUsortArr;
    float accum, partResult, avg; 
    char* charBuffer;
    char* str;
    char* endlineBuffer;
    size_t len;
-   bool oddFlag;
-   
+ 
    
    //ask user for dimension of input data matrix
    std::cout << " Please enter amount of rows desired to read in: ";
    std::cin >> rows;
    
    std::cout << " Please enter amount of columns desired to read in: ";
-   std::cin >> cols;
+   std::cin >> Readcols;
+
+   //set padded columns to read columns.
+   paddedCols = readCols;
+
+   //Check to see if number of columns is odd, need to pad in that case for reduction
+   if( paddedCols % 2 != 0 ){
+     paddedCols+=1;
+     }
+
    /*
-     test for odd number of columns, this is important for reduction in 
-     distance calculation kernel because reduction can only be performed 
-     on an even number of objects. This will set a flag which will be passed
-     into the kernel. I don't want to perform this on the GPU b/c of 
-     performance issues.
+     This line checks to see if number of columns-2 is a power of 2. 
+     Need to pad for reduction if not. First two columns are ignored b/c 1st
+     is id and 2nd is column with holes, so these are not involved in calc
    */  
-   if( cols % 2 != 0 ){
-     oddFlag = true;
-     }
-   else{
-     oddFlag = false;
-     }
+   while( ceil(log2(paddedCols-2)) != floor(log2(paddedCols-2)) ){
+     paddedCols+=2;
+   }
 
    //declare grid structure
    dim3 grid(16);
    //dim3 block((cols+32/32));
 
    //allocate Unified memory for input data storage
-   HANDLE_ERROR( cudaMallocManaged( &inData, rows*cols*sizeof(float)) );
-   HANDLE_ERROR( cudaMallocManaged( &partial, rows*cols*sizeof(float)) );
+   HANDLE_ERROR( cudaMallocManaged( &inData, rows*readCols*sizeof(float)) );
+   HANDLE_ERROR( cudaMallocManaged( &partial, rows*paddedCols*sizeof(float)) );
    HANDLE_ERROR( cudaMallocManaged( &GPUsortArr, rows*sizeof(float)) );
    
+   //initialize partial array with zeros, this is essentially the padding step
+   for(int i=0; i < rows*paddedCols; i++){
+     partial[i] = 0;
+   } 
+
    //allocate CPU memory
    charBuffer = (char*) malloc(20*sizeof(double));
    endlineBuffer = (char*) malloc(100*sizeof(double));
@@ -94,7 +102,7 @@ int main(int argc, char const *argv[])
             getdelim(&charBuffer, &len, ',',fp);
             str = strtok( charBuffer, ",");
             inData[ i*cols+j ] = std::strtod(str,NULL);
-           }
+           } 
          //skip until endline  
          getdelim(&endlineBuffer, &len, '\n', fp); 
         }
@@ -194,7 +202,7 @@ int main(int argc, char const *argv[])
         distances stored in the second col of each row. This value still needs to be
         square rooted to get the distance. 
       */  
-      knnDist<<<grid,32>>>(inData, partial, i, rows, cols, oddFlag);
+      knnDist<<<grid,32>>>(inData, partial, i, rows, readCols, paddedCols);
       //error checking for kernel call
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
@@ -203,7 +211,7 @@ int main(int argc, char const *argv[])
         this kernel squares results stored in col 2 of partial and transfers distance 
         into 1D array for sorting on CPU
       */  
-      distXfer<<<1,32>>>(partial, GPUsortArr, rows, cols);
+      distXfer<<<1,32>>>(partial, GPUsortArr, rows, paddedCols);
       //error checking for kernel call
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );

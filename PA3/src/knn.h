@@ -10,7 +10,7 @@
 #include <string.h>
 #include <stdlib.h>
 //function declarations
-__global__ void knnDist( float *, float *, int imputIndex, int rows, int cols, bool oddFlag);
+__global__ void knnDist( float *, float *, int imputIndex, int rows, int inCols, int pCols);
 
 __global__ void distXfer( float* , float* , int rows, int cols );
 
