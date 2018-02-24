@@ -52,7 +52,7 @@ int main(int argc, char const *argv[])
 
    //declare grid structure
    dim3 grid(16);
-   //dim3 block((cols+32/32));
+   dim3 block((cols+32/32));
 
    //allocate Unified memory for input data storage
    HANDLE_ERROR( cudaMallocManaged( &inData, rows*cols*sizeof(float)) );
@@ -132,10 +132,10 @@ int main(int argc, char const *argv[])
         CPUsortArr[ j ] = accum;
       }
       //printing CPUsort Arr
-      /*std::cout << std::endl << "CPUsortArr for row" << i << ": ";
+      std::cout << std::endl << "CPUsortArr for row" << i << ": ";
       for(int m = 0; m < rows; m++){
         std::cout << CPUsortArr[m] << std::endl; 
-      }*/
+      }
       //use qsort from stdlib. 
       qsort(CPUsortArr, rows, sizeof(float), compareFunc);
       //Then find k = 5 nearest neighbors. Average then
@@ -194,10 +194,10 @@ int main(int argc, char const *argv[])
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
       //print GPU sort array
-      /*std::cout << std::endl << "GPUsortArr for row" << i << ": ";
+      std::cout << std::endl << "GPUsortArr for row" << i << ": ";
       for(int m = 0; m < rows; m++){
         std::cout << GPUsortArr[m] << std::endl; 
-      }*/
+      }
       //sort array
       qsort(GPUsortArr, rows, sizeof(float), compareFunc);
       //Then find k = 5 nearest neighbors. Average then print.
