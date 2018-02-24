@@ -180,7 +180,7 @@ int main(int argc, char const *argv[])
         distances stored in the second col of each row. This value still needs to be
         square rooted to get the distance. 
       */  
-      knnDist<<<grid,2>>>(inData, partial, i, rows, cols);
+      knnDist<<<grid,32>>>(inData, partial, i, rows, cols);
       //error checking for kernel call
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
