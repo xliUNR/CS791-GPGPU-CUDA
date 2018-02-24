@@ -41,6 +41,7 @@ int main(int argc, char const *argv[])
    char* str;
    char* endlineBuffer;
    size_t len;
+   bool oddFlag;
    
    
    //ask user for dimension of input data matrix
@@ -49,6 +50,19 @@ int main(int argc, char const *argv[])
    
    std::cout << " Please enter amount of columns desired to read in: ";
    std::cin >> cols;
+   /*
+     test for odd number of columns, this is important for reduction in 
+     distance calculation kernel because reduction can only be performed 
+     on an even number of objects. This will set a flag which will be passed
+     into the kernel. I don't want to perform this on the GPU b/c of 
+     performance issues.
+   */  
+   if( col % 2 != 0 ){
+     oddFlag = true;
+     }
+   else{
+     oddFlag = false;
+     }
 
    //declare grid structure
    dim3 grid(16);
@@ -180,7 +194,7 @@ int main(int argc, char const *argv[])
         distances stored in the second col of each row. This value still needs to be
         square rooted to get the distance. 
       */  
-      knnDist<<<grid,32>>>(inData, partial, i, rows, cols);
+      knnDist<<<grid,32>>>(inData, partial, i, rows, cols, oddFlag);
       //error checking for kernel call
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );

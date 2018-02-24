@@ -13,7 +13,7 @@
 */
 
 __global__ void knnDist( float *inputMat, float *partialMat, int imputRow, 
-                                                           int rows, int cols){
+                                                  int rows, int cols, bool oddFlag){
    //initialize variables
    int bidx, tidx, reduceThreads, sumIdx, EmptyoffsetIndex, imputIdx;
    float diff;
@@ -94,8 +94,26 @@ __global__ void knnDist( float *inputMat, float *partialMat, int imputRow,
 
       //thread reduction step
          //reset tidx
-         tidx = bidx*cols + threadIdx.x + 2;      
-         reduceThreads = blockDim.x / 2;
+         tidx = bidx*cols + threadIdx.x + 2; 
+         /*
+           test for cases where blockDim is larger than # of cols to be reduced or 
+           when cols is larger than blockDim
+         */
+         if( blockDim.x < (cols - 2) )
+           {
+              reduceThreads = blockDim.x / 2;
+           }     
+
+         else 
+           {
+              reduceThreads = (cols - 2) / 2;
+           }
+         //Reduction won't work if odd number of threads, so must add 1 if odd.
+         if( oddFlag )
+              {
+                 reduceThreads+=1;
+              }
+
          while( reduceThreads > 0 )
             { 
                if( threadIdx.x < reduceThreads )
@@ -105,11 +123,7 @@ __global__ void knnDist( float *inputMat, float *partialMat, int imputRow,
                __syncthreads();   
                reduceThreads /= 2;   
             }            
-            //Square root results of summation to get distance             
-            //partialMat[ (bidx * cols + 2) ] = 
-                                   //sqrt( partialMat[ (bidx * cols + 2) ] );
          }
-
          //stride to next set of blocks
          bidx+=gridDim.x;   
       }
@@ -133,6 +147,6 @@ __global__ void distXfer( float* inMat, float* outArr, int rows, int cols ){
    }
 }     
 
-
+__device__ int
 
 
