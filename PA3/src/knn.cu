@@ -136,7 +136,7 @@ __global__ void knnDist( float *inputMat, float *partialMat, int imputRow,
               reduceThreads = (pCols - 2) / 2;
            }
 
-         printf("\n Value of reduceThreads= %d", reduceThreads);     
+         //printf("\n Value of reduceThreads= %d", reduceThreads);     
          
          while( reduceThreads > 0 )
             { 
