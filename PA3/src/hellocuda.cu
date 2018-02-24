@@ -48,7 +48,7 @@ int main(int argc, char const *argv[])
    std::cin >> rows;
    
    std::cout << " Please enter amount of columns desired to read in: ";
-   std::cin >> Readcols;
+   std::cin >> readCols;
 
    //set padded columns to read columns.
    paddedCols = readCols;
@@ -63,7 +63,7 @@ int main(int argc, char const *argv[])
      Need to pad for reduction if not. First two columns are ignored b/c 1st
      is id and 2nd is column with holes, so these are not involved in calc
    */  
-   while( ceil(log2(paddedCols-2)) != floor(log2(paddedCols-2)) ){
+   while( ceil(log2((float)paddedCols-2)) != floor(log2((float)paddedCols-2)) ){
      paddedCols+=2;
    }
 
@@ -95,13 +95,13 @@ int main(int argc, char const *argv[])
          //read in first value, discard and put index i instead as the first column
          getdelim(&charBuffer, &len, ',' ,fp);
          str = strtok( charBuffer, ",");
-         inData[ i*cols ] = (float)i;
+         inData[ i*readCols ] = (float)i;
 
          //loop over all columns and input value into 1D array
-         for(int j = 1; j < cols; j++){
+         for(int j = 1; j < readCols; j++){
             getdelim(&charBuffer, &len, ',',fp);
             str = strtok( charBuffer, ",");
-            inData[ i*cols+j ] = std::strtod(str,NULL);
+            inData[ i*readCols+j ] = std::strtod(str,NULL);
            } 
          //skip until endline  
          getdelim(&endlineBuffer, &len, '\n', fp); 
@@ -133,17 +133,17 @@ int main(int argc, char const *argv[])
   //outermost loop is to loop over all rows
   for(int i=0; i < rows; i++){
     //look for columns that are missing value, which is denoted by a -1
-    if( inData[ i*cols + 1] == -1 ){
+    if( inData[ i*readCols + 1] == -1 ){
       //loop over all rows again for nearest neighbor calc
       for(int j=0; j < rows; j++){
         //set accumulator to 0. This will store partial results from dist
         accum = 0;
         //This time checking for nonempty rows to calculate the
-        if( inData[ j*cols +1 ] != -1){
+        if( inData[ j*readCols +1 ] != -1){
           //loop over columns and calculate partial distance then sum into
           //accumulator
-          for(int k = 2; k < cols; k++){
-            partResult = inData[ i*cols + k ] - inData[ j*cols + k ];
+          for(int k = 2; k < readCols; k++){
+            partResult = inData[ i*readCols + k ] - inData[ j*readCols + k ];
             partResult *= partResult;
             accum += partResult;
           }
@@ -195,7 +195,7 @@ int main(int argc, char const *argv[])
   //loop over all rows
   for(int i=0; i < rows; i++){
     //If row needs to be imputed, will execute GPU kernel
-    if( inData[ i*cols + 1] == -1){
+    if( inData[ i*readCols + 1] == -1){
       /*
         kernel call to knnDist which calculates the partial distance between 
         the row to be imputed with every other row and returns a partial matrix with 
