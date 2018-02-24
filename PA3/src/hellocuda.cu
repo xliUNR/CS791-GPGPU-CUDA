@@ -57,7 +57,7 @@ int main(int argc, char const *argv[])
      into the kernel. I don't want to perform this on the GPU b/c of 
      performance issues.
    */  
-   if( col % 2 != 0 ){
+   if( cols % 2 != 0 ){
      oddFlag = true;
      }
    else{
