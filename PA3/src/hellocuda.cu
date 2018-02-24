@@ -153,8 +153,8 @@ int main(int argc, char const *argv[])
       //divide by 5 to get average
       avg /=5;
       //Print results
-      std::cout << std::endl << "CPU Imputed Index: " << i; 
-      std::cout << " CPU Imputed Value: " << avg; 
+      /*std::cout << std::endl << "CPU Imputed Index: " << i; 
+      std::cout << " CPU Imputed Value: " << avg; */
     }
   }
   //stop timing
@@ -194,10 +194,10 @@ int main(int argc, char const *argv[])
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
       //print GPU sort array
-      std::cout << std::endl << "GPUsortArr for row" << i << ": ";
+      /*std::cout << std::endl << "GPUsortArr for row" << i << ": ";
       for(int m = 0; m < rows; m++){
         std::cout << GPUsortArr[m] << std::endl; 
-      }
+      }*/
       //sort array
       qsort(GPUsortArr, rows, sizeof(float), compareFunc);
       //Then find k = 5 nearest neighbors. Average then print.
