@@ -34,31 +34,53 @@ int main(int argc, char const *argv[])
    //initialize variables
    //file pointer for reading data from file
    FILE * fp;
-   int rows, cols, numEmpty, knnCtr, knnIdx;
+   int rows, readCols, paddedCols, numEmpty, knnCtr, knnIdx;
    float *inData, *partial, *GPUsortArr, *CPUsortArr;
    float accum, partResult, avg; 
    char* charBuffer;
    char* str;
    char* endlineBuffer;
    size_t len;
-   
+ 
    
    //ask user for dimension of input data matrix
    std::cout << " Please enter amount of rows desired to read in: ";
    std::cin >> rows;
    
    std::cout << " Please enter amount of columns desired to read in: ";
-   std::cin >> cols;
+   std::cin >> readCols;
+
+   //set padded columns to read columns.
+   paddedCols = readCols;
+
+   //Check to see if number of columns is odd, need to pad in that case for reduction
+   if( paddedCols % 2 != 0 ){
+     paddedCols+=1;
+     }
+
+   /*
+     This line checks to see if number of columns-2 is a power of 2. 
+     Need to pad for reduction if not. First two columns are ignored b/c 1st
+     is id and 2nd is column with holes, so these are not involved in calc
+   */  
+   while( ceil(log2((float)paddedCols-2)) != floor(log2((float)paddedCols-2)) ){
+     paddedCols+=2;
+   }
 
    //declare grid structure
-   dim3 grid(32);
-   dim3 block((cols+32/32));
+   dim3 grid(64);
+   //dim3 block((cols+32/32));
 
    //allocate Unified memory for input data storage
-   HANDLE_ERROR( cudaMallocManaged( &inData, rows*cols*sizeof(float)) );
-   HANDLE_ERROR( cudaMallocManaged( &partial, rows*cols*sizeof(float)) );
+   HANDLE_ERROR( cudaMallocManaged( &inData, rows*readCols*sizeof(float)) );
+   HANDLE_ERROR( cudaMallocManaged( &partial, rows*paddedCols*sizeof(float)) );
    HANDLE_ERROR( cudaMallocManaged( &GPUsortArr, rows*sizeof(float)) );
    
+   //initialize partial array with zeros, this is essentially the padding step
+   for(int i=0; i < rows*paddedCols; i++){
+     partial[i] = 0;
+   } 
+
    //allocate CPU memory
    charBuffer = (char*) malloc(20*sizeof(double));
    endlineBuffer = (char*) malloc(100*sizeof(double));
@@ -73,14 +95,14 @@ int main(int argc, char const *argv[])
          //read in first value, discard and put index i instead as the first column
          getdelim(&charBuffer, &len, ',' ,fp);
          str = strtok( charBuffer, ",");
-         inData[ i*cols ] = (float)i;
+         inData[ i*readCols ] = (float)i;
 
          //loop over all columns and input value into 1D array
-         for(int j = 1; j < cols; j++){
+         for(int j = 1; j < readCols; j++){
             getdelim(&charBuffer, &len, ',',fp);
             str = strtok( charBuffer, ",");
-            inData[ i*cols+j ] = std::strtod(str,NULL);
-           }
+            inData[ i*readCols+j ] = std::strtod(str,NULL);
+           } 
          //skip until endline  
          getdelim(&endlineBuffer, &len, '\n', fp); 
         }
@@ -98,7 +120,7 @@ int main(int argc, char const *argv[])
    numEmpty = (rows <= 10) ? 1: (rows/10);
 
    for(int i = 0; i < numEmpty; i++){
-       inData[ i*cols+1] = -1;
+       inData[ i*readCols+1] = -1;
    }   
   //////////////////////////////////////////////////////////////////////////
   //////////////////// sequential Implementation  //////////////////////////
@@ -111,17 +133,17 @@ int main(int argc, char const *argv[])
   //outermost loop is to loop over all rows
   for(int i=0; i < rows; i++){
     //look for columns that are missing value, which is denoted by a -1
-    if( inData[ i*cols + 1] == -1 ){
+    if( inData[ i*readCols + 1] == -1 ){
       //loop over all rows again for nearest neighbor calc
       for(int j=0; j < rows; j++){
         //set accumulator to 0. This will store partial results from dist
         accum = 0;
         //This time checking for nonempty rows to calculate the
-        if( inData[ j*cols +1 ] != -1){
+        if( inData[ j*readCols +1 ] != -1){
           //loop over columns and calculate partial distance then sum into
           //accumulator
-          for(int k = 2; k < cols; k++){
-            partResult = inData[ i*cols + k ] - inData[ j*cols + k ];
+          for(int k = 2; k < readCols; k++){
+            partResult = inData[ i*readCols + k ] - inData[ j*readCols + k ];
             partResult *= partResult;
             accum += partResult;
           }
@@ -132,7 +154,7 @@ int main(int argc, char const *argv[])
         CPUsortArr[ j ] = accum;
       }
       //printing CPUsort Arr
-      /*std::cout << "CPUsortArr: ";
+      /*std::cout << std::endl << "CPUsortArr for row" << i << ": ";
       for(int m = 0; m < rows; m++){
         std::cout << CPUsortArr[m] << std::endl; 
       }*/
@@ -152,9 +174,9 @@ int main(int argc, char const *argv[])
       }
       //divide by 5 to get average
       avg /=5;
-      //write back into array
-      std::cout << std::endl << "Imputed Index: " << i; 
-      std::cout << "  Imputed Value: " << avg; 
+      //Print results
+      std::cout << std::endl << "CPU Imputed Index: " << i; 
+      std::cout << " CPU Imputed Value: " << avg; 
     }
   }
   //stop timing
@@ -173,31 +195,34 @@ int main(int argc, char const *argv[])
   //loop over all rows
   for(int i=0; i < rows; i++){
     //If row needs to be imputed, will execute GPU kernel
-    if( inData[ i*cols + 1] == -1){
+    if( inData[ i*readCols + 1] == -1){
       /*
-        kernel call to knnDist which calculates the distance between the row 
-        to be imputed with every other row and returns a partial matrix with 
-        distances stored in the second col of each row 
+        kernel call to knnDist which calculates the partial distance between 
+        the row to be imputed with every other row and returns a partial matrix with 
+        distances stored in the second col of each row. This value still needs to be
+        square rooted to get the distance. 
       */  
-      knnDist<<<grid,block>>>(inData, partial, i, rows, cols);
+      knnDist<<<grid,32>>>(inData, partial, i, rows, readCols, paddedCols);
       //error checking for kernel call
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
 
-      //this kernel transfers distance into 1D array for sorting on CPU
-      distXfer<<<grid,1>>>(partial, GPUsortArr, rows, cols);
+      /*
+        this kernel squares results stored in col 2 of partial and transfers distance 
+        into 1D array for sorting on CPU
+      */  
+      distXfer<<<1,32>>>(partial, GPUsortArr, rows, paddedCols);
       //error checking for kernel call
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
       //print GPU sort array
-      /*std::cout << "GPUsortArr: ";
+      /*std::cout << std::endl << "GPUsortArr for row" << i << ": ";
       for(int m = 0; m < rows; m++){
         std::cout << GPUsortArr[m] << std::endl; 
       }*/
       //sort array
       qsort(GPUsortArr, rows, sizeof(float), compareFunc);
-      //Then find k = 5 nearest neighbors. Average then
-      //deposit back into inMat.
+      //Then find k = 5 nearest neighbors. Average then print.
       knnCtr = 0;
       knnIdx = 0;
       avg = 0;
@@ -210,7 +235,7 @@ int main(int argc, char const *argv[])
       }
       //divide by 5 to get average
       avg /=5;
-      //write back into array
+      //print results
       std::cout << std::endl << "GPU Imputed Index: " << i; 
       std::cout << "  GPU Imputed Value: " << avg; 
     }
