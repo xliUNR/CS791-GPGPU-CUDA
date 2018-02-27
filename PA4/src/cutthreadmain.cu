@@ -22,7 +22,7 @@ struct dataStruct
       int * a;
       int * b;
       int * c;
-   }
+   };
 /*
   This routine is called within the start_threads call. This will be run on all threads, each will call kernel on a seperate GPU.
 */
@@ -39,13 +39,13 @@ int main(int argc, char const *argv[])
 {
    int numGPU;
    int N = 1;
-   dataStruct *runData = new dataStruct[numGPU];
    //get number of gpus
    cudaGetDeviceCount(&numGPU);
-   
+   //initialize struct for data
+   dataStruct *runData = new dataStruct[numGPU];
    //initialize thread array, each thread can be accessed by index
    CUTThread *thread = new CUTThread[numGPU];
-   CUTThread threadId[ MAX_GPU_COUNT];
+   //CUTThread threadId[ MAX_GPU_COUNT];
 
    //initialize beginning arrays
    for(int i=0; i < numGPU; i++){
@@ -75,7 +75,7 @@ int main(int argc, char const *argv[])
    for(int i=0; i< numGPU; i++){
       printf("\n Result from GPU: %d is %d", i, runData[i]->c[0]);
    }
-   
+
    //free memory
    for(int i=0; i<numGPU; i++){
       cudaFree( runData[i]->a );
@@ -91,9 +91,9 @@ void seqMatrixMult(int* in1, int* in2, int* output, int arrDim){
    for(int i = 0; i < arrDim; i++){
       for(int j = 0; j < arrDim; j++){
          //initialize value of 0 for output matrix element
-         output[ i*m + k ] = 0;
+         output[ i*arrDim + k ] = 0;
          for(int k = 0; k < arrDim; k++){
-            output[ i*m + k ]+= a[ i*m + k ] * b[ k*m + j ];
+            output[ i*arrDim + k ]+= a[ i*arrDim + k ] * b[ k*arrDim + j ];
          }
       }
    }
