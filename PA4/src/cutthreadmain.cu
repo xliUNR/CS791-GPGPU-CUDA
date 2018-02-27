@@ -50,7 +50,7 @@ int main(int argc, char const *argv[])
    //initialize beginning data
    for(int i=0; i < numGPU; i++){
       HANDLE_ERROR( cudaMallocManaged(&runData[i].a, N*N*sizeof(int)) );
-      HANDLE_ERROR( cudaMallocManaged(&(runData[i].b), N*N*sizeof(int)) );
+      HANDLE_ERROR( cudaMallocManaged(runData[i].b, N*N*sizeof(int)) );
       HANDLE_ERROR( cudaMallocManaged(&runData[i].c, N*N*sizeof(int)) );
 
       //fill array with data including 0 for result matrix
