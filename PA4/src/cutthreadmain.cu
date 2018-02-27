@@ -49,9 +49,9 @@ int main(int argc, char const *argv[])
 
    //initialize beginning arrays
    for(int i=0; i < numGPU; i++){
-      HANDLE_ERROR( cudaMallocManaged(*(runData[i]->a), N*N*sizeof(int)) );
-      HANDLE_ERROR( cudaMallocManaged(&(runData[i]->b), N*N*sizeof(int)) );
-      HANDLE_ERROR( cudaMallocManaged(&runData[i]->c, N*N*sizeof(int)) );
+      HANDLE_ERROR( cudaMallocManaged(runData[i].a, N*N*sizeof(int)) );
+      HANDLE_ERROR( cudaMallocManaged(&(runData[i].b), N*N*sizeof(int)) );
+      HANDLE_ERROR( cudaMallocManaged(&runData[i].c, N*N*sizeof(int)) );
 
       //fill array with data including 0 for result matrix
       for( int j=0; j < N*N; j++){
@@ -91,9 +91,9 @@ void seqMatrixMult(int* in1, int* in2, int* output, int arrDim){
    for(int i = 0; i < arrDim; i++){
       for(int j = 0; j < arrDim; j++){
          //initialize value of 0 for output matrix element
-         output[ i*arrDim + k ] = 0;
+         output[ i*arrDim + j ] = 0;
          for(int k = 0; k < arrDim; k++){
-            output[ i*arrDim + k ]+= a[ i*arrDim + k ] * b[ k*arrDim + j ];
+            output[ i*arrDim + k ]+= in1[ i*arrDim + k ] * in2[ k*arrDim + j ];
          }
       }
    }
