@@ -49,9 +49,9 @@ int main(int argc, char const *argv[])
 
    //initialize beginning arrays
    for(int i=0; i < numGPU; i++){
-      HANDLE_ERROR( cudaMallocManaged(*runData[i]->a, N*N*sizeof(int)) );
-      HANDLE_ERROR( cudaMallocManaged(*runData[i]->b, N*N*sizeof(int)) );
-      HANDLE_ERROR( cudaMallocManaged(*runData[i]->c, N*N*sizeof(int)) );
+      HANDLE_ERROR( cudaMallocManaged(*(runData[i]->a), N*N*sizeof(int)) );
+      HANDLE_ERROR( cudaMallocManaged(&(runData[i]->b), N*N*sizeof(int)) );
+      HANDLE_ERROR( cudaMallocManaged(&runData[i]->c, N*N*sizeof(int)) );
 
       //fill array with data including 0 for result matrix
       for( int j=0; j < N*N; j++){
@@ -64,7 +64,7 @@ int main(int argc, char const *argv[])
 
    //start threads
    for( int i = 0; i < numGPU; i++){
-      threadId[ i ] = start_thread(routine, &dataStruct[i]);
+      thread[ i ] = start_thread(routine, &runData[i]);
    }
    //end threads
    for(int i=0; i < numGPU; i++){
