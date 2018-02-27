@@ -73,14 +73,14 @@ int main(int argc, char const *argv[])
    
    //print results
    for(int i=0; i< numGPU; i++){
-      printf("\n Result from GPU: %d is %d", i, runData[i]->c[0]);
+      printf("\n Result from GPU: %d is %d", i, runData[i].c[0]);
    }
 
    //free memory
    for(int i=0; i<numGPU; i++){
-      cudaFree( runData[i]->a );
-      cudaFree( runData[i]->b );
-      cudaFree( runData[i]->c );
+      cudaFree( runData[i].a );
+      cudaFree( runData[i].b );
+      cudaFree( runData[i].c );
    }
    /* code */
    return 0;
