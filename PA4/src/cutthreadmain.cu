@@ -6,7 +6,7 @@
 #include<stdio.h>
 
 
-#include"cudafunctions.cu"
+#include"cudafunctions.h"
 #include "book.h"
  
 
