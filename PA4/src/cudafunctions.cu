@@ -1,5 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include "cudafunctions.h"
 
 
 //extern "C" cudaHello(){}
