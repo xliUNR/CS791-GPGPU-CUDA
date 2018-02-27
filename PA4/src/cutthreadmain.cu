@@ -47,7 +47,7 @@ int main(int argc, char const *argv[])
    CUTThread *thread = new CUTThread[numGPU];
    //CUTThread threadId[ MAX_GPU_COUNT];
 
-   //initialize beginning arrays
+   //initialize beginning data
    for(int i=0; i < numGPU; i++){
       HANDLE_ERROR( cudaMallocManaged(&runData[i].a, N*N*sizeof(int)) );
       HANDLE_ERROR( cudaMallocManaged(&(runData[i].b), N*N*sizeof(int)) );
@@ -59,7 +59,7 @@ int main(int argc, char const *argv[])
          runData[i].b[j] = 1;
          runData[i].c[j] = 0;
       }
-  
+      runData[i].deviceID = i;
    }
 
    //start threads
