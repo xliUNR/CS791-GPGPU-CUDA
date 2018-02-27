@@ -49,9 +49,9 @@ int main(int argc, char const *argv[])
 
    //initialize beginning arrays
    for(int i=0; i < numGPU; i++){
-      HANDLE_ERROR( cudaMallocManaged(runData[i]->a, N*N*sizeof(int)) );
-      HANDLE_ERROR( cudaMallocManaged(runData[i]->b, N*N*sizeof(int)) );
-      HANDLE_ERROR( cudaMallocManaged(runData[i]->c, N*N*sizeof(int)) );
+      HANDLE_ERROR( cudaMallocManaged(*runData[i]->a, N*N*sizeof(int)) );
+      HANDLE_ERROR( cudaMallocManaged(*runData[i]->b, N*N*sizeof(int)) );
+      HANDLE_ERROR( cudaMallocManaged(*runData[i]->c, N*N*sizeof(int)) );
 
       //fill array with data including 0 for result matrix
       for( int j=0; j < N*N; j++){
