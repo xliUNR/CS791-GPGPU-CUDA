@@ -79,10 +79,10 @@ int main(int argc, char const *argv[])
       
    }
 
-   /*//end threads
+   //end threads
    for(int i=0; i < numGPU; i++){
       destroy_thread( thread[i]);
-   }*/
+   }
    //print results
    for(int i=0; i< numGPU; i++){
       printf("\n Result from GPU: %d is %d", i, runData[i].c[0]);
