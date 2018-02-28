@@ -37,8 +37,28 @@ __global__ void matrixMult(int*a, int* b, int* outMat, int arrDim){
 }
 
 __global__ void reduction(int* inMat, int* outMat, int arrDim){
+   int bidx_y, bidx_x, blockId, tidx, reduceThreads;
+
+   bidx_x = blockIdx.x;
+   bidx_y = blockIdx.y;
+   blockId = bidx_y * gridDim.x + bidx_x;
+
+   tidx = threadIdx.x;
+
    for(int i = ( blockId*blockDim.x + tidx ) ; i < arrDim*arrDim*arrDim; 
                                  i+= (gridDim.x * gridDim.y * blockIdx.x) ){
-      
+
+
+      //recalculate indices basedon striding.
+      tidx+= blockDim.x;
+      bidx_y+=gridDim.y;
+      bidx_x+=gridDim.x;
    }
+}
+
+/*
+   kernel for element by element matrix summation. Launch uses 1D grid of 1D blocks
+*/   
+__global__ void matSum( int*a, int*b, int*result, int arrDim){
+   
 }
