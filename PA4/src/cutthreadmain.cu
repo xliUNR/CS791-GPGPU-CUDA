@@ -22,6 +22,7 @@ struct dataStruct
       int * a;
       int * b;
       int * c;
+      int * partial;
    };
 /*
   This routine is called within the start_threads call. This will be run on all threads, each will call kernel on a seperate GPU.
@@ -37,7 +38,7 @@ void* routine(void* dataSPtr)
 
 int main(int argc, char const *argv[])
 {
-   int numGPU;
+   int numGPU, numGPUthreads;
    int N = 1;
    //get number of gpus
    cudaGetDeviceCount(&numGPU);
@@ -47,17 +48,39 @@ int main(int argc, char const *argv[])
    CUTThread *thread = new CUTThread[numGPU];
    //CUTThread threadId[ MAX_GPU_COUNT];
 
-   //initialize beginning data
+
+   std::cout<< "Please enter in matrix dimensions: ";
+   std::cin >> N;
+   //calculate padding for reduction, needs to be power of 2
+   numGPUthreads = N;
+   //if odd, add 1 b
+   if( numGPUthreads % 2 != 0 ){
+     numGPUthreads+=1;
+     }
+   //check for power of 2, add 2 until it is power of 2
+   while( ceil(log2((float)numGPUthreads-2)) 
+                                    != floor(log2((float)numGPUthreads-2)) ){
+     numGPUthreads+=2;
+   }  
+
+
+   //allocate unified memory and initialize beginning data
    for(int i=0; i < numGPU; i++){
       HANDLE_ERROR( cudaMallocManaged(&(runData[i].a), N*N*sizeof(int)) );
       HANDLE_ERROR( cudaMallocManaged(&(runData[i].b), N*N*sizeof(int)) );
       HANDLE_ERROR( cudaMallocManaged(&(runData[i].c), N*N*sizeof(int)) );
+      HANDLE_ERROR( cudaMallocManaged(&(runData[i].partial), 
+                                         N*N*numGPUthreads*sizeof(int)) );
 
       //fill array with data including 0 for result matrix
       for( int j=0; j < N*N; j++){
          runData[i].a[j] = 1;
          runData[i].b[j] = 1;
          runData[i].c[j] = 0;
+      }
+      //fill partial matrix with zeros
+      for(int k=0; k < N*N*numGPUthreads; k++){
+         runData[i].partial[k] = 0;
       }
       runData[i].deviceID = i;
    }
@@ -94,11 +117,13 @@ int main(int argc, char const *argv[])
       cudaFree( runData[i].a );
       cudaFree( runData[i].b );
       cudaFree( runData[i].c );
+      cudaFree( runData[i].partial);
    }
    /* code */
    return 0;
 }
 
+//sequential implementation
 void seqMatrixMult(int* in1, int* in2, int* output, int arrDim){
    //loop over column and rows for each element of the output matrix
    for(int i = 0; i < arrDim; i++){
