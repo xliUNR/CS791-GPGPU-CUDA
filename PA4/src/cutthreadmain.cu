@@ -76,6 +76,11 @@ int main(int argc, char const *argv[])
       printf("\n Result from GPU: %d is %d", i, runData[i].c[0]);
    }
 
+    //print results
+   for(int i=0; i< numGPU; i++){
+      printf("\n Result from GPU: %d is %d", i, runData[i].c[0]);
+   }
+
    //free memory
    for(int i=0; i<numGPU; i++){
       cudaFree( runData[i].a );
