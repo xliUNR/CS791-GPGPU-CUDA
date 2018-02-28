@@ -68,11 +68,21 @@ int main(int argc, char const *argv[])
    }
 
    //end threads
-   for(int i=0; i < numGPU; i++){
+   /*for(int i=0; i < numGPU; i++){
       //end_thread( thread[i]);
-      pthread_join(thread[i], NULL);
+      wait_for_threads(thread[i], NULL);
+   }*/
+
+   //end threads
+   for(int i=0; i < numGPU; i++){
+      end_thread( thread[i]);
+      
    }
-   
+
+   end threads
+   for(int i=0; i < numGPU; i++){
+      destroy_thread( thread[i]);
+   }
    //print results
    for(int i=0; i< numGPU; i++){
       printf("\n Result from GPU: %d is %d", i, runData[i].c[0]);
