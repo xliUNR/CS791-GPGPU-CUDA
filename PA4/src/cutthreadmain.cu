@@ -70,7 +70,7 @@ int main(int argc, char const *argv[])
    //end threads
    for(int i=0; i < numGPU; i++){
       //end_thread( thread[i]);
-      pthread_join(thread[i]);
+      pthread_join(thread[i], NULL);
    }
    
    //print results
