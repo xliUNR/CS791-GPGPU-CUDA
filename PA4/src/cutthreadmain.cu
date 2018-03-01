@@ -33,6 +33,9 @@ void* routine(void* dataSPtr)
       cudaSetDevice(data->deviceID);
       //run kernel?
       matrixMult<<<1,1>>>( data->a, data->b, data->c, N);
+      //reduction step
+      reduction<<<1,1>>>(data->partial, data->c, N, partialSize);
+      if( data->deviceID)
       return 0;
    }
 
@@ -97,6 +100,22 @@ int main(int argc, char const *argv[])
    }*/
 
    //end threads
+   for(int i=0; i < numGPU; i++){
+      end_thread( thread[i]);
+      
+   }
+
+   //end threads
+   for(int i=0; i < numGPU; i++){
+      destroy_thread( thread[i]);
+   }
+
+   //start thread for summing
+   for(int i=0; i < numGPU / 2; i++){
+      thread[i] = start_thread(sumroutine, &runData)
+   }
+
+   //end thread for summing
    for(int i=0; i < numGPU; i++){
       end_thread( thread[i]);
       
