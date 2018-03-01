@@ -32,13 +32,13 @@ void* routine(void* dataSPtr)
       dataStruct *data = (dataStruct*)dataSPtr;
       cudaSetDevice(data->deviceID);
       //run kernel?
-      helloThere<<<1,1>>>(data->deviceID, data->a, data->b, data->c);
+      matrixMult<<<1,1>>>( data->a, data->b, data->c, N);
       return 0;
    }
 
 int main(int argc, char const *argv[])
 {
-   int numGPU, numGPUthreads;
+   int numGPU, partialSize;
    int N = 1;
    //get number of gpus
    cudaGetDeviceCount(&numGPU);
@@ -52,15 +52,15 @@ int main(int argc, char const *argv[])
    std::cout<< "Please enter in matrix dimensions: ";
    std::cin >> N;
    //calculate padding for reduction, needs to be power of 2
-   numGPUthreads = N;
+   partialSize = N;
    //if odd, add 1 b
-   if( numGPUthreads % 2 != 0 ){
-     numGPUthreads+=1;
+   if( partialSize % 2 != 0 ){
+     partialSize+=1;
      }
    //check for power of 2, add 2 until it is power of 2
-   while( ceil(log2((float)numGPUthreads-2)) 
-                                    != floor(log2((float)numGPUthreads-2)) ){
-     numGPUthreads+=2;
+   while( ceil(log2((float)partialSize-2)) 
+                                    != floor(log2((float)partialSize-2)) ){
+     partialSize+=2;
    }  
 
 
@@ -70,7 +70,7 @@ int main(int argc, char const *argv[])
       HANDLE_ERROR( cudaMallocManaged(&(runData[i].b), N*N*sizeof(int)) );
       HANDLE_ERROR( cudaMallocManaged(&(runData[i].c), N*N*sizeof(int)) );
       HANDLE_ERROR( cudaMallocManaged(&(runData[i].partial), 
-                                         N*N*numGPUthreads*sizeof(int)) );
+                                         N*N*partialSize*sizeof(int)) );
 
       //fill array with data including 0 for result matrix
       for( int j=0; j < N*N; j++){
@@ -79,7 +79,7 @@ int main(int argc, char const *argv[])
          runData[i].c[j] = 0;
       }
       //fill partial matrix with zeros
-      for(int k=0; k < N*N*numGPUthreads; k++){
+      for(int k=0; k < N*N*partialSize; k++){
          runData[i].partial[k] = 0;
       }
       runData[i].deviceID = i;
@@ -106,8 +106,16 @@ int main(int argc, char const *argv[])
    for(int i=0; i < numGPU; i++){
       destroy_thread( thread[i]);
    }
-   //print results
+   //print partial results
+   std::cout <<std::endl<< " printing partial matrix";
    for(int i=0; i< numGPU; i++){
+      std::cout << std::endl;
+      for(int j=0; j < N; j++){
+         std::cout << std::endl;
+         for(int k=0; k < N; k++){
+            std::cout << runData[i].c[k] << ' ';
+         }
+      }
       printf("\n Result from GPU: %d is %d", i, runData[i].c[0]);
    }
 
