@@ -47,11 +47,10 @@ void* routineM(void* dataSPtr)
 
       HANDLE_ERROR( cudaSetDevice(GPUId) );
       HANDLE_ERROR( cudaDeviceSynchronize() );
-      printf("\n GPU NUM: %d", GPUId);
       printf("\n GPU ID: %d", data->deviceID);
 
       
-      /*//run matrix mult kernel
+      //run matrix mult kernel
       matrixMult<<<grid, block>>>
       ( data[GPUId].a, data[GPUId].b, data[GPUId].partial, arrDim, partialDim);
       HANDLE_ERROR( cudaPeekAtLastError() );
