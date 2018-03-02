@@ -4,7 +4,7 @@
 
 #include <stdlib.h>
 #include<stdio.h>
-
+#include <iostream>
 
 #include"cudafunctions.h"
 #include "book.h"
