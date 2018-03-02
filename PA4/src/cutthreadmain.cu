@@ -83,20 +83,21 @@ void* routineM(void* dataSPtr)
          {
             printf("GPU ID %d add with GPUID: %d", GPUId, data->structPtr[GPUId+1 % 4].deviceID);
             matSum<<<data->gridx,block>>>
-                  (data->c, data->structPtr[GPUId+1 % 4].c, arrDim);
+                  (data->c, &(data->structPtr[GPUId+1 % 4].c), arrDim);
             HANDLE_ERROR( cudaPeekAtLastError() );
             HANDLE_ERROR( cudaDeviceSynchronize() );
          }
       //HANDLE_ERROR( cudaDeviceSynchronize() );
      
       //print final matrix
+       
       for(int i=0; i < arrDim; i++){
          std::cout << std::endl;
          for(int k=0; k < arrDim; k++ ){
             std::cout << data->c[i*arrDim+k];
          }
       }
-      
+      std::cout << std::endl;
       //helloThere<<<grid,block>>>(data[GPUId])   
       HANDLE_ERROR( cudaDeviceSynchronize() );
       return 0;
