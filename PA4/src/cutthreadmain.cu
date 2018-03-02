@@ -70,12 +70,12 @@ void* routineM(void* dataSPtr)
       }
 
       //reduction step
-      reduction<<<grid,block>>>(data->.partial, data->c, 
+      reduction<<<grid,block>>>(data->partial, data->c, 
                                                    arrDim, partialDim);
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
 
-      
+
       /*//Matrix addition step
       //test for even, sum w/ odd and then store in even 
       if( GPUId % 2 == 0)
