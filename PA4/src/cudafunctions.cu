@@ -94,5 +94,5 @@ __global__ void matSum( int*a, int*b, int arrDim){
       a[i]+= b[i];
     printf("\n The result of addition of first and %d is: %d", b[i], a[i]);
    }
-
+  __syncthreads(); 
 }
