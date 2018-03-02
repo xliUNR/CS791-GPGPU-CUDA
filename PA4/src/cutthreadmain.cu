@@ -76,7 +76,9 @@ void* routineM(void* dataSPtr)
       HANDLE_ERROR( cudaDeviceSynchronize() );
       return 0;
    } 
-
+/*
+   Routine for thread launch of matrix addition
+*/
 void* routineAdd(void* dataSPtr )
    {
       dataStruct *data = (dataStruct*)dataSPtr;
@@ -110,7 +112,7 @@ void* routineAdd(void* dataSPtr )
    }    
 ////////////// free function prototypes ////////////////////////////////////
 void seqMatrixMult(int* in1, int* in2, int* output, int arrDim);
-void seqMatrixSum(int* in1, int* in2, int* output, int arrDim );
+void seqMatrixSum(int* in1, int* in2, int arrDim );
 
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc, char const *argv[])
@@ -122,6 +124,7 @@ int main(int argc, char const *argv[])
    cudaGetDeviceCount(&numGPU);
    //initialize struct for data
    dataStruct *runData = new dataStruct[numGPU];
+   dataStruct *CPUData = new dataStruct[numGPU];
    //initialize thread array, each thread can be accessed by index
    CUTThread *thread = new CUTThread[numGPU];
    //CUTThread threadId[ MAX_GPU_COUNT];
@@ -166,28 +169,48 @@ int main(int argc, char const *argv[])
       runData[i].partialSize = partialSize;
       //initiate pointer to this array of dataStruct
       runData[i].structPtr = runData;
+
+      //allocate CPU memory for sequential implementation
+      CPUData[i].a = (int*) malloc(N*N*sizeof(int));
+      CPUData[i].b = (int*) malloc(N*N*sizeof(int));
+      CPUData[i].c = (int*) malloc(N*N*sizeof(int));
+      //set array size
+      CPUData[i].inArrSize = N;
+
       //fill array with data including 0 for result matrix
       for( int j=0; j < N*N; j++){
+         //GPU data
          runData[i].a[j] = 2;
          runData[i].b[j] = 2;
          runData[i].c[j] = 0;
+         //CPU data
+         CPUData[i].a[j] = 2;
+         CPUData[i].b[j] = 2;
+         CPUData[i].c[j] = 0;
       }
+
       //fill partial matrix with zeros
       for(int k=0; k < N*N*partialSize; k++){
          runData[i].partial[k] = 0;
       }
       runData[i].deviceID = i;
+      CPUData[i].deviceID = i;
       //printf(" /n DEVICE ID FROM HOST: %d", runData[i].deviceID);
    }
 
-   /*//sequential portion
-   for(int i=0; i < numGPU; i++){
-      seqMatrixMult(runData[i].a, runData[i].b, runData[i].c, 
-                                             runData[i].inArrSize);
-      seqMatrixSum(runData[i].a, runData[i].b, runData[i].c, 
-                                             runData[i].inArrSize);
-   }*/
-   
+   //sequential portion
+   for(int i=0; i < numGPU; i++)
+      {
+         seqMatrixMult(CPUData[i].a, CPUData[i].b, CPUData[i].c, 
+                                             CPUData[i].inArrSize);
+      }
+
+   for(int i=0; i < numGPU / 2; i++)
+      {
+         seqMatrixSum(CPUData[i].c, CPUData[i+2].c, CPUData[i].inArrSize);
+      }
+   seqMatrixSum(CPUData[0].c, CPUData[1].c, CPUData[i].inArrSize);
+      
 
    //start threads for matrix multiplication
    for( int i = 0; i < numGPU; i++){
@@ -216,11 +239,11 @@ int main(int argc, char const *argv[])
    for(int i=0; i < numGPU / 2; i++){
       destroy_thread( thread[i]);
    }
-   /*dim3 hgrid(runData[0].gridx);
+   //dim3 hgrid(runData[0].gridx);
    //do final summation, this one only needs 1 thread
-   matSum<<<hgrid,runData[0].blocks>>>(runData[0].c, runData[2].c, runData[0].c, N );
+   matSum<<<runData[0].gridx,runData[0].blocks>>>(runData[0].c, runData[1].c, runData[0].c, N );
    HANDLE_ERROR( cudaPeekAtLastError() );
-   HANDLE_ERROR( cudaDeviceSynchronize() );*/
+   HANDLE_ERROR( cudaDeviceSynchronize() );
 
   
    //print partial results
@@ -263,10 +286,10 @@ void seqMatrixMult(int* in1, int* in2, int* output, int arrDim){
 
 }
 
-void seqMatrixSum(int* in1, int* in2, int* output, int arrDim ){
+void seqMatrixSum(int* in1, int* in2, int arrDim ){
    for(int i = 0; i < arrDim; i++){
       for(int j = 0; j < arrDim; j++){
-         output[i*arrDim + j] = in1[i*arrDim + j] + in2[i*arrDim + j];
+         in1[i*arrDim + j] += in2[i*arrDim + j];
       }
    }
 }
