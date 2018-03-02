@@ -153,6 +153,7 @@ int main(int argc, char const *argv[])
          runData[i].partial[k] = 0;
       }
       runData[i].deviceID = i;
+      printf(" /n DEVICE ID FROM HOST: %d", runData[i].deviceID);
    }
 
    //sequential portion
