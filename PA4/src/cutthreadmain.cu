@@ -80,7 +80,7 @@ void* routineM(void* dataSPtr)
       //test for even, sum w/ odd and then store in even 
       if( GPUId % 2 == 0)
          {
-            printf("Matrix addition GPU ID: %d", GPUId);
+            printf("GPU ID %d add with GPUID: %d", GPUId, data->structPtr[GPUId+1 % 4].deviceID);
             matSum<<<grid,block>>>
                   (data->c, data->structPtr[GPUId+1 % 4].c, data->c, arrDim);
             HANDLE_ERROR( cudaPeekAtLastError() );
