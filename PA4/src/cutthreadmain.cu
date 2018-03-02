@@ -163,13 +163,13 @@ int main(int argc, char const *argv[])
       //printf(" /n DEVICE ID FROM HOST: %d", runData[i].deviceID);
    }
 
-   //sequential portion
+   /*//sequential portion
    for(int i=0; i < numGPU; i++){
       seqMatrixMult(runData[i].a, runData[i].b, runData[i].c, 
                                              runData[i].inArrSize);
       seqMatrixSum(runData[i].a, runData[i].b, runData[i].c, 
                                              runData[i].inArrSize);
-   }
+   }*/
    
 
    //start threads
@@ -192,11 +192,12 @@ int main(int argc, char const *argv[])
    for(int i=0; i < numGPU; i++){
       destroy_thread( thread[i]);
    }
-   dim3 hgrid(runData[0].gridx);
+
+   /*dim3 hgrid(runData[0].gridx);
    //do final summation, this one only needs 1 thread
    matSum<<<hgrid,runData[0].blocks>>>(runData[0].c, runData[2].c, runData[0].c, N );
    HANDLE_ERROR( cudaPeekAtLastError() );
-   HANDLE_ERROR( cudaDeviceSynchronize() );
+   HANDLE_ERROR( cudaDeviceSynchronize() );*/
 
   
    //print partial results
