@@ -78,6 +78,7 @@ void* routineM(void* dataSPtr)
 
       //Matrix addition step
       //test for even, sum w/ odd and then store in even 
+
       if( GPUId % 2 == 0)
          {
             printf("GPU ID %d add with GPUID: %d", GPUId, data->structPtr[GPUId+1 % 4].deviceID);
@@ -87,7 +88,7 @@ void* routineM(void* dataSPtr)
             HANDLE_ERROR( cudaDeviceSynchronize() );
          }
       //HANDLE_ERROR( cudaDeviceSynchronize() );
-
+      delay(2000); 
       //print final matrix
       for(int i=0; i < arrDim; i++){
          std::cout << std::endl;
