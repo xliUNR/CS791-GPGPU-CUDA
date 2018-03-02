@@ -27,17 +27,31 @@ struct dataStruct
 /*
   This routine is called within the start_threads call. This will be run on all threads, each will call kernel on a seperate GPU.
 */
-void* routine(void* dataSPtr)
+void* routineM(void* dataSPtr)
    {
       dataStruct *data = (dataStruct*)dataSPtr;
-      cudaSetDevice(data->deviceID);
+      int GPUId = data->deviceID;
+      HANDLE_ERROR( cudaSetDevice(GPUId) );
+      HANDLE_ERROR( cudaDeviceSynchronize() );
       //run kernel?
-      matrixMult<<<1,1>>>( data->a, data->b, data->c, N);
+      matrixMult<<<1,1>>>
+                  ( data[GPUId].a, data[GPUId].b, data[GPUId].partial, N);
+      HANDLE_ERROR( cudaPeekAtLastError() );
+      HANDLE_ERROR( cudaDeviceSynchronize() );
       //reduction step
-      reduction<<<1,1>>>(data->partial, data->c, N, partialSize);
-      if( data->deviceID)
+      reduction<<<1,1>>>(data[GPUId].partial, data[GPUId].c, N, partialSize);
+      HANDLE_ERROR( cudaPeekAtLastError() );
+      HANDLE_ERROR( cudaDeviceSynchronize() );
+      //test for even, sum w/ odd and then store in even 
+      if( data->deviceID % 2 == 0)
+         {
+            matSum<<<1,1>>>
+                  (data[GPUId].c, data[GPUId+1].c, data[GPUId].c, N);
+            HANDLE_ERROR( cudaPeekAtLastError() );
+            HANDLE_ERROR( cudaDeviceSynchronize() );
+         }
       return 0;
-   }
+   }  
 
 int main(int argc, char const *argv[])
 {
@@ -90,7 +104,7 @@ int main(int argc, char const *argv[])
 
    //start threads
    for( int i = 0; i < numGPU; i++){
-      thread[ i ] = start_thread(routine, &runData[i]);
+      thread[ i ] = start_thread(routineM, &runData[i]);
    }
 
    //end threads
@@ -104,27 +118,17 @@ int main(int argc, char const *argv[])
       end_thread( thread[i]);
       
    }
-
-   //end threads
+   //destroy threads
    for(int i=0; i < numGPU; i++){
       destroy_thread( thread[i]);
    }
 
-   //start thread for summing
-   for(int i=0; i < numGPU / 2; i++){
-      thread[i] = start_thread(sumroutine, &runData)
-   }
+   //do final summation, this one only needs 1 thread
+   matSum<<<>>>(runData[0].c, runData[2].c, runData[0].c, N );
+   HANDLE_ERROR( cudaPeekAtLastError() );
+   HANDLE_ERROR( cudaDeviceSynchronize() );
 
-   //end thread for summing
-   for(int i=0; i < numGPU; i++){
-      end_thread( thread[i]);
-      
-   }
-
-   //end threads
-   for(int i=0; i < numGPU; i++){
-      destroy_thread( thread[i]);
-   }
+  
    //print partial results
    std::cout <<std::endl<< " printing partial matrix";
    for(int i=0; i< numGPU; i++){
@@ -146,7 +150,7 @@ int main(int argc, char const *argv[])
       cudaFree( runData[i].c );
       cudaFree( runData[i].partial);
    }
-   /* code */
+   
    return 0;
 }
 
