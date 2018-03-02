@@ -92,7 +92,7 @@ void* routineM(void* dataSPtr)
       for(int i=0; i < arrDim; i++){
          std::cout << std::endl;
          for(int k=0; k < arrDim; k++ ){
-            cout << data->c[i*arrDim+k];
+            std::cout << data->c[i*arrDim+k];
          }
       }
       
