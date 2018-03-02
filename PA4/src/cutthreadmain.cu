@@ -76,7 +76,7 @@ void* routineM(void* dataSPtr)
       HANDLE_ERROR( cudaDeviceSynchronize() );
 
 
-      /*//Matrix addition step
+      //Matrix addition step
       //test for even, sum w/ odd and then store in even 
       if( GPUId % 2 == 0)
          {
@@ -87,7 +87,7 @@ void* routineM(void* dataSPtr)
          }
       
       
-      helloThere<<<grid,block>>>(data[GPUId])   
+      /*helloThere<<<grid,block>>>(data[GPUId])   
       HANDLE_ERROR( cudaDeviceSynchronize() );*/
       return 0;
    }  
