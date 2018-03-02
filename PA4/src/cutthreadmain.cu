@@ -56,7 +56,7 @@ void* routineM(void* dataSPtr)
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
 
-      //print partial
+     /* //print partial
       printf("\n partial results for GPU %d: ", GPUId);
       for(int i=0; i < arrDim; i++){
          //std::cout << std::endl;
@@ -67,7 +67,7 @@ void* routineM(void* dataSPtr)
                   data->partial[(i*arrDim + j)*partialDim + k] << ' ';
             }
          }
-      }
+      }*/
 
       //reduction step
       reduction<<<grid,block>>>(data->partial, data->c, 
@@ -86,7 +86,15 @@ void* routineM(void* dataSPtr)
             HANDLE_ERROR( cudaPeekAtLastError() );
             HANDLE_ERROR( cudaDeviceSynchronize() );
          }
-      
+      HANDLE_ERROR( cudaDeviceSynchronize() );
+
+      //print final matrix
+      for(int i=0; i < arrDim; i++){
+         std::cout << std::endl;
+         for(int k=0; k < arrDim; k++ ){
+            cout << data->c[i*arrDim+k];
+         }
+      }
       
       /*helloThere<<<grid,block>>>(data[GPUId])   
       HANDLE_ERROR( cudaDeviceSynchronize() );*/
