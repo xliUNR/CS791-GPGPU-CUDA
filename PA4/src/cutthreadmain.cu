@@ -94,7 +94,7 @@ void seqMatrixSum(int* in1, int* in2, int* output, int arrDim );
 int main(int argc, char const *argv[])
 {
    int numGPU, partialSize, gridx, gridy, bdim;
-   int N = 1;
+   int N;
    
    //get number of gpus
    cudaGetDeviceCount(&numGPU);
