@@ -44,6 +44,9 @@ void* routineM(void* dataSPtr)
 
       HANDLE_ERROR( cudaSetDevice(GPUId) );
       HANDLE_ERROR( cudaDeviceSynchronize() );
+      printf("\n GPU NUM: %d", GPUId);
+
+      
       //run matrix mult kernel
       matrixMult<<<grid, block>>>
       ( data[GPUId].a, data[GPUId].b, data[GPUId].partial, arrDim, partialDim);
@@ -53,9 +56,9 @@ void* routineM(void* dataSPtr)
       //print partial
       printf("\n partial results for GPU %d: ", GPUId);
       for(int i=0; i < arrDim; i++){
-         std::cout << std::endl;
+         //std::cout << std::endl;
          for(int j=0; j < arrDim; j++){
-            std::cout << std::endl;
+            //std::cout << std::endl;
             for(int k=0; k < partialDim; k++){
                std::cout << 
                   data[GPUId].partial[(i*arrDim + j)*partialDim + k] << ' ';
@@ -63,7 +66,7 @@ void* routineM(void* dataSPtr)
          }
       }
 
-      //reduction step
+      /*//reduction step
       reduction<<<grid,block>>>(data[GPUId].partial, data[GPUId].c, 
                                                    arrDim, partialDim);
       HANDLE_ERROR( cudaPeekAtLastError() );
@@ -76,6 +79,10 @@ void* routineM(void* dataSPtr)
             HANDLE_ERROR( cudaPeekAtLastError() );
             HANDLE_ERROR( cudaDeviceSynchronize() );
          }
+      
+      
+      helloThere<<<grid,block>>>(data[GPUId])   
+      HANDLE_ERROR( cudaDeviceSynchronize() );*/
       return 0;
    }  
 ////////////// free function prototypes ////////////////////////////////////
@@ -136,8 +143,8 @@ int main(int argc, char const *argv[])
       runData[i].partialSize = partialSize;
       //fill array with data including 0 for result matrix
       for( int j=0; j < N*N; j++){
-         runData[i].a[j] = 1;
-         runData[i].b[j] = 1;
+         runData[i].a[j] = 2;
+         runData[i].b[j] = 2;
          runData[i].c[j] = 0;
       }
       //fill partial matrix with zeros
