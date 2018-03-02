@@ -91,9 +91,9 @@ __global__ void reduction(int* inMat, int* outMat, int arrDim, int partialDim){
 __global__ void matSum( int*a, int*b, int arrDim){
    for(int i=blockIdx.x * blockDim.x + threadIdx.x; i < arrDim*arrDim;
                                                    i+=blockDim.x*gridDim.x ){
-      //a[i]+= b[i];
-      atomicAdd(&a[i], b[i]);
-    printf("\n The result of addition of first and %d is: %d", b[i], a[i]);
+      a[i]+= b[i];
+      //atomicAdd(&a[i], b[i]);
+    //printf("\n The result of addition of first and %d is: %d", b[i], a[i]);
    }
   __syncthreads(); 
 }
