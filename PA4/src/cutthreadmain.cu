@@ -172,7 +172,7 @@ int main(int argc, char const *argv[])
 
    //start threads
    for( int i = 0; i < numGPU; i++){
-      thread[ i ] = start_thread(routineM, runData[i]);
+      thread[ i ] = start_thread(routineM, &runData[i]);
    }
 
    //end threads
