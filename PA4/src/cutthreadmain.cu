@@ -88,12 +88,12 @@ void* routineAdd(void* dataSPtr )
 
       //printf("GPU ID %d add with GPUID: %d \n", GPUId, data->structPtr[GPUId+2].deviceID);
       //print array b4 summing
-      for(int i=0; i < arrDim; i++){
+     /* for(int i=0; i < arrDim; i++){
        std::cout << std::endl;
          for(int k=0; k < arrDim; k++ ){
             std::cout << data->structPtr[GPUId+2].c[i*arrDim+k];
          }
-      }
+      }*/
 
       matSum<<<data->gridx,data->blocks>>>
             (data->c, data->structPtr[GPUId+2].c, arrDim);
@@ -188,7 +188,7 @@ int main(int argc, char const *argv[])
          CPUData[i].b[j] = 2;
          CPUData[i].c[j] = 0;
       }
-
+ 
       //fill partial matrix with zeros
       for(int k=0; k < N*N*partialSize; k++){
          runData[i].partial[k] = 0;
@@ -231,7 +231,7 @@ int main(int argc, char const *argv[])
    for(int j=0; j < N; j++){
       std::cout << std::endl;
       for(int k=0; k < N; k++){
-         std::cout << CPUData[0].c[k] << ' ';
+         std::cout << CPUData[0].c[j*N + k] << ' ';
       }
    }
 
@@ -284,7 +284,7 @@ int main(int argc, char const *argv[])
    for(int j=0; j < N; j++){
       std::cout << std::endl;
       for(int k=0; k < N; k++){
-         std::cout << runData[0].c[k] << ' ';
+         std::cout << runData[0].c[j*N + k] << ' ';
       }
    }
       //printf("\n Result from GPU: %d is %d", i, runData[i].c[0]);
@@ -299,7 +299,7 @@ int main(int argc, char const *argv[])
   std::cout << std::endl << "Your program took: " << elapsedTime << " ms." 
                                                                 << std::endl;
   std::cout << "The CPU took: " << cpuTime << "ms " << std::endl;
-  
+
    //free memory
    for(int i=0; i<numGPU; i++){
       cudaFree( runData[i].a );
