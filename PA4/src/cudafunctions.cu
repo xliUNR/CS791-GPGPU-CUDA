@@ -91,7 +91,7 @@ __global__ void reduction(int* inMat, int* outMat, int arrDim, int partialDim){
 __global__ void matSum( int*a, int*b, int*result, int arrDim){
    for(int i=blockIdx.x * blockDim.x + threadIdx.x; i < arrDim*arrDim;
                                                    i+=blockDim.x ){
-      c[i] = a[i] + b[i];
+      result[i] = a[i] + b[i];
 
    }
 }
