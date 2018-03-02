@@ -34,18 +34,18 @@ void* routineM(void* dataSPtr)
       HANDLE_ERROR( cudaSetDevice(GPUId) );
       HANDLE_ERROR( cudaDeviceSynchronize() );
       //run kernel?
-      matrixMult<<<1,1>>>
+      matrixMult<<<grid,block>>>
                   ( data[GPUId].a, data[GPUId].b, data[GPUId].partial, N);
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
       //reduction step
-      reduction<<<1,1>>>(data[GPUId].partial, data[GPUId].c, N, partialSize);
+      reduction<<<grid,block>>>(data[GPUId].partial, data[GPUId].c, N, partialSize);
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
       //test for even, sum w/ odd and then store in even 
       if( data->deviceID % 2 == 0)
          {
-            matSum<<<1,1>>>
+            matSum<<<grid,block>>>
                   (data[GPUId].c, data[GPUId+1].c, data[GPUId].c, N);
             HANDLE_ERROR( cudaPeekAtLastError() );
             HANDLE_ERROR( cudaDeviceSynchronize() );
@@ -57,6 +57,8 @@ int main(int argc, char const *argv[])
 {
    int numGPU, partialSize;
    int N = 1;
+   dim3 grid(1,1);
+   dim3 block(1);
    //get number of gpus
    cudaGetDeviceCount(&numGPU);
    //initialize struct for data
@@ -104,7 +106,7 @@ int main(int argc, char const *argv[])
 
    //start threads
    for( int i = 0; i < numGPU; i++){
-      thread[ i ] = start_thread(routineM, &runData[i]);
+      thread[ i ] = start_thread(routineM, runData);
    }
 
    //end threads
@@ -124,7 +126,7 @@ int main(int argc, char const *argv[])
    }
 
    //do final summation, this one only needs 1 thread
-   matSum<<<>>>(runData[0].c, runData[2].c, runData[0].c, N );
+   matSum<<<grid,block>>>(runData[0].c, runData[2].c, runData[0].c, N );
    HANDLE_ERROR( cudaPeekAtLastError() );
    HANDLE_ERROR( cudaDeviceSynchronize() );
 
