@@ -28,6 +28,7 @@ struct dataStruct
       int * b;
       int * c;
       int * partial;
+      dataStruct * structPtr;
    };
 ////////////////////////////////////////////////////////////////////////////   
 /*
@@ -35,12 +36,14 @@ struct dataStruct
 */
 void* routineM(void* dataSPtr)
    {
-      //dataStruct *data = (dataStruct*)dataSPtr;
-      int GPUId = dataSPtr->deviceID;
-      /*dim3 grid(data[GPUId].gridx, data[GPUId].gridy);
+      dataStruct *data = (dataStruct*)dataSPtr;
+      //this pointer is for the whole struct array, one for each GPU
+      dataStruct *wStructPtr;
+      int GPUId = data->deviceID;
+      dim3 grid(data[GPUId].gridx, data[GPUId].gridy);
       dim3 block(data[GPUId].blocks);
       int arrDim = data[GPUId].inArrSize;
-      int partialDim = data[GPUId].partialSize;*/
+      int partialDim = data[GPUId].partialSize;
 
       HANDLE_ERROR( cudaSetDevice(GPUId) );
       HANDLE_ERROR( cudaDeviceSynchronize() );
@@ -142,6 +145,8 @@ int main(int argc, char const *argv[])
       //set array sizes
       runData[i].inArrSize = N;
       runData[i].partialSize = partialSize;
+      //initiate pointer to this array of dataStruct
+      runData[i].structPtr = runData;
       //fill array with data including 0 for result matrix
       for( int j=0; j < N*N; j++){
          runData[i].a[j] = 2;
@@ -167,7 +172,7 @@ int main(int argc, char const *argv[])
 
    //start threads
    for( int i = 0; i < numGPU; i++){
-      thread[ i ] = start_thread(routineM, runData);
+      thread[ i ] = start_thread(routineM, runData[i]);
    }
 
    //end threads
