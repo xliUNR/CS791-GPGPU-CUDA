@@ -38,12 +38,12 @@ void* routineM(void* dataSPtr)
    {
       dataStruct *data = (dataStruct*)dataSPtr;
       //this pointer is for the whole struct array, one for each GPU
-      dataStruct *wStructPtr;
+      dataStruct *wStructPtr = data->structPtr;
       int GPUId = data->deviceID;
-      dim3 grid(data[GPUId].gridx, data[GPUId].gridy);
-      dim3 block(data[GPUId].blocks);
-      int arrDim = data[GPUId].inArrSize;
-      int partialDim = data[GPUId].partialSize;
+      dim3 grid(data->gridx, data->gridy);
+      dim3 block(data->blocks);
+      int arrDim = data->inArrSize;
+      int partialDim = data->partialSize;
 
       HANDLE_ERROR( cudaSetDevice(GPUId) );
       HANDLE_ERROR( cudaDeviceSynchronize() );
@@ -52,7 +52,7 @@ void* routineM(void* dataSPtr)
       
       //run matrix mult kernel
       matrixMult<<<grid, block>>>
-      ( data[GPUId].a, data[GPUId].b, data[GPUId].partial, arrDim, partialDim);
+      ( data->a, data->b, data->partial, arrDim, partialDim);
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
 
@@ -64,12 +64,12 @@ void* routineM(void* dataSPtr)
             //std::cout << std::endl;
             for(int k=0; k < partialDim; k++){
                std::cout << 
-                  data[GPUId].partial[(i*arrDim + j)*partialDim + k] << ' ';
+                  data->.partial[(i*arrDim + j)*partialDim + k] << ' ';
             }
          }
       }
 
-      //reduction step
+      /*//reduction step
       reduction<<<grid,block>>>(data[GPUId].partial, data[GPUId].c, 
                                                    arrDim, partialDim);
       HANDLE_ERROR( cudaPeekAtLastError() );
