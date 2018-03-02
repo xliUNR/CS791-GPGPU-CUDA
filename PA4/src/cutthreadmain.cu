@@ -56,7 +56,8 @@ void* routineM(void* dataSPtr)
          for(int j=0; j < 4*4*4; j++){
             std::cout << std::endl;
             for(int k=0; k < 4*4*4; k++){
-               data[GPUId].partial[(i*arrDim + j)*partialDim + k];
+               std::cout << 
+                  data[GPUId].partial[(i*arrDim + j)*partialDim + k] << ' ';
             }
          }
       }
@@ -168,7 +169,7 @@ int main(int argc, char const *argv[])
    HANDLE_ERROR( cudaDeviceSynchronize() );
 
   
-   //print partial results
+   /*//print partial results
    std::cout <<std::endl<< " printing final matrix";
    for(int i=0; i< numGPU; i++){
       std::cout << std::endl;
@@ -179,7 +180,7 @@ int main(int argc, char const *argv[])
          }
       }
       //printf("\n Result from GPU: %d is %d", i, runData[i].c[0]);
-   }
+   }*/
 
 
    //free memory
