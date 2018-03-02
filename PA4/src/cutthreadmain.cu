@@ -55,14 +55,15 @@ void* routineM(void* dataSPtr)
          std::cout << std::endl;
          for(int j=0; j < 4*4*4; j++){
             std::cout << std::endl;
-            for(int k=0; k < 4*4*; k++){
+            for(int k=0; k < 4*4*4; k++){
                data[GPUId].partial[(i*arrDim + j)*partialDim + k];
             }
          }
       }
 
       //reduction step
-      reduction<<<grid,block>>>(data[GPUId].partial, arrDim, partialDim);
+      reduction<<<grid,block>>>(data[GPUId].partial, data[GPUId].c, 
+                                                   arrDim, partialDim);
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
       //test for even, sum w/ odd and then store in even 
