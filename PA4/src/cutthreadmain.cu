@@ -209,8 +209,8 @@ int main(int argc, char const *argv[])
       {
          seqMatrixSum(CPUData[i].c, CPUData[i+2].c, CPUData[i].inArrSize);
       }
-   seqMatrixSum(CPUData[0].c, CPUData[1].c, CPUData[i].inArrSize);
-      
+   seqMatrixSum(CPUData[0].c, CPUData[1].c, CPUData[0].inArrSize);
+
 
    //start threads for matrix multiplication
    for( int i = 0; i < numGPU; i++){
@@ -241,7 +241,8 @@ int main(int argc, char const *argv[])
    }
    //dim3 hgrid(runData[0].gridx);
    //do final summation, this one only needs 1 thread
-   matSum<<<runData[0].gridx,runData[0].blocks>>>(runData[0].c, runData[1].c, runData[0].c, N );
+   matSum<<<runData[0].gridx,runData[0].blocks>>>
+                                       (runData[0].c, runData[1].c, N );
    HANDLE_ERROR( cudaPeekAtLastError() );
    HANDLE_ERROR( cudaDeviceSynchronize() );
 
