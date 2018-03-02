@@ -48,7 +48,7 @@ void* routineM(void* dataSPtr)
       HANDLE_ERROR( cudaSetDevice(GPUId) );
       HANDLE_ERROR( cudaDeviceSynchronize() );
       printf("\n GPU ID: %d", data->deviceID);
-      printf("\n GPU ID OF NEIGHBOR: %d", data->structPtr[3].deviceID);
+      printf("\n GPU ID OF NEIGHBOR: %d", data->structPtr[GPUId+1 % 4].deviceID);
       
       //run matrix mult kernel
       matrixMult<<<grid, block>>>
@@ -69,11 +69,14 @@ void* routineM(void* dataSPtr)
          }
       }
 
-      /*//reduction step
-      reduction<<<grid,block>>>(data[GPUId].partial, data[GPUId].c, 
+      //reduction step
+      reduction<<<grid,block>>>(data->.partial, data->c, 
                                                    arrDim, partialDim);
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
+
+      
+      /*//Matrix addition step
       //test for even, sum w/ odd and then store in even 
       if( GPUId % 2 == 0)
          {
@@ -157,7 +160,7 @@ int main(int argc, char const *argv[])
          runData[i].partial[k] = 0;
       }
       runData[i].deviceID = i;
-      printf(" /n DEVICE ID FROM HOST: %d", runData[i].deviceID);
+      //printf(" /n DEVICE ID FROM HOST: %d", runData[i].deviceID);
    }
 
    //sequential portion
