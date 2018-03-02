@@ -29,6 +29,7 @@ struct dataStruct
       int * c;
       int * partial;
    };
+////////////////////////////////////////////////////////////////////////////   
 /*
   This routine is called within the start_threads call. This will be run on all threads, each will call kernel on a seperate GPU.
 */
@@ -43,7 +44,7 @@ void* routineM(void* dataSPtr)
 
       HANDLE_ERROR( cudaSetDevice(GPUId) );
       HANDLE_ERROR( cudaDeviceSynchronize() );
-      //run kernel?
+      //run matrix mult kernel
       matrixMult<<<grid, block>>>
       ( data[GPUId].a, data[GPUId].b, data[GPUId].partial, arrDim, partialDim);
       HANDLE_ERROR( cudaPeekAtLastError() );
@@ -51,11 +52,11 @@ void* routineM(void* dataSPtr)
 
       //print partial
       printf("\n partial results for GPU %d: ", GPUId);
-      for(int i=0; i < 4; i++){
+      for(int i=0; i < arrDim; i++){
          std::cout << std::endl;
-         for(int j=0; j < 4; j++){
+         for(int j=0; j < arrDim; j++){
             std::cout << std::endl;
-            for(int k=0; k < 4; k++){
+            for(int k=0; k < partialDim; k++){
                std::cout << 
                   data[GPUId].partial[(i*arrDim + j)*partialDim + k] << ' ';
             }
@@ -68,7 +69,7 @@ void* routineM(void* dataSPtr)
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
       //test for even, sum w/ odd and then store in even 
-      if( data->deviceID % 2 == 0)
+      if( GPUId % 2 == 0)
          {
             matSum<<<grid,block>>>
                   (data[GPUId].c, data[GPUId+1].c, data[GPUId].c, arrDim);
@@ -77,7 +78,11 @@ void* routineM(void* dataSPtr)
          }
       return 0;
    }  
+////////////// free function prototypes ////////////////////////////////////
+void seqMatrixMult(int* in1, int* in2, int* output, int arrDim);
+void seqMatrixSum(int* in1, int* in2, int* output, int arrDim );
 
+///////////////////////////////////////////////////////////////////////////////
 int main(int argc, char const *argv[])
 {
    int numGPU, partialSize, gridx, gridy, bdim;
@@ -142,6 +147,15 @@ int main(int argc, char const *argv[])
       runData[i].deviceID = i;
    }
 
+   //sequential portion
+   for(int i=0; i < numGPU; i++){
+      seqMatrixMult(runData[i].a, runData[i].b, runData[i].c, 
+                                             runData[i].inArrSize);
+      seqMatrixSum(runData[i].a, runData[i].b, runData[i].c, 
+                                             runData[i].inArrSiz);
+   }
+   
+
    //start threads
    for( int i = 0; i < numGPU; i++){
       thread[ i ] = start_thread(routineM, runData);
@@ -162,7 +176,7 @@ int main(int argc, char const *argv[])
    for(int i=0; i < numGPU; i++){
       destroy_thread( thread[i]);
    }
-   dim3 hgrid(runData[0].gridx, runData[0].gridy );
+   dim3 hgrid(runData[0].gridx);
    //do final summation, this one only needs 1 thread
    matSum<<<hgrid,runData[0].blocks>>>(runData[0].c, runData[2].c, runData[0].c, N );
    HANDLE_ERROR( cudaPeekAtLastError() );
@@ -207,4 +221,12 @@ void seqMatrixMult(int* in1, int* in2, int* output, int arrDim){
       }
    }
 
+}
+
+void seqMatrixSum(int* in1, int* in2, int* output, int arrDim ){
+   for(int i = 0; i < arrDim; i++){
+      for(int j = 0; j < arrDim; j++){
+         output[i*arrDim + j] = in1[i*arrDim + j] + in2[i*arrDim + j];
+      }
+   }
 }
