@@ -37,22 +37,39 @@ void* routineM(void* dataSPtr)
       dataStruct *data = (dataStruct*)dataSPtr;
       int GPUId = data->deviceID;
       dim3 grid(data[GPUId].gridx, data[GPUId].gridy);
+      dim3 block(data[GPUId].blocks);
+      int arrDim = data[GPUId].inArrSize;
+      int partialDim = data[GPUId].partialSize;
+
       HANDLE_ERROR( cudaSetDevice(GPUId) );
       HANDLE_ERROR( cudaDeviceSynchronize() );
       //run kernel?
-      matrixMult<<<grid,data[GPUId].blocks>>>
-                  ( data[GPUId].a, data[GPUId].b, data[GPUId].partial, data[GPUId].inArrSize, data[GPUId].partialSize);
+      matrixMult<<<grid, block>>>
+      ( data[GPUId].a, data[GPUId].b, data[GPUId].partial, arrDim, partialDim);
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
+
+      //print partial
+      printf("\n partial results for GPU %d: ", GPUId);
+      for(int i=0; i < 4*4*4; i++){
+         std::cout << std::endl;
+         for(int j=0; j < 4*4*4; j++){
+            std::cout << std::endl;
+            for(int k=0; k < 4*4*; k++){
+               data[GPUId].partial[(i*arrDim + j)*partialDim + k];
+            }
+         }
+      }
+
       //reduction step
-      reduction<<<grid,data[GPUId].blocks>>>(data[GPUId].partial, data[GPUId].c, data[GPUId].inArrSize, data[GPUId].partialSize);
+      reduction<<<grid,block>>>(data[GPUId].partial, arrDim, partialDim);
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
       //test for even, sum w/ odd and then store in even 
       if( data->deviceID % 2 == 0)
          {
-            matSum<<<grid,data[GPUId].blocks>>>
-                  (data[GPUId].c, data[GPUId+1].c, data[GPUId].c, data[GPUId].inArrSize);
+            matSum<<<grid,block>>>
+                  (data[GPUId].c, data[GPUId+1].c, data[GPUId].c, arrDim);
             HANDLE_ERROR( cudaPeekAtLastError() );
             HANDLE_ERROR( cudaDeviceSynchronize() );
          }
@@ -151,7 +168,7 @@ int main(int argc, char const *argv[])
 
   
    //print partial results
-   std::cout <<std::endl<< " printing partial matrix";
+   std::cout <<std::endl<< " printing final matrix";
    for(int i=0; i< numGPU; i++){
       std::cout << std::endl;
       for(int j=0; j < N; j++){
@@ -160,7 +177,7 @@ int main(int argc, char const *argv[])
             std::cout << runData[i].c[k] << ' ';
          }
       }
-      printf("\n Result from GPU: %d is %d", i, runData[i].c[0]);
+      //printf("\n Result from GPU: %d is %d", i, runData[i].c[0]);
    }
 
 
