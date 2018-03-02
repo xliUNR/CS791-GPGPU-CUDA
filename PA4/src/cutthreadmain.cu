@@ -81,7 +81,14 @@ void* routineM(void* dataSPtr)
 
       if( GPUId % 2 == 0)
          {
-            printf("GPU ID %d add with GPUID: %d", GPUId, data->structPtr[GPUId+1 % 4].deviceID);
+            printf("GPU ID %d add with GPUID: %d \n", GPUId, data->structPtr[GPUId+1 % 4].deviceID);
+            //print array b4 summing
+            for(int i=0; i < arrDim; i++){
+             std::cout << std::endl;
+               for(int k=0; k < arrDim; k++ ){
+                  std::cout << data->structPtr[GPUId+1 % 4].c[i*arrDim+k];
+               }
+            }
             matSum<<<data->gridx,block>>>
                   (data->c, data->structPtr[GPUId+1 % 4].c, arrDim);
             HANDLE_ERROR( cudaPeekAtLastError() );
