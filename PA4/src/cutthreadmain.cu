@@ -35,12 +35,12 @@ struct dataStruct
 */
 void* routineM(void* dataSPtr)
    {
-      dataStruct *data = (dataStruct*)dataSPtr;
-      int GPUId = data->deviceID;
-      dim3 grid(data[GPUId].gridx, data[GPUId].gridy);
+      //dataStruct *data = (dataStruct*)dataSPtr;
+      int GPUId = dataSPtr->deviceID;
+      /*dim3 grid(data[GPUId].gridx, data[GPUId].gridy);
       dim3 block(data[GPUId].blocks);
       int arrDim = data[GPUId].inArrSize;
-      int partialDim = data[GPUId].partialSize;
+      int partialDim = data[GPUId].partialSize;*/
 
       HANDLE_ERROR( cudaSetDevice(GPUId) );
       HANDLE_ERROR( cudaDeviceSynchronize() );
@@ -48,7 +48,7 @@ void* routineM(void* dataSPtr)
       printf("\n GPU ID: %d", data->deviceID);
 
       
-      //run matrix mult kernel
+      /*//run matrix mult kernel
       matrixMult<<<grid, block>>>
       ( data[GPUId].a, data[GPUId].b, data[GPUId].partial, arrDim, partialDim);
       HANDLE_ERROR( cudaPeekAtLastError() );
@@ -67,7 +67,7 @@ void* routineM(void* dataSPtr)
          }
       }
 
-      /*//reduction step
+      //reduction step
       reduction<<<grid,block>>>(data[GPUId].partial, data[GPUId].c, 
                                                    arrDim, partialDim);
       HANDLE_ERROR( cudaPeekAtLastError() );
@@ -167,7 +167,7 @@ int main(int argc, char const *argv[])
 
    //start threads
    for( int i = 0; i < numGPU; i++){
-      thread[ i ] = start_thread(routineM, &runData);
+      thread[ i ] = start_thread(routineM, runData);
    }
 
    //end threads
