@@ -48,7 +48,7 @@ void* routineM(void* dataSPtr)
       HANDLE_ERROR( cudaSetDevice(GPUId) );
       HANDLE_ERROR( cudaDeviceSynchronize() );
       printf("\n GPU ID: %d", data->deviceID);
-
+      printf("\n GPU ID OF NEIGHBOR: %d", data->structPtr[3].deviceID);
       
       //run matrix mult kernel
       matrixMult<<<grid, block>>>
@@ -64,7 +64,7 @@ void* routineM(void* dataSPtr)
             //std::cout << std::endl;
             for(int k=0; k < partialDim; k++){
                std::cout << 
-                  data->.partial[(i*arrDim + j)*partialDim + k] << ' ';
+                  data->partial[(i*arrDim + j)*partialDim + k] << ' ';
             }
          }
       }
