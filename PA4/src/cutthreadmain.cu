@@ -52,7 +52,7 @@ void* routineM(void* dataSPtr)
       if( data->deviceID % 2 == 0)
          {
             matSum<<<grid,data[GPUId].blocks>>>
-                  (data[GPUId].c, data[GPUId+1].c, data[GPUId].c, N);
+                  (data[GPUId].c, data[GPUId+1].c, data[GPUId].c, data[GPUId].inArrSize);
             HANDLE_ERROR( cudaPeekAtLastError() );
             HANDLE_ERROR( cudaDeviceSynchronize() );
          }
