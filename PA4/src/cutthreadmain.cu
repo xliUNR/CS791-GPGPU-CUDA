@@ -47,8 +47,8 @@ void* routineM(void* dataSPtr)
 
       HANDLE_ERROR( cudaSetDevice(GPUId) );
       HANDLE_ERROR( cudaDeviceSynchronize() );
-      printf("\n GPU ID: %d", data->deviceID);
-      printf("\n GPU ID OF NEIGHBOR: %d", data->structPtr[GPUId+1 % 4].deviceID);
+      //printf("\n GPU ID: %d", data->deviceID);
+      //printf("\n GPU ID OF NEIGHBOR: %d", data->structPtr[GPUId+1 % 4].deviceID);
       
       //run matrix mult kernel
       matrixMult<<<grid, block>>>
@@ -86,7 +86,7 @@ void* routineM(void* dataSPtr)
             HANDLE_ERROR( cudaPeekAtLastError() );
             HANDLE_ERROR( cudaDeviceSynchronize() );
          }
-      HANDLE_ERROR( cudaDeviceSynchronize() );
+      //HANDLE_ERROR( cudaDeviceSynchronize() );
 
       //print final matrix
       for(int i=0; i < arrDim; i++){
@@ -96,8 +96,8 @@ void* routineM(void* dataSPtr)
          }
       }
       
-      /*helloThere<<<grid,block>>>(data[GPUId])   
-      HANDLE_ERROR( cudaDeviceSynchronize() );*/
+      //helloThere<<<grid,block>>>(data[GPUId])   
+      HANDLE_ERROR( cudaDeviceSynchronize() );
       return 0;
    }  
 ////////////// free function prototypes ////////////////////////////////////
