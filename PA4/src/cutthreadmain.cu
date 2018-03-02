@@ -76,13 +76,13 @@ void* routineM(void* dataSPtr)
       HANDLE_ERROR( cudaDeviceSynchronize() );
       return 0;
    } 
-   
+
 void* routineAdd(void* dataSPtr )
    {
       dataStruct *data = (dataStruct*)dataSPtr;
-      dataStruct *wStructPtr = data->structPtr;
+      //dataStruct *wStructPtr = data->structPtr;
       int GPUId = data->deviceID;
-
+      int arrDim = data->inArrSize;
 
       printf("GPU ID %d add with GPUID: %d \n", GPUId, data->structPtr[GPUId+2].deviceID);
       //print array b4 summing
@@ -106,7 +106,7 @@ void* routineAdd(void* dataSPtr )
          }
       }
       std::cout << std::endl;
-   
+      return 0;
    }    
 ////////////// free function prototypes ////////////////////////////////////
 void seqMatrixMult(int* in1, int* in2, int* output, int arrDim);
