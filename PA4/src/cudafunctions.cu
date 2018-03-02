@@ -86,12 +86,13 @@ __global__ void reduction(int* inMat, int* outMat, int arrDim, int partialDim){
 
 
 /*
-   kernel for element by element matrix summation. Launch uses 1D grid of 1D blocks
+   kernel for element by element matrix summation. Launch uses 1D grid of 1D blocks. Stores result back in first parameter matrix
 */   
-__global__ void matSum( int*a, int*b, int*result, int arrDim){
+__global__ void matSum( int*a, int*b, int arrDim){
    for(int i=blockIdx.x * blockDim.x + threadIdx.x; i < arrDim*arrDim;
                                                    i+=blockDim.x*gridDim.x ){
-      result[i] = a[i] + b[i];
+      a[i]+= b[i];
 
    }
+
 }

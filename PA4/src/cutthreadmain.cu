@@ -8,7 +8,7 @@
 
 #include"cudafunctions.h"
 #include "book.h"
-#include "windows.h" 
+
 
 /*
   declare struct that contains data ID, grid and block structure, as well as 3 pointers that will identify matrices that the kernel will work on. 
@@ -82,13 +82,13 @@ void* routineM(void* dataSPtr)
       if( GPUId % 2 == 0)
          {
             printf("GPU ID %d add with GPUID: %d", GPUId, data->structPtr[GPUId+1 % 4].deviceID);
-            matSum<<<grid,block>>>
-                  (data->c, data->structPtr[GPUId+1 % 4].c, data->c, arrDim);
+            matSum<<<data->gridx,block>>>
+                  (data->c, data->structPtr[GPUId+1 % 4].c, arrDim);
             HANDLE_ERROR( cudaPeekAtLastError() );
             HANDLE_ERROR( cudaDeviceSynchronize() );
          }
       //HANDLE_ERROR( cudaDeviceSynchronize() );
-      sleep(2000); 
+     
       //print final matrix
       for(int i=0; i < arrDim; i++){
          std::cout << std::endl;
