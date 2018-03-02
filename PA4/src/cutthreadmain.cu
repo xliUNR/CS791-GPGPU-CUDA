@@ -83,7 +83,7 @@ void* routineM(void* dataSPtr)
          {
             printf("GPU ID %d add with GPUID: %d", GPUId, data->structPtr[GPUId+1 % 4].deviceID);
             matSum<<<data->gridx,block>>>
-                  (data->c, &(data->structPtr[GPUId+1 % 4].c), arrDim);
+                  (data->c, data->structPtr[GPUId+1 % 4].c, arrDim);
             HANDLE_ERROR( cudaPeekAtLastError() );
             HANDLE_ERROR( cudaDeviceSynchronize() );
          }

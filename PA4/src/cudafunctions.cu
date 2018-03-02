@@ -92,7 +92,7 @@ __global__ void matSum( int*a, int*b, int arrDim){
    for(int i=blockIdx.x * blockDim.x + threadIdx.x; i < arrDim*arrDim;
                                                    i+=blockDim.x*gridDim.x ){
       a[i]+= b[i];
-
+    printf("/n The result of addition is: %d", a[i]);
    }
 
 }
