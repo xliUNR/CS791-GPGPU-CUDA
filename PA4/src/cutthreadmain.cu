@@ -152,7 +152,7 @@ int main(int argc, char const *argv[])
       seqMatrixMult(runData[i].a, runData[i].b, runData[i].c, 
                                              runData[i].inArrSize);
       seqMatrixSum(runData[i].a, runData[i].b, runData[i].c, 
-                                             runData[i].inArrSiz);
+                                             runData[i].inArrSize);
    }
    
 
