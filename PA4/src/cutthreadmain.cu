@@ -8,7 +8,7 @@
 
 #include"cudafunctions.h"
 #include "book.h"
- 
+#include "dos.h" 
 
 /*
   declare struct that contains data ID, grid and block structure, as well as 3 pointers that will identify matrices that the kernel will work on. 
