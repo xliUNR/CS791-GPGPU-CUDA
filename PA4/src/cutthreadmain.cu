@@ -81,7 +81,7 @@ void* routineM(void* dataSPtr)
       if( GPUId % 2 == 0)
          {
             matSum<<<grid,block>>>
-                  (data[GPUId].c, data[GPUId+1].c, data[GPUId].c, arrDim);
+                  (data->c, wStructPtr[GPUId+1].c, data->c, arrDim);
             HANDLE_ERROR( cudaPeekAtLastError() );
             HANDLE_ERROR( cudaDeviceSynchronize() );
          }
