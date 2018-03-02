@@ -8,7 +8,7 @@
 
 #include"cudafunctions.h"
 #include "book.h"
-#include "dos.h" 
+#include "windows.h" 
 
 /*
   declare struct that contains data ID, grid and block structure, as well as 3 pointers that will identify matrices that the kernel will work on. 
@@ -88,7 +88,7 @@ void* routineM(void* dataSPtr)
             HANDLE_ERROR( cudaDeviceSynchronize() );
          }
       //HANDLE_ERROR( cudaDeviceSynchronize() );
-      delay(2000); 
+      sleep(2000); 
       //print final matrix
       for(int i=0; i < arrDim; i++){
          std::cout << std::endl;
