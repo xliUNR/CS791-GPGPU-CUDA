@@ -21,6 +21,8 @@ struct dataStruct
       int deviceID;
       dim3 grid;
       int blocks;
+      int partialSize;
+      int inArrSize;
       int * a;
       int * b;
       int * c;
@@ -33,22 +35,22 @@ void* routineM(void* dataSPtr)
    {
       dataStruct *data = (dataStruct*)dataSPtr;
       int GPUId = data->deviceID;
-      dim3 grid = {}
+      dim3 grid = {data[GPUId].}
       HANDLE_ERROR( cudaSetDevice(GPUId) );
       HANDLE_ERROR( cudaDeviceSynchronize() );
       //run kernel?
-      matrixMult<<<grid,block>>>
-                  ( data[GPUId].a, data[GPUId].b, data[GPUId].partial, N);
+      matrixMult<<<data[GPUId].grid,data[GPUId].blocks>>>
+                  ( data[GPUId].a, data[GPUId].b, data[GPUId].partial, data[GPUId].inArrSize, data[GPUId].partialSize);
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
       //reduction step
-      reduction<<<grid,block>>>(data[GPUId].partial, data[GPUId].c, N, partialSize);
+      reduction<<<data[GPUId].grid,data[GPUId].blocks>>>(data[GPUId].partial, data[GPUId].c, data[GPUId].inArrSize, data[GPUId].partialSize);
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
       //test for even, sum w/ odd and then store in even 
       if( data->deviceID % 2 == 0)
          {
-            matSum<<<grid,block>>>
+            matSum<<<data[GPUId].grid,data[GPUId].blocks>>>
                   (data[GPUId].c, data[GPUId+1].c, data[GPUId].c, N);
             HANDLE_ERROR( cudaPeekAtLastError() );
             HANDLE_ERROR( cudaDeviceSynchronize() );
@@ -103,6 +105,9 @@ int main(int argc, char const *argv[])
       //set grid and block dimensions based on user response
       runData[i].grid = {gridx, gridy};
       runData[i].blocks = bdim;
+      //set array sizes
+      runData[i].inArrSize = N;
+      runData[i].partialSize = partialSize;
       //fill array with data including 0 for result matrix
       for( int j=0; j < N*N; j++){
          runData[i].a[j] = 1;
@@ -138,7 +143,7 @@ int main(int argc, char const *argv[])
    }
 
    //do final summation, this one only needs 1 thread
-   matSum<<<grid,block>>>(runData[0].c, runData[2].c, runData[0].c, N );
+   matSum<<<runData[0].grid,runData[0].blocks>>>(runData[0].c, runData[2].c, runData[0].c, N );
    HANDLE_ERROR( cudaPeekAtLastError() );
    HANDLE_ERROR( cudaDeviceSynchronize() );
 
