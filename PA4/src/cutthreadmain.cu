@@ -37,8 +37,6 @@ struct dataStruct
 void* routineM(void* dataSPtr)
    {
       dataStruct *data = (dataStruct*)dataSPtr;
-      //this pointer is for the whole struct array, one for each GPU
-      dataStruct *wStructPtr = data->structPtr;
       int GPUId = data->deviceID;
       dim3 grid(data->gridx, data->gridy);
       dim3 block(data->blocks);
