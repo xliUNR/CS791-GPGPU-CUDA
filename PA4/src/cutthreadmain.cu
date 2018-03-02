@@ -93,7 +93,7 @@ void* routineAdd(void* dataSPtr )
          }
       }
 
-      matSum<<<data->gridx,data->block>>>
+      matSum<<<data->gridx,data->blocks>>>
             (data->c, data->structPtr[GPUId+2].c, arrDim);
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
