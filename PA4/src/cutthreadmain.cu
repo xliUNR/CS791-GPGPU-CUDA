@@ -332,7 +332,7 @@ void seqMatrixMult(int* in1, int* in2, int* output, int arrDim){
          //initialize value of 0 for output matrix element
          output[ i*arrDim + j ] = 0;
          for(int k = 0; k < arrDim; k++){
-            output[ i*arrDim + k ]+= in1[ i*arrDim + k ] * in2[ k*arrDim + j ];
+            output[ i*arrDim + j ]+= in1[ i*arrDim + k ] * in2[ k*arrDim + j ];
          }
       }
    }
