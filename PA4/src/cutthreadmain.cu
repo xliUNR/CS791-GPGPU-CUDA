@@ -74,41 +74,40 @@ void* routineM(void* dataSPtr)
                                                    arrDim, partialDim);
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
+      return 0;
+   } 
+   
+void* routineAdd(void* dataSPtr )
+   {
+      dataStruct *data = (dataStruct*)dataSPtr;
+      dataStruct *wStructPtr = data->structPtr;
+      int GPUId = data->deviceID;
 
 
-      //Matrix addition step
-      //test for even, sum w/ odd and then store in even 
-
-      if( GPUId % 2 == 0)
-         {
-            printf("GPU ID %d add with GPUID: %d \n", GPUId, data->structPtr[GPUId+1 % 4].deviceID);
-            //print array b4 summing
-            for(int i=0; i < arrDim; i++){
-             std::cout << std::endl;
-               for(int k=0; k < arrDim; k++ ){
-                  std::cout << data->structPtr[GPUId+1 % 4].c[i*arrDim+k];
-               }
-            }
-            matSum<<<data->gridx,block>>>
-                  (data->c, data->structPtr[GPUId+1 % 4].c, arrDim);
-            HANDLE_ERROR( cudaPeekAtLastError() );
-            HANDLE_ERROR( cudaDeviceSynchronize() );
-         }
-      //HANDLE_ERROR( cudaDeviceSynchronize() );
-     
-      //print final matrix
-       
+      printf("GPU ID %d add with GPUID: %d \n", GPUId, data->structPtr[GPUId+2].deviceID);
+      //print array b4 summing
       for(int i=0; i < arrDim; i++){
+       std::cout << std::endl;
+         for(int k=0; k < arrDim; k++ ){
+            std::cout << data->structPtr[GPUId+2].c[i*arrDim+k];
+         }
+      }
+
+      matSum<<<data->gridx,data->block>>>
+            (data->c, data->structPtr[GPUId+2].c, arrDim);
+      HANDLE_ERROR( cudaPeekAtLastError() );
+      HANDLE_ERROR( cudaDeviceSynchronize() );
+      //print matrix after sum
+
+       for(int i=0; i < arrDim; i++){
          std::cout << std::endl;
          for(int k=0; k < arrDim; k++ ){
             std::cout << data->c[i*arrDim+k];
          }
       }
       std::cout << std::endl;
-      //helloThere<<<grid,block>>>(data[GPUId])   
-      HANDLE_ERROR( cudaDeviceSynchronize() );
-      return 0;
-   }  
+   
+   }    
 ////////////// free function prototypes ////////////////////////////////////
 void seqMatrixMult(int* in1, int* in2, int* output, int arrDim);
 void seqMatrixSum(int* in1, int* in2, int* output, int arrDim );
@@ -190,27 +189,33 @@ int main(int argc, char const *argv[])
    }*/
    
 
-   //start threads
+   //start threads for matrix multiplication
    for( int i = 0; i < numGPU; i++){
       thread[ i ] = start_thread(routineM, &runData[i]);
    }
-
-   //end threads
-   /*for(int i=0; i < numGPU; i++){
-      //end_thread( thread[i]);
-      wait_for_threads(thread[i], NULL);
-   }*/
-
    //end threads
    for(int i=0; i < numGPU; i++){
-      end_thread( thread[i]);
-      
+      end_thread( thread[i]);  
    }
    //destroy threads
    for(int i=0; i < numGPU; i++){
       destroy_thread( thread[i]);
    }
 
+
+
+   //start thread for addition
+   for( int i = 0; i < numGPU / 2; i++){
+      thread[ i ] = start_thread(routineAdd, &runData[i]);
+   }
+   //end threads
+   for(int i=0; i < numGPU / 2; i++){
+      end_thread( thread[i]);    
+   }
+   //destroy threads
+   for(int i=0; i < numGPU / 2; i++){
+      destroy_thread( thread[i]);
+   }
    /*dim3 hgrid(runData[0].gridx);
    //do final summation, this one only needs 1 thread
    matSum<<<hgrid,runData[0].blocks>>>(runData[0].c, runData[2].c, runData[0].c, N );
