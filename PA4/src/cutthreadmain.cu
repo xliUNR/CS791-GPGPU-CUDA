@@ -14,10 +14,12 @@
   declare struct that contains data ID, grid and block structure, as well as 3 pointers that will identify matrices that the kernel will work on. 
   a and b store input matrices
   c is for the results matrix 
-*/  
+*/ 
+
 struct dataStruct
    {
       int deviceID;
+      dim3 grid;
       int blocks;
       int * a;
       int * b;
@@ -31,6 +33,7 @@ void* routineM(void* dataSPtr)
    {
       dataStruct *data = (dataStruct*)dataSPtr;
       int GPUId = data->deviceID;
+      dim3 grid = {}
       HANDLE_ERROR( cudaSetDevice(GPUId) );
       HANDLE_ERROR( cudaDeviceSynchronize() );
       //run kernel?
@@ -55,10 +58,9 @@ void* routineM(void* dataSPtr)
 
 int main(int argc, char const *argv[])
 {
-   int numGPU, partialSize;
+   int numGPU, partialSize, gridx, gridy, bdim;
    int N = 1;
-   dim3 grid(1,1);
-   dim3 block(1);
+   
    //get number of gpus
    cudaGetDeviceCount(&numGPU);
    //initialize struct for data
@@ -67,9 +69,16 @@ int main(int argc, char const *argv[])
    CUTThread *thread = new CUTThread[numGPU];
    //CUTThread threadId[ MAX_GPU_COUNT];
 
-
-   std::cout<< "Please enter in matrix dimensions: ";
+   //ask user for numbers
+   std::cout<< std::endl << "Please enter in matrix dimensions: ";
    std::cin >> N;
+   std::cout<< std::endl << "Please enter in grid x dim: ";
+   std::cin >> gridx;
+   std::cout<< std::endl << "Please enter in grid y dim: ";
+   std::cin >> gridy;
+   std::cout<< std::endl << "Please enter in block dim: ";
+   std::cin >> bdim;
+
    //calculate padding for reduction, needs to be power of 2
    partialSize = N;
    //if odd, add 1 b
@@ -91,6 +100,9 @@ int main(int argc, char const *argv[])
       HANDLE_ERROR( cudaMallocManaged(&(runData[i].partial), 
                                          N*N*partialSize*sizeof(int)) );
 
+      //set grid and block dimensions based on user response
+      runData[i].grid = {gridx, gridy};
+      runData[i].blocks = bdim;
       //fill array with data including 0 for result matrix
       for( int j=0; j < N*N; j++){
          runData[i].a[j] = 1;
