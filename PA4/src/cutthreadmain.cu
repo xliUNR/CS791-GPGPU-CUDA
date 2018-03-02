@@ -86,7 +86,7 @@ void* routineAdd(void* dataSPtr )
       int GPUId = data->deviceID;
       int arrDim = data->inArrSize;
 
-      printf("GPU ID %d add with GPUID: %d \n", GPUId, data->structPtr[GPUId+2].deviceID);
+      //printf("GPU ID %d add with GPUID: %d \n", GPUId, data->structPtr[GPUId+2].deviceID);
       //print array b4 summing
       for(int i=0; i < arrDim; i++){
        std::cout << std::endl;
@@ -99,7 +99,7 @@ void* routineAdd(void* dataSPtr )
             (data->c, data->structPtr[GPUId+2].c, arrDim);
       HANDLE_ERROR( cudaPeekAtLastError() );
       HANDLE_ERROR( cudaDeviceSynchronize() );
-      //print matrix after sum
+      /*//print matrix after sum
 
        for(int i=0; i < arrDim; i++){
          std::cout << std::endl;
@@ -107,7 +107,7 @@ void* routineAdd(void* dataSPtr )
             std::cout << data->c[i*arrDim+k];
          }
       }
-      std::cout << std::endl;
+      std::cout << std::endl;*/
       return 0;
    }    
 ////////////// free function prototypes ////////////////////////////////////
@@ -198,6 +198,13 @@ int main(int argc, char const *argv[])
       //printf(" /n DEVICE ID FROM HOST: %d", runData[i].deviceID);
    }
 
+/////////////////  Sequential Implementation  ///////////////////////////////
+   //make event timing variables for Sequential implementation
+   cudaEvent_t hstart, hend;
+   cudaEventCreate(&hstart);
+   cudaEventCreate(&hend);
+   cudaEventRecord( hstart, 0 );
+
    //sequential portion
    for(int i=0; i < numGPU; i++)
       {
@@ -211,6 +218,29 @@ int main(int argc, char const *argv[])
       }
    seqMatrixSum(CPUData[0].c, CPUData[1].c, CPUData[0].inArrSize);
 
+   //stop timing
+   cudaEventRecord( hend, 0 );
+   cudaEventSynchronize( hend );
+   float cpuTime;
+   cudaEventElapsedTime( &cpuTime, hstart, hend);
+
+   //print CPU results
+   std::cout <<std::endl<< " printing CPU matrix";
+   
+   std::cout << std::endl;
+   for(int j=0; j < N; j++){
+      std::cout << std::endl;
+      for(int k=0; k < N; k++){
+         std::cout << CPUData[0].c[k] << ' ';
+      }
+   }
+
+////////////////////  GPU Implementation  //////////////////////////////////   
+   //start event timer for GPU parallel implementation 
+   cudaEvent_t start, end;
+   cudaEventCreate(&start);
+   cudaEventCreate(&end);
+   cudaEventRecord( start, 0 );
 
    //start threads for matrix multiplication
    for( int i = 0; i < numGPU; i++){
@@ -248,25 +278,38 @@ int main(int argc, char const *argv[])
 
   
    //print partial results
-   std::cout <<std::endl<< " printing final matrix";
-   for(int i=0; i< numGPU; i++){
+   std::cout <<std::endl<< " printing GPU matrix";
+   
+   std::cout << std::endl;
+   for(int j=0; j < N; j++){
       std::cout << std::endl;
-      for(int j=0; j < N; j++){
-         std::cout << std::endl;
-         for(int k=0; k < N; k++){
-            std::cout << runData[i].c[k] << ' ';
-         }
+      for(int k=0; k < N; k++){
+         std::cout << runData[0].c[k] << ' ';
       }
-      //printf("\n Result from GPU: %d is %d", i, runData[i].c[0]);
    }
+      //printf("\n Result from GPU: %d is %d", i, runData[i].c[0]);
+   
+   //stop GPU timing
+   cudaEventRecord( end, 0 );
+   cudaEventSynchronize( end );
+   float elapsedTime;
+   cudaEventElapsedTime( &elapsedTime, start, end );
 
-
+   //print out program stats
+  std::cout << std::endl << "Your program took: " << elapsedTime << " ms." 
+                                                                << std::endl;
+  std::cout << "The CPU took: " << cpuTime << "ms " << std::endl;
+  
    //free memory
    for(int i=0; i<numGPU; i++){
       cudaFree( runData[i].a );
       cudaFree( runData[i].b );
       cudaFree( runData[i].c );
       cudaFree( runData[i].partial);
+
+      free(CPUData[i].a);
+      free(CPUData[i].b);
+      free(CPUData[i].c);
    }
    
    return 0;
