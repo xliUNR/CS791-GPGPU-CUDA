@@ -268,15 +268,15 @@ int main(int argc, char const *argv[])
  
    //start thread for addition
    for( int i = 0; i < 4/ 2; i++){
-      thread[ i ] = start_thread(routineAdd, &runData[i]);
+      thread[ i % numGPU ] = start_thread(routineAdd, &runData[i]);
    }
       //end threads
       for(int i=0; i < 4 / 2; i++){
-         end_thread( thread[i]);    
+         end_thread( thread[i % numGPU ]);    
       }
       //destroy threads
       for(int i=0; i < 4 / 2; i++){
-         destroy_thread( thread[i]);
+         destroy_thread( thread[i % numGPU]);
       }   
    
    
