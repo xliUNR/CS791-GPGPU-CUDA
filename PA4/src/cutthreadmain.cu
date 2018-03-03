@@ -267,18 +267,26 @@ int main(int argc, char const *argv[])
    }
  
    //start thread for addition
+   if( numGPU > 1 ){
    for( int i = 0; i < 4/ 2; i++){
-      thread[ i % numGPU ] = start_thread(routineAdd, &runData[i]);
+      thread[ i ] = start_thread(routineAdd, &runData[i]);
    }
       //end threads
       for(int i=0; i < 4 / 2; i++){
-         end_thread( thread[i % numGPU ]);    
+         end_thread( thread[i]);    
       }
       //destroy threads
       for(int i=0; i < 4 / 2; i++){
-         destroy_thread( thread[i % numGPU]);
+         destroy_thread( thread[i]);
       }   
-   
+   }
+   else{
+      for(int i = 0; i < 2; i++){
+         thread[0] = start_thread(routineAdd, &runData[i]);
+         end_thread( thread[0]);
+         destroy_thread( thread[0]);
+      }
+   }
    
    //dim3 hgrid(runData[0].gridx);
    //do final summation, this one only needs 1 thread
