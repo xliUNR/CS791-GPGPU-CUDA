@@ -249,23 +249,22 @@ int main(int argc, char const *argv[])
    cudaEventRecord( start, 0 );
    int x = 0;
    //loop over all data points, this is for cases where numGPU < 4
-   while( x*numGPU < 4)
-      {
+   
           //start threads for matrix multiplication
          for( int i = 0; i < numGPU; i++){
-            thread[ i ] = start_thread(routineM, &runData[ x*numGPU + i ]);
+            thread[ i % numGPU ] = start_thread(routineM, &runData[ i ]);
          }
          //end threads
          for(int i=0; i < numGPU; i++){
-            end_thread( thread[i]);  
+            end_thread( thread[i % numGPU ]);  
          }
          //destroy threads
          for(int i=0; i < numGPU; i++){
-            destroy_thread( thread[i]);
+            destroy_thread( thread[i % numGPU ]);
          }
          //increment to next data offsetsz
          x++;
-      }
+   
   
  
    //start thread for addition
