@@ -49,7 +49,7 @@ void* routineM(void* dataSPtr)
       //printf("\n GPU ID: %d", data->deviceID);
       //printf("\n GPU ID OF NEIGHBOR: %d", data->structPtr[GPUId+1 % 4].deviceID);
       
-      while( GPUId < 4 ){
+      
             //run matrix mult kernel
          matrixMult<<<grid, block>>>
          ( data->a, data->b, data->partial, arrDim, partialDim);
@@ -74,7 +74,7 @@ void* routineM(void* dataSPtr)
                                                       arrDim, partialDim);
          HANDLE_ERROR( cudaPeekAtLastError() );
          HANDLE_ERROR( cudaDeviceSynchronize() );
-      }
+   
       
       return 0;
    } 
