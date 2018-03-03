@@ -19,6 +19,7 @@
 struct dataStruct
    {
       int deviceID;
+      int totalGPUs;
       int gridx;
       int gridy;
       int blocks;
@@ -48,30 +49,33 @@ void* routineM(void* dataSPtr)
       //printf("\n GPU ID: %d", data->deviceID);
       //printf("\n GPU ID OF NEIGHBOR: %d", data->structPtr[GPUId+1 % 4].deviceID);
       
-      //run matrix mult kernel
-      matrixMult<<<grid, block>>>
-      ( data->a, data->b, data->partial, arrDim, partialDim);
-      HANDLE_ERROR( cudaPeekAtLastError() );
-      HANDLE_ERROR( cudaDeviceSynchronize() );
+      while( GPUId < 4 ){
+            //run matrix mult kernel
+         matrixMult<<<grid, block>>>
+         ( data->a, data->b, data->partial, arrDim, partialDim);
+         HANDLE_ERROR( cudaPeekAtLastError() );
+         HANDLE_ERROR( cudaDeviceSynchronize() );
 
-     /* //print partial
-      printf("\n partial results for GPU %d: ", GPUId);
-      for(int i=0; i < arrDim; i++){
-         //std::cout << std::endl;
-         for(int j=0; j < arrDim; j++){
+        /* //print partial
+         printf("\n partial results for GPU %d: ", GPUId);
+         for(int i=0; i < arrDim; i++){
             //std::cout << std::endl;
-            for(int k=0; k < partialDim; k++){
-               std::cout << 
-                  data->partial[(i*arrDim + j)*partialDim + k] << ' ';
+            for(int j=0; j < arrDim; j++){
+               //std::cout << std::endl;
+               for(int k=0; k < partialDim; k++){
+                  std::cout << 
+                     data->partial[(i*arrDim + j)*partialDim + k] << ' ';
+               }
             }
-         }
-      }*/
+         }*/
 
-      //reduction step
-      reduction<<<grid,block>>>(data->partial, data->c, 
-                                                   arrDim, partialDim);
-      HANDLE_ERROR( cudaPeekAtLastError() );
-      HANDLE_ERROR( cudaDeviceSynchronize() );
+         //reduction step
+         reduction<<<grid,block>>>(data->partial, data->c, 
+                                                      arrDim, partialDim);
+         HANDLE_ERROR( cudaPeekAtLastError() );
+         HANDLE_ERROR( cudaDeviceSynchronize() );
+      }
+      
       return 0;
    } 
 /*
@@ -83,7 +87,6 @@ void* routineAdd(void* dataSPtr )
       //dataStruct *wStructPtr = data->structPtr;
       int GPUId = data->deviceID;
       int arrDim = data->inArrSize;
-
       //printf("GPU ID %d add with GPUID: %d \n", GPUId, data->structPtr[GPUId+2].deviceID);
       //print array b4 summing
      /* for(int i=0; i < arrDim; i++){
@@ -151,13 +154,15 @@ int main(int argc, char const *argv[])
 
 
    //allocate unified memory and initialize beginning data
-   for(int i=0; i < numGPU; i++){
+   for(int i=0; i < 4; i++){
       HANDLE_ERROR( cudaMallocManaged(&(runData[i].a), N*N*sizeof(int)) );
       HANDLE_ERROR( cudaMallocManaged(&(runData[i].b), N*N*sizeof(int)) );
       HANDLE_ERROR( cudaMallocManaged(&(runData[i].c), N*N*sizeof(int)) );
       HANDLE_ERROR( cudaMallocManaged(&(runData[i].partial), 
                                          N*N*partialSize*sizeof(int)) );
 
+      //set number of gpus total
+      runData[i].totalGPUs = numGPU;
       //set grid and block dimensions based on user response
       runData[i].gridx = gridx;
       runData[i].gridy = gridy;
@@ -191,8 +196,8 @@ int main(int argc, char const *argv[])
       for(int k=0; k < N*N*partialSize; k++){
          runData[i].partial[k] = 0;
       }
-      runData[i].deviceID = i;
-      CPUData[i].deviceID = i;
+      //set deviceID based on how many GPU there are 
+      runData[i].deviceID = i % numGPU;  
       //printf(" /n DEVICE ID FROM HOST: %d", runData[i].deviceID);
    }
 
@@ -204,25 +209,18 @@ int main(int argc, char const *argv[])
    cudaEventRecord( hstart, 0 );
 
    //sequential portion
+   //sequential matrix mult
    for(int i=0; i < numGPU; i++)
       {
          seqMatrixMult(CPUData[i].a, CPUData[i].b, CPUData[i].c, 
                                              CPUData[i].inArrSize);
       }
-       //print CPU results
-   std::cout <<std::endl<< " printing between CPU matrix";
-   
-   std::cout << std::endl;
-   for(int j=0; j < N; j++){
-      std::cout << std::endl;
-      for(int k=0; k < N; k++){
-         std::cout << CPUData[0].c[j*N + k] << ' ';
-      }
-   }
+   //sequential matrix addition  
    for(int i=0; i < numGPU / 2; i++)
       {
          seqMatrixSum(CPUData[i].c, CPUData[i+2].c, CPUData[i].inArrSize);
       }
+   //last step of addition   
    seqMatrixSum(CPUData[0].c, CPUData[1].c, CPUData[0].inArrSize);
 
    //stop timing
@@ -231,7 +229,7 @@ int main(int argc, char const *argv[])
    float cpuTime;
    cudaEventElapsedTime( &cpuTime, hstart, hend);
 
-   //print CPU results
+   /*//print CPU results
    std::cout <<std::endl<< " printing CPU matrix";
    
    std::cout << std::endl;
@@ -240,7 +238,8 @@ int main(int argc, char const *argv[])
       for(int k=0; k < N; k++){
          std::cout << CPUData[0].c[j*N + k] << ' ';
       }
-   }
+   }*/
+
 
 ////////////////////  GPU Implementation  //////////////////////////////////   
    //start event timer for GPU parallel implementation 
@@ -248,34 +247,40 @@ int main(int argc, char const *argv[])
    cudaEventCreate(&start);
    cudaEventCreate(&end);
    cudaEventRecord( start, 0 );
-
-   //start threads for matrix multiplication
-   for( int i = 0; i < numGPU; i++){
-      thread[ i ] = start_thread(routineM, &runData[i]);
-   }
-   //end threads
-   for(int i=0; i < numGPU; i++){
-      end_thread( thread[i]);  
-   }
-   //destroy threads
-   for(int i=0; i < numGPU; i++){
-      destroy_thread( thread[i]);
-   }
-
-
-
+   int x = 0;
+   //loop over all data points, this is for cases where numGPU < 4
+   while( x*numGPU < 4)
+      {
+          //start threads for matrix multiplication
+         for( int i = 0; i < numGPU; i++){
+            thread[ i ] = start_thread(routineM, &runData[ x*numGPU + i ]);
+         }
+         //end threads
+         for(int i=0; i < numGPU; i++){
+            end_thread( thread[i]);  
+         }
+         //destroy threads
+         for(int i=0; i < numGPU; i++){
+            destroy_thread( thread[i]);
+         }
+         //increment to next data offsetsz
+         x++;
+      }
+  
+ 
    //start thread for addition
-   for( int i = 0; i < numGPU / 2; i++){
-      thread[ i ] = start_thread(routineAdd, &runData[i]);
+   for( int i = 0; i < 4/ 2; i++){
+      thread[ i % numGPU ] = start_thread(routineAdd, &runData[i]);
+      //end threads
+      for(int i=0; i < numGPU / 2; i++){
+         end_thread( thread[i]);    
+      }
+      //destroy threads
+      for(int i=0; i < numGPU / 2; i++){
+         destroy_thread( thread[i]);
+      }   
    }
-   //end threads
-   for(int i=0; i < numGPU / 2; i++){
-      end_thread( thread[i]);    
-   }
-   //destroy threads
-   for(int i=0; i < numGPU / 2; i++){
-      destroy_thread( thread[i]);
-   }
+   
    //dim3 hgrid(runData[0].gridx);
    //do final summation, this one only needs 1 thread
    matSum<<<runData[0].gridx,runData[0].blocks>>>
@@ -284,7 +289,7 @@ int main(int argc, char const *argv[])
    HANDLE_ERROR( cudaDeviceSynchronize() );
 
   
-   //print partial results
+   /*//print results
    std::cout <<std::endl<< " printing GPU matrix";
    
    std::cout << std::endl;
@@ -293,7 +298,7 @@ int main(int argc, char const *argv[])
       for(int k=0; k < N; k++){
          std::cout << runData[0].c[j*N + k] << ' ';
       }
-   }
+   }*/
       //printf("\n Result from GPU: %d is %d", i, runData[i].c[0]);
    
    //stop GPU timing
