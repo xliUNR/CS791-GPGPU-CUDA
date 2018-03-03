@@ -251,7 +251,7 @@ int main(int argc, char const *argv[])
    //loop over all data points, this is for cases where numGPU < 4
    
           //start threads for matrix multiplication
-         for( int i = 0; i < numGPU; i++){
+         for( int i = 0; i < 4; i++){
             thread[ i % numGPU ] = start_thread(routineM, &runData[ i ]);
          }
          //end threads
