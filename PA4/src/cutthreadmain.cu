@@ -197,7 +197,8 @@ int main(int argc, char const *argv[])
          runData[i].partial[k] = 0;
       }
       //set deviceID based on how many GPU there are 
-      runData[i].deviceID = i; //% numGPU;  
+      runData[i].deviceID = i;
+      CPUData[i].deviceID = i; //% numGPU;  
       //printf(" /n DEVICE ID FROM HOST: %d", runData[i].deviceID);
    }
 
@@ -268,15 +269,15 @@ int main(int argc, char const *argv[])
  
    //start thread for addition
    
-   for( int i = 0; i < 4/ 2; i++){
+   for( int i = 0; i < numGPU/ 2; i++){
       thread[ i ] = start_thread(routineAdd, &runData[i]);
    }
       //end threads
-      for(int i=0; i < 4 / 2; i++){
+      for(int i=0; i < numGPU/ 2; i++){
          end_thread( thread[i]);    
       }
       //destroy threads
-      for(int i=0; i < 4 / 2; i++){
+      for(int i=0; i < numGPU/ 2; i++){
          destroy_thread( thread[i]);
       }   
    
