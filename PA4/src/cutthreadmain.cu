@@ -249,25 +249,25 @@ int main(int argc, char const *argv[])
    cudaEventRecord( start, 0 );
    int x = 0;
    //loop over all data points, this is for cases where numGPU < 4
-   for( int i=0; i < 4/numGPU; i++){
+   
           //start threads for matrix multiplication
          for( int j = 0; j < numGPU; j++){
-            thread[ j ] = start_thread(routineM, &runData[ x*numGPU + j ]);
+            thread[ j ] = start_thread(routineM, &runData[ j ]);
          }
          //end threads
          for(int i=0; i < numGPU; i++){
-            end_thread( thread[i % numGPU ]);  
+            end_thread( thread[i ]);  
          }
          //destroy threads
          for(int i=0; i < numGPU; i++){
-            destroy_thread( thread[i % numGPU ]);
+            destroy_thread( thread[i ]);
          }
          //increment to next data offsetsz
-         x++; 
-   }
+        
+   
  
    //start thread for addition
-   if( numGPU > 1 ){
+   
    for( int i = 0; i < 4/ 2; i++){
       thread[ i ] = start_thread(routineAdd, &runData[i]);
    }
@@ -279,14 +279,14 @@ int main(int argc, char const *argv[])
       for(int i=0; i < 4 / 2; i++){
          destroy_thread( thread[i]);
       }   
-   }
-   else{
+   
+   
       for(int i = 0; i < 2; i++){
          thread[0] = start_thread(routineAdd, &runData[i]);
          end_thread( thread[0]);
          destroy_thread( thread[0]);
       }
-   }
+   
    
    //dim3 hgrid(runData[0].gridx);
    //do final summation, this one only needs 1 thread
