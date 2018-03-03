@@ -210,7 +210,7 @@ int main(int argc, char const *argv[])
                                              CPUData[i].inArrSize);
       }
        //print CPU results
-   /*std::cout <<std::endl<< " printing between CPU matrix";
+   std::cout <<std::endl<< " printing between CPU matrix";
    
    std::cout << std::endl;
    for(int j=0; j < N; j++){
@@ -218,8 +218,7 @@ int main(int argc, char const *argv[])
       for(int k=0; k < N; k++){
          std::cout << CPUData[0].c[j*N + k] << ' ';
       }
-   }*/
-      
+   }
    for(int i=0; i < numGPU / 2; i++)
       {
          seqMatrixSum(CPUData[i].c, CPUData[i+2].c, CPUData[i].inArrSize);
