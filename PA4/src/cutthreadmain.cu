@@ -208,7 +208,7 @@ int main(int argc, char const *argv[])
          seqMatrixMult(CPUData[i].a, CPUData[i].b, CPUData[i].c, 
                                              CPUData[i].inArrSize);
       }
-       //print CPU results
+  /*     //print CPU results
    std::cout <<std::endl<< " printing between CPU matrix";
    
    std::cout << std::endl;
@@ -217,7 +217,7 @@ int main(int argc, char const *argv[])
       for(int k=0; k < N; k++){
          std::cout << CPUData[0].c[j*N + k] << ' ';
       }
-   }
+   }*/
    for(int i=0; i < numGPU / 2; i++)
       {
          seqMatrixSum(CPUData[i].c, CPUData[i+2].c, CPUData[i].inArrSize);
@@ -230,7 +230,7 @@ int main(int argc, char const *argv[])
    float cpuTime;
    cudaEventElapsedTime( &cpuTime, hstart, hend);
 
-   //print CPU results
+  /* //print CPU results
    std::cout <<std::endl<< " printing CPU matrix";
    
    std::cout << std::endl;
@@ -239,7 +239,7 @@ int main(int argc, char const *argv[])
       for(int k=0; k < N; k++){
          std::cout << CPUData[0].c[j*N + k] << ' ';
       }
-   }
+   }*/
 
 ////////////////////  GPU Implementation  //////////////////////////////////   
    //start event timer for GPU parallel implementation 
@@ -284,7 +284,7 @@ int main(int argc, char const *argv[])
 
   
    //print partial results
-   std::cout <<std::endl<< " printing GPU matrix";
+   /*std::cout <<std::endl<< " printing GPU matrix";
    
    std::cout << std::endl;
    for(int j=0; j < N; j++){
@@ -292,7 +292,7 @@ int main(int argc, char const *argv[])
       for(int k=0; k < N; k++){
          std::cout << runData[0].c[j*N + k] << ' ';
       }
-   }
+   }*/
       //printf("\n Result from GPU: %d is %d", i, runData[i].c[0]);
    
    //stop GPU timing
