@@ -266,7 +266,7 @@ int main(int argc, char const *argv[])
          x++; 
    }
  
-   //start thread for addition
+   /*//start thread for addition
    for( int i = 0; i < 4/ 2; i++){
       thread[ i % numGPU ] = start_thread(routineAdd, &runData[i]);
       //end threads
@@ -277,7 +277,7 @@ int main(int argc, char const *argv[])
       for(int i=0; i < numGPU / 2; i++){
          destroy_thread( thread[i]);
       }   
-   }
+   }*/
    
    //dim3 hgrid(runData[0].gridx);
    //do final summation, this one only needs 1 thread
