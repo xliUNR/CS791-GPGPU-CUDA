@@ -197,7 +197,7 @@ int main(int argc, char const *argv[])
          runData[i].partial[k] = 0;
       }
       //set deviceID based on how many GPU there are 
-      runData[i].deviceID = i % numGPU;  
+      runData[i].deviceID = i; //% numGPU;  
       //printf(" /n DEVICE ID FROM HOST: %d", runData[i].deviceID);
    }
 
