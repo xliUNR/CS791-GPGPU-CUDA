@@ -10,7 +10,7 @@ This is a simple program to add two arrays by using GPU. To run this project ```
 ## PA1: Spinning Cube
 This should be an improved version of PA0. You need to follow the ideas from PA0 and what is learned from this course to finish this assignment.
 
-##PA2: 
+## PA2: KNN
 K- nearest neighbors data imputation. Uses KNN to impute missing data.
 
 ##PA3:
